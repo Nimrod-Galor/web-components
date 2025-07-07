@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script defer src="./ExpandingList.js"></script>
+    <script defer src="./Popupinfo.js"></script>
+
+    <script defrer src="Password.js"></script>
+
+    <style>
+        .wrapper{
+            margin: 20px;
+        }
+
+
+
+    </style>
+    <title>Web Components</title>
+</head>
+<body>
+    <div>
+        <h3>Web Components</h3>
+
+        <div class="wrapper">
+            <h4>Expanding List</h4>
+            <ul is="expanding-list">
+                <li>
+                    order list
+                    <ol>
+                        <li>Item 1
+                            <dl>
+                                <dt>Definition term</dt>
+                                <dd>Definition description
+                                    <ul>
+                                        <li>Sub item 1</li>
+                                        <li>Sub item 2</li>
+                                        <li>Sub item 3</li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li>Item 2</li>
+                        <li>Item 3</li>
+                    </ol>
+                </li>
+                <li>
+                    UK
+                    <ul>
+                        <li>
+                            Yorkshire
+                            <ul>
+                                <li>
+                                    Leeds
+                                    <ul>
+                                        <li>Train station</li>
+                                        <li>Town hall</li>
+                                        <li>Headrow</li>
+                                    </ul>
+                                </li>
+                                <li>Bradford</li>
+                                <li>Hull</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    USA
+                    <ul>
+                        <li>
+                            California
+                            <ul>
+                                <li>Los Angeles</li>
+                                <li>San Francisco</li>
+                                <li>Berkeley</li>
+                            </ul>
+                        </li>
+                        <li>Nevada</li>
+                        <li>Oregon</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+
+        <div class="wrapper">
+            <h4>Pop-up info widget - web components</h4>
+
+            <form>
+                <div>
+                    <label for="cvc">
+                        Enter your CVC
+                        <popup-info
+                            img="img/alt.png"
+                            data-text="Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card."
+                        ></popup-info>
+                    </label>
+                    <input type="text" id="cvc" />
+                </div>
+            </form>
+        </div>
+
+        <div class="wrapper">
+            <h4>Custom Password hide/show Input</h4>
+
+            <form id="demo">
+                <label for="password">Password: </label>
+                <input-password id="password" name="password" placeholder="Enter password"></input-password>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.getElementById('demo').addEventListener('submit', e => {
+            e.preventDefault()
+            console.log([...new FormData(e.target)])   // →  [ ['user', 'John'] ]
+        })
+    </script>
+</body>
+</html>
