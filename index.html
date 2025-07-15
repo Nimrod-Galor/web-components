@@ -741,8 +741,62 @@
     </div>
 
     <div class="wrapper">
-        <h4>Currency Converter</h4>
-        <currency-converter source="" target="">19</currency-converter>
+        <h3>Fetch Data Components</h3>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Currency Converter</h4>
+                <currency-converter source="" target="EUR ILS ARS CAD">1</currency-converter>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbcc1">
+                    <label for="cbcc1" class="tab__label">Currency Converter</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;currency-converter&gt;`, provides a live currency conversion tool using the [frankfurter.app](https://www.frankfurter.app/) API.</p>
+
+                            Key Features
+                            <dl>
+                            <dt>Live Currency Conversion:</dt>
+                            <dd>Converts an amount from a source currency to one or more target currencies using real-time exchange rates.</dd>
+
+                            <dt>Flexible Input:</dt>
+                            <dd>Users can specify the source currency, target currencies (space-separated), and amount via attributes or the input field.</dd>
+
+                            <dt>Automatic Updates:</dt>
+                            <dd>Reacts to changes in its attributes (`source`, `target`, `amount`) and updates the conversion results automatically.</dd>
+
+                            <dt>Error Handling:</dt>
+                            <dd>Displays clear error messages for network/API issues or unsupported currencies.</dd>
+
+                            <dt>Accessibility:</dt>
+                            <dd>Uses labels, `aria-label`, and `title` attributes for screen readers and tooltips.</dd>
+
+                            <dt>Shadow DOM Encapsulation:</dt>
+                            <dd>Styles and markup are encapsulated for safe integration.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;currency-converter source="USD" target="EUR GBP" amount="100"&gt;&lt;/currency-converter&gt;
+                            </code>
+
+                            <div class="notecard warning">
+                                Note:
+                            This implementation uses the frankfurter.app API. Not all currencies are supported; if a selected currency is not available, the conversion will not update for that currency. The upside is that no API key is required. For broader currency support, you can use a different currency conversion API.
+                            </div>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;currency-converter&gt;` is a reactive, accessible, and user-friendly currency conversion component for web apps, supporting multiple currencies and live updates.</p>
+
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 

@@ -301,3 +301,51 @@ This web component, `<relativetime-format>`, automatically formats a numeric val
 
 **Summary:**  
 `<relativetime-format>` is a reactive, accessible, locale-aware relative time formatter for web apps, supporting multiple time units, styles, and automatic updates.
+
+## Currency Converter
+
+This web component, `<currency-converter>`, provides a live currency conversion tool using the [frankfurter.app](https://www.frankfurter.app/) API.
+
+---
+
+### Key Features
+
+- **Live Currency Conversion:**  
+  Converts an amount from a source currency to one or more target currencies using real-time exchange rates.
+
+- **Flexible Input:**  
+  Users can specify the source currency, target currencies (space-separated), and amount via attributes or the input field.
+
+- **Automatic Updates:**  
+  Reacts to changes in its attributes (`source`, `target`, `amount`) and updates the conversion results automatically.
+
+- **Error Handling:**  
+  Displays clear error messages for network/API issues or unsupported currencies.
+
+- **Accessibility:**  
+  Uses labels, `aria-label`, and `title` attributes for screen readers and tooltips.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated for safe integration.
+
+---
+
+### Usage Example
+
+```html
+<currency-converter
+  source="USD"
+  target="EUR GBP"
+  amount="100"
+></currency-converter>
+```
+
+---
+
+**Note:**  
+This implementation uses the frankfurter.app API. Not all currencies are supported; if a selected currency is not available, the conversion will not update for that currency. The upside is that no API key is required. For broader currency support, you can use a different currency conversion API.
+
+---
+
+**Summary:**  
+`<currency-converter>` is a reactive, accessible, and user-friendly currency conversion component for web apps, supporting multiple currencies and live updates.

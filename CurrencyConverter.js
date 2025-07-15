@@ -26,7 +26,7 @@ class CurrencyConverter extends HTMLElement {
     }
 
     get target() {
-        return this.getAttribute('target') || 'EUR'
+        return this.getAttribute('target') ? this._parseTargets(this.getAttribute('target')) : ['EUR']
     }
 
     set target(value) {
@@ -62,21 +62,34 @@ class CurrencyConverter extends HTMLElement {
     }
 
     async _fetchConversionRate() {
-        const url = `https://api.frankfurter.app/latest?from=${this.source}&to=${this.target}`
+        if (!this.source || this.target.length === 0){
+            this._renderError('Source or target currency missing')
+            return
+        }
+
+        const symbols = this.target.join(',')
+
+        const url = `https://api.frankfurter.app/latest?from=${this.source}&symbols=${symbols}`
         
         try {
             fetch(url)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    this._renderError(`API error: ${res.status} ${res.statusText}`);
+                    return
+                }
+                return res.json()
+            })
             .then(data => {
                 if (data && data.rates != null) {
-                    this.rate = data.rates[this.target]
+                    this._rates = data.rates
                     this._render()
                 } else {
                     this._renderError('Invalid API response')
                 }
             })
         } catch (err) {
-            this._renderError('Failed to fetch rate')
+            this._renderError('Network error. Failed to fetch rate')
         }
     }
 
@@ -89,8 +102,24 @@ class CurrencyConverter extends HTMLElement {
     }
 
     _render() {
-        const converted = (this.amount * this.rate).toFixed(2)
-        this.shadowRoot.innerHTML = `<input type='number' id="amount" value="${this.amount}" onchange="(e) => _amountUpdated()" /><label for="amount"> ${this.source}</label> = <span class="output">${converted}</span><span class="target"> ${this.target}</span>`
+        // const converted = (this.amount * this.rate).toFixed(2)
+        const convertedList = this._parseRates()
+        const summary = this._summary()
+
+        this.shadowRoot.innerHTML = `
+        <style>
+            :host {
+                display: flex;
+                gap:10px;
+            }
+            #amount {
+                justify-items: end;
+                height: fit-content;
+            }
+        </style>
+        <input type='number' id="amount" value="${this.amount}" min="1" aria-label="Amount in ${this.source}" />
+        <label for="amount"> ${this.source}</label> = 
+        <div class="output" aria-label="${summary}" title="${summary}">${convertedList}</div>`
         this.shadowRoot.querySelector('#amount').addEventListener('input', this._onAmountChange.bind(this))
     }
 
@@ -102,12 +131,42 @@ class CurrencyConverter extends HTMLElement {
     }
 
     _renderConverted() {
-        const converted = (this.amount * this.rate).toFixed(2)
-        // this.shadowRoot.querySelector('span').textContent = `${converted} ${this.target}`
         const output = this.shadowRoot.querySelector('.output');
-        if (output) {
-            output.textContent = converted
+        if (!output) {
+            return
         }
+
+        const summary = this._summary()
+        output.innerHTML = this._parseRates()
+        output.setAttribute('aria-label', summary)
+        output.setAttribute('title', summary)
+    }
+
+    _parseRates(){
+        const output = this.target.map(target => {
+                const rate = this._rates[target]
+                if (!rate) {
+                    return `<span style="color:red">No rate for ${target}</span>`
+                }
+                const amount = (Number(this.amount) * rate).toFixed(2);
+                return `<div>${amount} ${target}</div>`;
+            }).join('')
+
+        return output || `<span style="color:red">No rates available</span>`
+    }
+
+    _summary(){
+        return `${this.amount} ${this.source} = ${this.target.map(t => {
+            const rate = this._rates?.[t];
+            return rate ? `${(Number(this.amount) * rate).toFixed(2)} ${t}` : `No rate for ${t}`;
+        }).join(', ')}`
+    }
+
+    _parseTargets(targetAttr) {
+        return (targetAttr || '')
+        .split(' ')
+        .map(t => t.trim().toUpperCase())
+        .filter(Boolean)
     }
 }
 
