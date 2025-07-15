@@ -9,39 +9,10 @@ class PopupInfo extends HTMLElement {
     // Create a shadow root
     const shadow = this.attachShadow({ mode: "open" });
 
-    // Create spans
-    const wrapper = document.createElement("span");
-    wrapper.setAttribute("class", "wrapper");
-
-    const icon = document.createElement("span");
-    icon.setAttribute("class", "icon");
-    icon.setAttribute("tabindex", 0);
-
-    const info = document.createElement("span");
-    info.setAttribute("class", "info");
-
-    // Take attribute content and put it inside the info span
-    const text = this.getAttribute("data-text");
-    info.textContent = text;
-
-    // Insert icon
-    let imgUrl;
-    if (this.hasAttribute("img")) {
-      imgUrl = this.getAttribute("img");
-    } else {
-      imgUrl = "img/default.png";
-    }
-
-    const img = document.createElement("img");
-    img.src = imgUrl;
-    icon.appendChild(img);
-
-    // Create some CSS to apply to the shadow dom
-    const style = document.createElement("style");
-    console.log(style.isConnected);
-
-    style.textContent = `
-      .wrapper {
+     // Create styles and append them to the shadow root
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(`
+          .wrapper {
         position: relative;
       }
 
@@ -61,21 +32,39 @@ class PopupInfo extends HTMLElement {
         z-index: 3;
       }
 
-      img {
-        width: 1.2rem;
+      .icon{
+      display: inline-block;
+        width: 32px; height: 32px;
+        background: no-repeat center/20px;
+        background-image: url("data:image/png;base64,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");
       }
 
       .icon:hover + .info, .icon:focus + .info {
         opacity: 1;
       }
-    `;
+          `)
 
-    // Attach the created elements to the shadow dom
-    shadow.appendChild(style);
-    // console.log(style.isConnected);
-    shadow.appendChild(wrapper);
+      shadow.adoptedStyleSheets = [sheet]
+
+    // Create spans
+    const wrapper = document.createElement("span");
+    wrapper.setAttribute("class", "wrapper");
+
+    const icon = document.createElement("span");
+    icon.setAttribute("class", "icon");
+    icon.setAttribute("tabindex", 0);
+    icon.setAttribute("aria-describedby", "info-popup");
     wrapper.appendChild(icon);
+
+    const info = document.createElement("span");
+    info.setAttribute("class", "info");
+    info.setAttribute("id", "info-popup");
+    info.setAttribute("role", "tooltip");
+    // Take attribute content and put it inside the info span
+    info.textContent = this.getAttribute("data-text");
     wrapper.appendChild(info);
+
+    shadow.appendChild(wrapper);
   }
 }
 

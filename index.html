@@ -4,25 +4,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script defer src="./SelectLocale.js"></script>
+
     <script defer src="./ExpandingList.js"></script>
     <script defer src="./Popupinfo.js"></script>
 
     <script defrer src="Password.js"></script>
+    <script defrer src="TextareaCount.js"></script>
+    <script defrer src="InputKnob.js"></script>
+    <script defrer src="SignaturePad.js"></script>
+
+    <script defrer src="NumberFormat.js"></script>
+    <script defrer src="CurrencyFormat.js"></script>
+    <script defrer src="DateFormat.js"></script>
+    <script defrer src="DurationFormat.js"></script>
+    <script defrer src="PluralRules.js"></script>
+    <script defrer src="RelativeTimeFormat.js"></script>
+
+    <script defer src="Test.js"></script>
 
     <style>
         .wrapper{
             margin: 20px;
         }
 
+        .notecard {
+            padding: 1rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 1px 2px #2b2a330d;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .notecard.info .tab label:before {
+            background-color: #0085f2;
+            content: "";
+            display: block;
+            height: 1rem;
+            left: 1rem;
+            -webkit-mask-image: url(/img/default.png);
+            mask-image: url(/img/default.png);
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            position: absolute;
+            width: 1rem;
+        }
 
+        .info{
+            background-color: #c3e4ff;
+            border-left: 2px solid #0085f2;
+        }
+
+        .warning{
+            background-color: #ffe0b3;
+            border-left: 2px solid #ff9800;
+        }
+
+        .row{
+            margin: 5px 0;
+            display: flex;
+            gap:20px;
+        }
+
+        .auto{
+            flex: 1;
+        }
+
+        dt{
+            font-weight: 600;
+        }
+
+        .tagbox{
+            display: block;
+            width:fit-content;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #d5d5d5;
+            border: 1px solid #757575;
+        }
+
+        form#demo div{
+            margin: 10px 0;
+        }
+
+        .styled-number{
+            font-size: 16px;
+        }
+
+
+        .styled-number .currency {
+            top: -.5em;
+            font-size: 1rem;
+            position: relative;
+            font-weight: bold;
+            color: #000;
+            margin: 0 0.2em;
+        }
+
+        .styled-number .fraction {
+            top: -.5em;
+            font-size: 13px;
+            position: relative;
+            color: #6f7373;
+            text-decoration: underline;
+            margin-left: 0.2rem;
+        }
+
+        .styled-number .decimal {
+            display: none;
+        }
+
+
+        /* Accordion */
+        /* Core styles/functionality */
+        .tab {
+            position: relative;
+        
+            input {
+                position: absolute;
+                opacity: 0;
+                z-index: -1;
+
+                &:checked ~ .tab__content {
+                    max-height: 1000rem;
+                    transition: max-height 1s ease-in-out;
+                }
+
+                &:checked + .tab__label::after {
+                    transform: rotate(270deg);
+                }
+
+                 /* Arrow animation */
+                &:not(:checked) + .tab__label:hover::after {
+                    animation: bounce .5s infinite;
+                }
+
+                @keyframes bounce {
+                    25% {
+                        transform: rotate(90deg) translate(.25rem);
+                    }
+                    75% {
+                        transform: rotate(90deg) translate(-.25rem);
+                    }
+                }
+            }
+        }
+
+        .tab__content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+
+            .content {
+                margin: 0;
+                padding: 1rem;
+            }
+        }
+        
+
+        /* Visual styles */
+        .accordion {
+            overflow: hidden;
+        }
+        .tab__label,
+        .tab__close {
+            display: flex;
+            cursor: pointer;
+        }
+
+        .tab__label {
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            &::after {
+                content: "\276F";
+                width: 1em;
+                height: 1em;
+                text-align: center;
+                transform: rotate(90deg);
+                transition: all 0.35s;
+            }
+        }
+
+
+        .tab__close {
+            justify-content: flex-end;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+
+       
 
     </style>
     <title>Web Components</title>
 </head>
-<body>
+<body style="--locale: en-US">
     <div>
         <h3>Web Components</h3>
-
+        
         <div class="wrapper">
             <h4>Expanding List</h4>
             <ul is="expanding-list">
@@ -85,9 +268,18 @@
         
 
         <div class="wrapper">
-            <h4>Pop-up info widget - web components</h4>
+            <h4>Form compnents</h4>
 
-            <form>
+            <form id="demo">
+                <div>
+                    <label for="password">Password: </label>
+                    <input-password id="password" name="password" placeholder="Enter password" required></input-password>
+                </div>
+              
+                <div>
+                    <label for="comment">Comment: </label><br />
+                    <textarea is="textarea-count" id="comment" name="comment" placeholder="Type your comment here..." rows="5" cols="50" maxlength="20"></textarea>
+                </div>
                 <div>
                     <label for="cvc">
                         Enter your CVC
@@ -96,20 +288,470 @@
                             data-text="Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card."
                         ></popup-info>
                     </label>
-                    <input type="text" id="cvc" />
+                    <input type="text" id="cvc" name="cvc" />
                 </div>
-            </form>
-        </div>
+                <div>
+                    <label for="knob">Volume: </label>
+                    <input-knob
+                        id="knob"
+                        name="knob"
+                        min="0"
+                        max="50"
+                        step="1"
+                        value="25"
+                        label="Volume"
+                        direction="bottom"
+                        sweep="270"
+                        style="
+                        --stroke-width: 2px;
+                        --pointer-stroke-color: red;
+                        --pointer-stroke-width: 8px;
+                        --highlight-stroke-color: green;
+                        --highlight-stroke-width: 8px;
+                        "
+                        ></input-knob>
+                
+                    <input-knob
+                        id="knob2"
+                        name="knob2"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value="50"
+                        label="Volume"
+                        direction="left"
+                        sweep="310"></input-knob>
+                </div>
+                <div>
+                    <signature-pad name="signature" required></signature-pad>
+                </div>
 
-        <div class="wrapper">
-            <h4>Custom Password hide/show Input</h4>
-
-            <form id="demo">
-                <label for="password">Password: </label>
-                <input-password id="password" name="password" placeholder="Enter password"></input-password>
+                <!-- <input type="text" name="testtext" required /> -->
                 <button type="submit">Submit</button>
             </form>
         </div>
+    </div>
+
+    <div class="wrapper">
+        <h3>Formating components</h3>
+        <div class="notecard info">
+            <p><strong>Locales</strong> in JavaScript (and computing in general) represent <strong>language + region + cultural formatting preferences</strong>.</p>
+            <p>Locales affect how things are <strong>displayed</strong> to the user, such as: Numbers, Dates, Currencies and Plural forms.</p>
+            <p>JavaScript provides the Intl object, a set of internationalization APIs to format data according to locale.</p>
+            <p>The following web components format data according to selected Locale.</p>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Select Locale</h4>
+                <select-locale displayLocale="en-US"></select-locale>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-1" id="cb1">
+                    <label for="cb1" class="tab__label">Select Locale</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>
+                                This web component, &lt;select-locale&gt;, provides a dropdown menu for selecting a locale (language and region code) supported by the browser.
+                            </p>
+                            Key Features
+                            <dl>
+                                <dt>Locale List:</dt>
+                                    <dd>Displays a comprehensive list of supported locales (e.g., en-US, fr-FR, zh-CN).</dd>
+                                <dt>Display Names:</dt>
+                                    <dd>Uses Intl.DisplayNames to show user-friendly names for each locale, such as "English (United States)" or "Français (France)".</dd>
+
+                                <dt>Default Locale:</dt>
+                                    <dd>Defaults to 'en-US' if no displayLocale attribute is set.</dd>
+
+                                <dt>Reactivity:</dt>
+                                    <dd>When the user selects a new locale, the component updates its internal state and dispatches a locale-change custom event with the new locale.</dd>
+
+                                <dt>Custom Attribute:</dt>
+                                    <dd>The displayLocale attribute controls which locale is currently selected and how locale names are displayed.</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Uses a native &lt;select&gt; element for keyboard and screen reader support.</dd>
+                            </dl>
+                            Usage Example
+                            <code class="tagbox">
+                                &lt;select-local displayLocale="fr-FR"&gt;&lt;/select-local&gt;
+                            </code>
+                            How It Works
+                            <ul>
+                                <li>On connection, it builds the dropdown with all supported locales.</li>
+                                <li>Selecting a locale updates the component and notifies listeners via an event.</li>
+                                <li>Locale names are shown in the currently selected language.</li>
+                            </ul>
+                            <strong>Summary:</strong>
+                            <p>
+                                &lt;select-local&gt; is a reusable locale picker for web apps, supporting internationalization and easy integration.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Number Format</h4>
+                <number-format id="num1" class="styled-number">Text is ignored.</number-format>
+                <br />
+                <number-format id="num2" class="styled-number">100121.01</number-format>
+                <br />
+                <number-format locale="ar-EG" class="styled-number">1001211</number-format>
+                <br />
+                <number-format locale="de-DE" class="styled-number">1001211</number-format>
+                <br />
+                <number-format minimum-fraction-digits="2" maximum-fraction-digits="2" class="styled-number">123</number-format>
+            
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbnf1">
+                    <label for="cbnf1" class="tab__label">Number Format</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;number-format&gt;`, automatically formats its numeric content as a localized number using the browser's `Intl.NumberFormat` API.</p>
+                            Key Features
+                            <dl>
+                                <dt>Locale-aware Formatting:</dt>
+                                <dd>Formats numbers according to the specified `locale` attribute, or falls back to a CSS variable or `'en-US'`.</dd>
+                                
+                                <dt>Fraction Digits Control:</dt>
+                                <dd>Supports `minimum-fraction-digits` and `maximum-fraction-digits` attributes for precise decimal formatting.</dd>
+                                
+                                <dt>Live Updates:</dt>
+                                <dd>Reacts to changes in its content and attributes, updating the formatted output automatically.</dd>
+                                
+                                <dt>MutationObserver:</dt>
+                                <dd>Watches for changes to its content and re-formats as needed.</dd>
+                                
+                                <dt>Accessibility:</dt>
+                                <dd>Sets both `aria-label` and `title` attributes to the formatted number for screen readers and tooltips.</dd>
+                            </dl>
+                            Usage Example
+                            <code class="tagbox">
+                                &lt;number-format locale="fr-FR" minimum-fraction-digits="2" maximum-fraction-digits="2"&gt;
+                                12345.678
+                                &lt;/number-format&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;number-format&gt;` is a reactive, accessible, locale-aware number formatter for web apps, supporting custom fraction digit control and automatic updates.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Currency Format</h4>
+                <currency-format id="num2" class="styled-number" currency="USD">1001311.005</currency-format>
+                <br />
+                <currency-format locale="he-IL" currency="ILS" class="styled-number">1234.5</currency-format>
+                <br />
+                <currency-format locale="fr-FR" currency="EUR" class="styled-number">9874.5</currency-format>
+                <br />
+                <currency-format currency="USD" minimum-fraction-digits="0" maximum-fraction-digits="0" class="styled-number">1234.99</currency-format>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbcf1">
+                    <label for="cbcf1" class="tab__label">Currency Format</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;currency-format&gt;`, automatically formats its numeric content as a localized currency value using the browser's `Intl.NumberFormat` API.</p>
+                            
+                            Key Features
+
+                            <dl>
+
+                            <dt>>Locale-aware Currency Formatting:</dt>
+                            <dd>Formats numbers as currency according to the specified `locale` and `currency` attributes, or uses a default currency mapped from the locale.</dd>
+
+                            <dt>>Live Exchange Rate Conversion:</dt>
+                            <dd>When the `currency` attribute changes, it fetches the latest exchange rate and converts the value automatically.</dd>
+
+                            <dt>>Fraction Styling:</dt>
+                            <dd>Groups decimal and fraction parts together in a `&lt;span class="fraction"&gt;` for custom styling, and wraps the currency symbol in `&lt;span class="currency"&gt;`.</dd>
+
+                            <dt>>Automatic Updates:</dt>
+                            <dd>Reacts to changes in its content and attributes, updating the formatted output automatically.</dd>
+
+                            <dt>>MutationObserver:</dt>
+                            <dd>Watches for changes to its content and re-formats as needed.</dd>
+
+                            <dt>>Accessibility:</dt>
+                            <dd>Sets both `aria-label` and `title` attributes to the formatted currency string for screen readers and tooltips.</dd>
+
+                            <dt>>Locale-to-Currency Mapping:</dt>
+                            <dd>Includes a comprehensive mapping of locales to their default currencies.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;currency-format locale="fr-FR" currency="EUR" minimum-fraction-digits="2" maximum-fraction-digits="2"&gt;
+                                12345.678
+                                &lt;/currency-format&gt;
+                            </code>
+                            
+                            <strong>Summary:</strong>
+                            <p>`&lt;currency-format&gt;` is a reactive, accessible, locale-aware currency formatter for web apps, supporting automatic currency conversion, custom fraction styling, and a wide range of locales and currencies.</p>
+                            
+                            <div class="notecard warning">
+                                <strong>Note:</strong>
+                                <p>This implementation of currency conversion uses the frankfurter.app API. Not all currencies are supported; if the selected locale's currency is not available, the currency will not update. The advantage is that no API key is required. For broader currency support, you can use a different currency conversion API.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Date Format</h4>
+                <date-format id="date1">1752127073</date-format>
+                <br />
+                <date-format date-style="short" time-style="medium">1752127073</date-format> 
+                <!-- date-style = full long medium short -->
+                <br />
+                <date-format date-style="short" time-style="medium" local="en-US">1752127073</date-format> 
+                <br />
+                <date-format date-style="long" locale="en-US">2025-07-09</date-format>
+                <!-- → July 9, 2025 -->
+                <br />
+                <date-format date-style="full" time-style="short" locale="he-IL">2025-07-09T15:30</date-format>
+                <!-- → יום רביעי, 9 ביולי 2025 בשעה 15:30 -->
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbdf1">
+                    <label for="cbdf1" class="tab__label">Date Format</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;date-format&gt;`, automatically formats its content as a localized date and/or time using the browser's `Intl.DateTimeFormat` API.</p>
+                            
+                            Key Features
+
+                            <dl>
+                                <dt>Locale-aware Formatting:</dl>
+                                    <dd>Formats dates and times according to the specified `locale`, `date-style`, `time-style`, and `time-zone` attributes.</dd>
+
+                                <dt>Flexible Input:</dt>
+                                    <dd>Accepts either a date string or a numeric timestamp (seconds or milliseconds).</dd>
+
+                                <dt>Live Updates:</dt>
+                                    <dd>Reacts to changes in its content and attributes, updating the formatted output automatically.</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Sets both `aria-label` and `title` attributes to the formatted date/time for screen readers and tooltips.</dd>
+
+                                <dt>MutationObserver:</dt>
+                                    <dd>Watches for changes to its content and re-formats as needed.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;date-format locale="fr-FR" date-style="long" time-style="short" time-zone="Europe/Paris"&gt;
+                                2025-07-12T14:30:00
+                                &lt;/date-format&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;date-format&gt;` is a reactive, accessible, locale-aware date/time formatter for web apps, supporting custom styles and time zones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Duration Format</h4>
+                <duration-format id="duration1" fstyle="long" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <br />
+                <duration-format fstyle="long" locale="pt-PT" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <br />
+                <duration-format fstyle="narrow" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <br />
+                <duration-format fstyle="digital" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7"></duration-format>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbduf1">
+                    <label for="cbduf1" class="tab__label">Duration Format</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;duration-format&gt;`, automatically formats a duration (such as hours, minutes, seconds, etc.) as a localized string using the browser's `Intl.DurationFormat` API.</p>
+
+                            Key Features
+
+                            <dl>
+                                <dt>Locale-aware Formatting:</dl>
+                                <dd>Formats durations according to the specified `locale` and `fstyle` (format style) attributes.</dd>
+
+                                <dt>Flexible Duration Input:</dl>
+                                <dd>Supports all duration units: years, months, weeks, days, hours, minutes, seconds, milliseconds, microseconds, nanoseconds, and fractional digits, each as an attribute.</dd>
+
+                                <dt>Live Updates:</dl>
+                                <dd>Reacts to changes in its attributes and global `locale-change` events, updating the formatted output automatically.</dd>
+
+                                <dt>MutationObserver:</dl>
+                                <dd>Watches for changes to its content, though formatting is always based on attributes.</dd>
+
+                                <dt>Efficient Rendering:</dl>
+                                <dd>Only updates the displayed text if the formatted output changes.</dd>
+
+                                <dt>Accessibility</dt>
+                                    <dd>Sets both `aria-label` and `title` attributes to the formatted duration string for screen readers and tooltips.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;duration-format locale="fr-FR" fstyle="long" hours="2" minutes="30"&gtl&lt;/duration-format&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;duration-format&gt;` is a reactive, locale-aware duration formatter for web apps, supporting all time units and custom styles. It’s ideal for displaying durations in a user’s preferred language and format.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Plural Rules</h4>
+                <plural-rules>0</plural-rules>
+                <br />
+                <plural-rules>1</plural-rules>
+                <br />
+                <plural-rules>2</plural-rules>
+                <br />
+                <plural-rules>3</plural-rules>
+                <br />
+                <plural-rules>4</plural-rules>
+                <br />
+                <plural-rules>11</plural-rules>
+                <br />
+                <plural-rules>21</plural-rules>
+                <br />
+                <plural-rules>42</plural-rules>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbpr1">
+                    <label for="cbpr1" class="tab__label">Plural Rules</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;plural-rules&gt;`, automatically formats numbers as locale-aware ordinal numbers (like 1st, 2nd, 3rd, 4th) using the browser's `Intl.PluralRules` API and a locale-dependent suffix or prefix mapping.</p>
+                            Key Features
+
+                            <dl>
+                                <dt>Locale-aware Ordinal Formatting:</dt>
+                                    <dd>Formats numbers with the correct ordinal suffix or prefix for the selected locale (e.g., "st" for English, "º" for Spanish, "第" for Chinese).</dd>
+
+                                <dt>Automatic Suffix/Prefix Selection:</dt>
+                                    <dd>Uses a built-in mapping for many languages and leverages `Intl.PluralRules` to select the right suffix for English and other languages with multiple ordinal forms.</dd>
+
+                                <dt>Live Updates:</dt>
+                                    <dd>Reacts to changes in its content and attributes (`locale`, `value`), updating the formatted output automatically.</dd>
+
+                                <dt>MutationObserver:</dt>
+                                    <dd>Watches for changes to its content and re-formats as needed.</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Sets both `aria-label` and `title` attributes to the formatted ordinal string for screen readers and tooltips.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;plural-rules locale="en" value="2"&gt;2&lt;/plural-rules&gt;<br /> <!-- 2nd -->
+                                &lt;plural-rules locale="fr" value="1"&gt;1&lt;/plural-rules&gt;<br /> <!-- 1er -->
+                                &lt;plural-rules locale="zh" value="3"&gt;3&lt;/plural-rules&gt;<br /> <!-- 第3 -->
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;plural-rules&gt;` is a reactive, accessible, locale-aware ordinal number formatter for web apps, supporting a wide range of languages and automatic updates. If a locale is not mapped, it falls back to displaying the plain number.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Relative Time Format</h4>
+                <relativetime-format value="12" unit="day"></relativetime-format>
+                <br />
+                <relativetime-format value="0" unit="second"></relativetime-format>
+                <br />
+                <relativetime-format value="0" unit="day"></relativetime-format>
+                <br />
+                <relativetime-format value="0" unit="minute"></relativetime-format>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbrc1">
+                    <label for="cbrc1" class="tab__label">Relative Time Format</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;relativetime-format&gt;`, automatically formats a numeric value as a localized relative time string (like "2 days ago" or "in 3 weeks") using the browser's `Intl.RelativeTimeFormat` API.</p>
+
+                            Key Features
+
+                            <dl>
+                            <dt>Locale-aware Relative Time:</dt>
+                            <dd>Formats numbers as relative time (past or future) according to the specified `locale`, `unit` (e.g., "day", "month"), and `fstyle` (format style: "long", "short", "narrow") attributes.</dd>
+
+                            <dt>Live Updates:</dt>
+                            <dd>Reacts to changes in its attributes (`value`, `locale`, `unit`, `fstyle`) and updates the formatted output automatically.</dd>
+
+                            <dt>MutationObserver:</dt>
+                            <dd>Watches for changes to its content and re-formats as needed.</dd>
+
+                            <dt>Accessibility:</dt>
+                            <dd>Sets both `aria-label` and `title` attributes to the formatted relative time string for screen readers and tooltips.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;relativetime-format value="-2" unit="day" locale="en" fstyle="long"&gt;&lt;/relativetime-format&gt;
+                                <br />
+                                &lt;relativetime-format value="3" unit="week" locale="fr" fstyle="short"&gt;&lt;/relativetime-format&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;relativetime-format&gtl` is a reactive, accessible, locale-aware relative time formatter for web apps, supporting multiple time units, styles, and automatic updates.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="wrapper">
+        <h4>Test</h4>
+        <test-component>
+            <h3>
+                this is my test
+            </h3>
+            <select>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+        </test-component>
     </div>
 
     <script type="text/javascript">
