@@ -97,8 +97,8 @@ class CryptoTicker extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <style>
                 .wrapper {
-                    background: #111;
-                    color: #0f0;
+                    color: var(--cticker-color, #0f0);
+                    font-size: var(--cticker-font-size, '1rem');
                     padding: 8px;
                     font-family: monospace;
                     overflow: hidden;
