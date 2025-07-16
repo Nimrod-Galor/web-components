@@ -22,6 +22,10 @@
     <script defrer src="RelativeTimeFormat.js"></script>
 
     <script defrer src="CurrencyConverter.js"></script>
+    <script defrer src="WeatherWidget.js"></script>
+
+
+    <script defrer src="GeoLocation.js"></script>
 
     <script defer src="Test.js"></script>
 
@@ -741,7 +745,7 @@
     </div>
 
     <div class="wrapper">
-        <h3>Fetch Data Components</h3>
+        <h3>Widgets</h3>
         <div class="row">
             <div class="col-left auto">
                 <h4>Currency Converter</h4>
@@ -797,8 +801,64 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Locale Weather</h4>
+                <weather-widget></weather-widget>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cblw1">
+                    <label for="cblw1" class="tab__label">Locale Weather</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;weather-widget&gt;`, displays the current weather for a given location using the [open-meteo.com](https://open-meteo.com/) API.</p>
+                            
+                            Key Features
+
+                            <dl>
+                                <dt>Automatic or Manual Location:</dt>
+                                <dd>If `latitude` and `longitude` attributes are provided, it fetches weather for that location; otherwise, it tries to use the user's geolocation.</dd>
+
+                                <dt>Unit Selection:</dt>
+                                <dd>Supports temperature in Celsius (default) or Fahrenheit via the `unit` attribute.</dd>
+
+                                <dt>Live Weather Data:</dt>
+                                <dd>Fetches and displays the current temperature and a human-readable weather condition.</dd>
+
+                                <dt>Weather Code Mapping:</dt>
+                                <dd>Translates weather codes from the API into descriptive text (e.g., "Clear sky", "Light rain").</dd>
+
+                                <dt>Accessibility:</dt>
+                                <dd>Uses `aria-live="polite"` so screen readers announce updates.</dd>
+
+                                <dt>Error Handling:</dt>
+                                <dd>Displays clear error messages if geolocation or API requests fail.</dd>
+
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                <dd>Styles and markup are encapsulated for safe integration.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                            &lt;weather-widget latitude="40.7128" longitude="-74.0060" unit="fahrenheit"&gt;&lt;/weather-widget&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;weather-widget&gt;` is a user-friendly, accessible, and customizable weather display component for web apps, supporting both automatic and manual location, unit selection, and clear weather descriptions.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
+    <geo-location></geo-location>
 
     <div class="wrapper">
         <h4>Test</h4>

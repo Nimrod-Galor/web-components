@@ -349,3 +349,49 @@ This implementation uses the frankfurter.app API. Not all currencies are support
 
 **Summary:**  
 `<currency-converter>` is a reactive, accessible, and user-friendly currency conversion component for web apps, supporting multiple currencies and live updates.
+
+## Weather Widget
+
+This web component, `<weather-widget>`, displays the current weather for a given location using the [open-meteo.com](https://open-meteo.com/) API.
+
+---
+
+### Key Features
+
+- **Automatic or Manual Location:**  
+  If `latitude` and `longitude` attributes are provided, it fetches weather for that location; otherwise, it tries to use the user's geolocation.
+
+- **Unit Selection:**  
+  Supports temperature in Celsius (default) or Fahrenheit via the `unit` attribute.
+
+- **Live Weather Data:**  
+  Fetches and displays the current temperature and a human-readable weather condition.
+
+- **Weather Code Mapping:**  
+  Translates weather codes from the API into descriptive text (e.g., "Clear sky", "Light rain").
+
+- **Accessibility:**  
+  Uses `aria-live="polite"` so screen readers announce updates.
+
+- **Error Handling:**  
+  Displays clear error messages if geolocation or API requests fail.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated for safe integration.
+
+---
+
+### Usage Example
+
+```html
+<weather-widget
+  latitude="40.7128"
+  longitude="-74.0060"
+  unit="fahrenheit"
+></weather-widget>
+```
+
+---
+
+**Summary:**  
+`<weather-widget>` is a user-friendly, accessible, and customizable weather display component for web apps, supporting both automatic and manual location, unit selection, and clear weather descriptions.
