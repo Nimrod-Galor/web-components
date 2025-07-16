@@ -395,3 +395,49 @@ This web component, `<weather-widget>`, displays the current weather for a given
 
 **Summary:**  
 `<weather-widget>` is a user-friendly, accessible, and customizable weather display component for web apps, supporting both automatic and manual location, unit selection, and clear weather descriptions.
+
+## Crypto Ticker
+
+This web component, `<crypto-ticker>`, displays a live, animated ticker of cryptocurrency prices in a selected fiat currency, using data from the CoinGecko API.
+
+---
+
+### Key Features
+
+- **Live Crypto Prices:**  
+  Fetches and displays real-time prices for one or more cryptocurrencies (default: Bitcoin and Ethereum).
+
+- **Locale-aware Currency:**  
+  Automatically selects the fiat currency based on the user's locale or a specified `currency` attribute. Supports a wide range of locales and currencies.
+
+- **Customizable:**  
+  Accepts `coins`, `currency`, and `interval` attributes to control which coins are shown, the fiat currency, and how often prices update (default: every 5 minutes).
+
+- **Animated Ticker:**  
+  Shows prices in a horizontally scrolling ticker for a dynamic, real-time effect.
+
+- **Accessibility:**  
+  Uses `aria-label` to provide a screen-reader-friendly summary of all displayed prices.
+
+- **Error Handling & Retry:**  
+  Retries failed API requests up to 3 times and displays a clear error message if prices cannot be loaded.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated for safe integration with any site.
+
+---
+
+### Usage Example
+
+```html
+<crypto-ticker
+  coins="bitcoin,ethereum,dogecoin"
+  currency="eur"
+  interval="60000"
+></crypto-ticker>
+```
+
+---
+
+**Summary:**  
+`<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.

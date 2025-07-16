@@ -23,6 +23,7 @@
 
     <script defrer src="CurrencyConverter.js"></script>
     <script defrer src="WeatherWidget.js"></script>
+    <script defrer src="CryptoTicker.js"></script>
 
 
     <script defrer src="GeoLocation.js"></script>
@@ -849,6 +850,79 @@
 
                             <strong>Summary:</strong>
                             <p>`&lt;weather-widget&gt;` is a user-friendly, accessible, and customizable weather display component for web apps, supporting both automatic and manual location, unit selection, and clear weather descriptions.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Crypto Ticker</h4>
+                <crypto-ticker></crypto-ticker>
+                <crypto-ticker coins="cardano,eos,solana" currency="ils"></crypto-ticker>
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbct1">
+                    <label for="cbct1" class="tab__label">Crypto Ticker</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;crypto-ticker&gt;`, displays a live, animated ticker of cryptocurrency prices in a selected fiat currency, using data from the CoinGecko API.</p>
+
+                            Key Features
+
+                            <dl>
+
+                                <dt>Live Crypto Prices:</dt>
+                                <dd>Fetches and displays real-time prices for one or more cryptocurrencies (default: Bitcoin and Ethereum).</dd>
+
+                                <dt>Locale-aware Currency:</dt>
+                                <dd>Automatically selects the fiat currency based on the user's locale or a specified `currency` attribute. Supports a wide range of locales and currencies.</dd>
+
+                                <dt>Customizable:</dt>
+                                <dd>Accepts `coins`, `currency`, and `interval` attributes to control which coins are shown, the fiat currency, and how often prices update (default: every 5 minutes).</dd>
+
+                                <dt>Animated Ticker:</dt>
+                                <dd>Shows prices in a horizontally scrolling ticker for a dynamic, real-time effect.</dd>
+
+                                <dt>Accessibility:</dt>
+                                <dd>Uses `aria-label` to provide a screen-reader-friendly summary of all displayed prices.</dd>
+
+                                <dt>Error Handling & Retry:</dt>
+                                <dd>Retries failed API requests up to 3 times and displays a clear error message if prices cannot be loaded.</dd>
+
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                <dd>Styles and markup are encapsulated for safe integration with any site.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;crypto-ticker coins="bitcoin,ethereum,dogecoin" currency="eur" interval="60000"&gt;&lt;/crypto-ticker&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;crypto-ticker&gt;` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Name</h4>
+                
+            </div>
+            <div class="auto notecard info accordion">
+                <div class="tab">
+                    <input type="checkbox" name="accordion-2" id="cbxx1">
+                    <label for="cbxx1" class="tab__label">Name</label>
+                    <div class="tab__content">
+                        <div class="content">
 
                         </div>
                     </div>

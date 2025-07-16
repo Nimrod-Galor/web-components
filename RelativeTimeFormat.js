@@ -53,6 +53,10 @@ class RelativeTimeFormat extends HTMLElement{
         })
     }
 
+    disconnectedCallback() {
+        window.removeEventListener('locale-change', this._onLocaleChange)
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         if(this._connected && oldValue !== newValue){
             switch(name){

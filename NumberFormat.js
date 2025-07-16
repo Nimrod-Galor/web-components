@@ -29,6 +29,7 @@ class NumberFormat extends HTMLElement {
         if (this.observer){
             this.observer.disconnect()
         }
+        window.removeEventListener('locale-change', this._onLocaleChange)
     }
 
     // This will be called when any of the observed attributes change

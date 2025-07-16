@@ -123,6 +123,10 @@ class DurationFormat extends HTMLElement{
         })
     }
 
+    disconnectedCallback() {
+        window.removeEventListener('locale-change', this._onLocaleChange)
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         if(oldValue !== newValue){
             if(name ==='locale'){

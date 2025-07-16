@@ -30,6 +30,7 @@ class CurrencyFormat extends HTMLElement {
         if (this.observer){
             this.observer.disconnect()
         }
+        window.removeEventListener('locale-change', this._onLocaleChange)
     }
 
     // This will be called when any of the observed attributes change
@@ -84,7 +85,7 @@ class CurrencyFormat extends HTMLElement {
     }
 
     get currency() {
-        return this.getAttribute('currency') || this.LOCAL_TO_CURRENCY[this.locale] || 'USD'
+        return this.getAttribute('currency') || this.#LOCAL_TO_CURRENCY[this.locale] || 'USD'
     }
 
     set currency(value) {
@@ -98,7 +99,7 @@ class CurrencyFormat extends HTMLElement {
     set locale(value) {
         this.setAttribute('locale', value)
         // update to locale default currency
-        this.currency = this.LOCAL_TO_CURRENCY[value] || 'USD'
+        this.currency = this.#LOCAL_TO_CURRENCY[value] || 'USD'
     }
 
     get minimumFractionDigits() {
@@ -175,7 +176,7 @@ class CurrencyFormat extends HTMLElement {
         this._formatter = new Intl.NumberFormat(this.locale, options)
     }
 
-    LOCAL_TO_CURRENCY = {
+    #LOCAL_TO_CURRENCY = {
             "en-US": "USD",
             "en-GB": "GBP",
             "es-ES": "EUR",
