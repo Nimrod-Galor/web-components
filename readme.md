@@ -441,3 +441,56 @@ This web component, `<crypto-ticker>`, displays a live, animated ticker of crypt
 
 **Summary:**  
 `<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.
+
+## Virtual Keyboard
+
+This web component, `<virtual-keyboard>`, provides an on-screen, multi-language virtual keyboard that can be attached to any input or textarea element on the page.
+
+---
+
+### Key Features
+
+- **Multi-language Support:**  
+  Supports English, French, German, Hebrew, and Arabic layouts, with easy switching via a language selector.
+
+- **Shift and Caps Lock:**  
+  Handles both Shift and Caps Lock states for proper case and symbol entry, including language-specific shift overrides.
+
+- **Physical Keyboard Integration:**  
+  Synchronizes with physical keyboard events for seamless user experience.
+
+- **Custom Target:**  
+  Can be attached to any input or textarea by specifying the `target` attribute (the element’s ID).
+
+- **Accessibility:**  
+  Uses ARIA roles and labels for screen reader support. Each key and the language switcher are accessible.
+
+- **RTL Support:**  
+  Automatically sets right-to-left direction for Hebrew and Arabic layouts.
+
+- **Custom Layouts:**  
+  Allows for custom keyboard layouts via a property.
+
+- **Visual Feedback:**  
+  Highlights pressed keys and provides responsive button styling.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated for safe integration.
+
+---
+
+### Usage Example
+
+```html
+<input id="myInput" type="text" />
+<virtual-keyboard
+  target="myInput"
+  language="en"
+  langswitcher
+></virtual-keyboard>
+```
+
+---
+
+**Summary:**  
+`<virtual-keyboard>` is a robust, accessible, and highly configurable on-screen keyboard component, ideal for multilingual web apps, touch interfaces, and accessibility solutions.

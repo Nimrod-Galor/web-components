@@ -23,9 +23,10 @@
 
     <script defrer src="CurrencyConverter.js"></script>
     <script defrer src="WeatherWidget.js"></script>
-    <script defrer src="CryptoTicker.js"></script>
+    <!-- <script defrer src="CryptoTicker.js"></script> -->
 
 
+    <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="GeoLocation.js"></script>
 
     <script defer src="Test.js"></script>
@@ -43,7 +44,7 @@
             position: relative;
         }
         
-        .notecard.info .tab label:before {
+        .notecard.info.tab label:before {
             background-color: #0085f2;
             content: "";
             display: block;
@@ -169,8 +170,7 @@
             transition: max-height 0.5s ease-in-out;
 
             .content {
-                margin: 0;
-                padding: 1rem;
+                padding: 0 0.5rem;
             }
         }
         
@@ -187,7 +187,7 @@
 
         .tab__label {
             justify-content: space-between;
-            padding: 1rem 3rem;
+            padding: 0.2rem 2rem;
             &::after {
                 content: "\276F";
                 width: 1em;
@@ -354,8 +354,8 @@
                 <h4>Select Locale</h4>
                 <select-locale displayLocale="en-US"></select-locale>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-1" id="cb1">
                     <label for="cb1" class="tab__label">Select Locale</label>
                     <div class="tab__content">
@@ -417,8 +417,8 @@
                 <number-format minimum-fraction-digits="2" maximum-fraction-digits="2" class="styled-number">123</number-format>
             
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbnf1">
                     <label for="cbnf1" class="tab__label">Number Format</label>
                     <div class="tab__content">
@@ -467,8 +467,8 @@
                 <br />
                 <currency-format currency="USD" minimum-fraction-digits="0" maximum-fraction-digits="0" class="styled-number">1234.99</currency-format>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbcf1">
                     <label for="cbcf1" class="tab__label">Currency Format</label>
                     <div class="tab__content">
@@ -538,8 +538,8 @@
                 <date-format date-style="full" time-style="short" locale="he-IL">2025-07-09T15:30</date-format>
                 <!-- → יום רביעי, 9 ביולי 2025 בשעה 15:30 -->
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbdf1">
                     <label for="cbdf1" class="tab__label">Date Format</label>
                     <div class="tab__content">
@@ -591,8 +591,8 @@
                 <br />
                 <duration-format fstyle="digital" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7"></duration-format>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbduf1">
                     <label for="cbduf1" class="tab__label">Duration Format</label>
                     <div class="tab__content">
@@ -653,8 +653,8 @@
                 <br />
                 <plural-rules>42</plural-rules>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbpr1">
                     <label for="cbpr1" class="tab__label">Plural Rules</label>
                     <div class="tab__content">
@@ -706,8 +706,8 @@
                 <br />
                 <relativetime-format value="0" unit="minute"></relativetime-format>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbrc1">
                     <label for="cbrc1" class="tab__label">Relative Time Format</label>
                     <div class="tab__content">
@@ -754,8 +754,8 @@
                 <h4>Currency Converter</h4>
                 <currency-converter source="" target="EUR ILS ARS CAD">1</currency-converter>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbcc1">
                     <label for="cbcc1" class="tab__label">Currency Converter</label>
                     <div class="tab__content">
@@ -810,8 +810,8 @@
                 <h4>Locale Weather</h4>
                 <weather-widget></weather-widget>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cblw1">
                     <label for="cblw1" class="tab__label">Locale Weather</label>
                     <div class="tab__content">
@@ -864,8 +864,8 @@
                 <crypto-ticker style="background-color: #000;display: inline-flex;--cticker-font-size:2.2rem;"></crypto-ticker>
                 <crypto-ticker coins="cardano,eos,solana" currency="ils" style="display: block;background-color: #0085f2; border: 1px solid #ff9800;--cticker-color:#000;"></crypto-ticker>
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbct1">
                     <label for="cbct1" class="tab__label">Crypto Ticker</label>
                     <div class="tab__content">
@@ -913,16 +913,126 @@
                 </div>
             </div>
         </div>
-        
+    </div>
+    
+    <div class="wrapper">
+        <h3>Other</h3>
         <div class="row">
             <div class="col-left auto">
-                <h4>Name</h4>
+                <h4>Virtual Keyboard</h4>
+                <div style="display: flex; flex-direction: column; gap: 1rem;align-content: center;">
+                    <textarea id="input1" rows="4" cols="40"></textarea>
+                    <virtual-keyboard language="en" target="input1" langswitcher="true" style="align-self: anchor-center;"></virtual-keyboard>
+                </div>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="cbxx1">
+                    <label for="cbxx1" class="tab__label">Virtual Keyboard</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;virtual-keyboard&gt;`, provides an on-screen, multi-language virtual keyboard that can be attached to any input or textarea element on the page.</p>
+
+                            Key Features
+
+                            <dl>
+                                <dt>Multi-language Support:</dt>
+                                    <dd>Supports English, French, German, Hebrew, and Arabic layouts, with easy switching via a language selector.</dd>
+
+                                <dt>Shift and Caps Lock:</dt>
+                                    <dd>Handles both Shift and Caps Lock states for proper case and symbol entry, including language-specific shift overrides.</dd>
+
+                                <dt>Physical Keyboard Integration:</dt>
+                                    <dd>Synchronizes with physical keyboard events for seamless user experience.</dd>
+
+                                <dt>Custom Target:</dt>
+                                    <dd>Can be attached to any input or textarea by specifying the `target` attribute (the element’s ID).</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Uses ARIA roles and labels for screen reader support. Each key and the language switcher are accessible.</dd>
+
+                                <dt>RTL Support:</dt>
+                                    <dd>Automatically sets right-to-left direction for Hebrew and Arabic layouts.</dd>
+
+                                <dt>Custom Layouts:</dt>
+                                    <dd>Allows for custom keyboard layouts via a property.</dd>
+
+                                <dt>Visual Feedback:</dt>
+                                    <dd>Highlights pressed keys and provides responsive button styling.</dd>
+
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                    <dd>Styles and markup are encapsulated for safe integration.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;input id="myInput" type="text"&gt;
+                                &lt;virtual-keyboard target="myInput" language="en" langswitcher&gt;&lt;/virtual-keyboard&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;virtual-keyboard&gt;` is a robust, accessible, and highly configurable on-screen keyboard component, ideal for multilingual web apps, touch interfaces, and accessibility solutions.</p>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>GEO Location</h4>
+                <geo-location></geo-location>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="cbgl1">
+                    <label for="cbgl1" class="tab__label">GEO Location</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;geo-location&gt;`, provides a simple interface to access the user's geographical location using the browser's Geolocation API.</p>
+
+                            Key Features
+
+                            <dl>
+                                <dt>Automatic Location Detection:</dt>
+                                    <dd>Requests the user's current location (latitude and longitude) when the component is initialized.</dd>
+
+                                <dt>Error Handling:</dt>
+                                    <dd>Displays clear error messages if location access is denied or if the browser does not support geolocation.</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Uses ARIA roles and labels for screen reader support, providing a clear description of the current location.</dd>
+
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                    <dd>Styles and markup are encapsulated for safe integration with any site.</dd>
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;geo-location&gt;&lt;/geo-location&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;geo-location&gt;` is a simple, accessible, and user-friendly component for obtaining the user's geographical location in web applications.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>NameX</h4>
                 
             </div>
-            <div class="auto notecard info accordion">
-                <div class="tab">
+            <div class="auto accordion">
+                <div class="tab notecard info">
                     <input type="checkbox" name="accordion-2" id="cbxx1">
-                    <label for="cbxx1" class="tab__label">Name</label>
+                    <label for="cbxx1" class="tab__label">NameX</label>
                     <div class="tab__content">
                         <div class="content">
 
@@ -931,10 +1041,11 @@
                 </div>
             </div>
         </div>
-        
     </div>
 
-    <geo-location></geo-location>
+
+
+    
 
     <div class="wrapper">
         <h4>Test</h4>
