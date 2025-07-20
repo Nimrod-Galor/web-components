@@ -23,15 +23,29 @@
 
     <script defrer src="CurrencyConverter.js"></script>
     <script defrer src="WeatherWidget.js"></script>
-    <!-- <script defrer src="CryptoTicker.js"></script> -->
+    <script defrer src="CryptoTicker.js"></script>
 
 
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="GeoLocation.js"></script>
+    <script defrer src="BreadcrumbTrail.js"></script>
 
     <script defer src="Test.js"></script>
 
     <style>
+        h1{
+            color: #000;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+        h3{
+            color: #ff9800;
+            text-decoration: underline;
+        }
+        h4{
+            color: #0085f2;
+        }
         .wrapper{
             margin: 20px;
         }
@@ -213,126 +227,361 @@
 </head>
 <body style="--locale: en-US">
     <div>
-        <h3>Web Components</h3>
+        <h1>Web Components</h1>
         
         <div class="wrapper">
-            <h4>Expanding List</h4>
-            <ul is="expanding-list">
-                <li>
-                    order list
-                    <ol>
-                        <li>Item 1
-                            <dl>
-                                <dt>Definition term</dt>
-                                <dd>Definition description
-                                    <ul>
-                                        <li>Sub item 1</li>
-                                        <li>Sub item 2</li>
-                                        <li>Sub item 3</li>
-                                    </ul>
-                                </dd>
-                            </dl>
-                        </li>
-                        <li>Item 2</li>
-                        <li>Item 3</li>
-                    </ol>
-                </li>
-                <li>
-                    UK
-                    <ul>
-                        <li>
-                            Yorkshire
-                            <ul>
-                                <li>
-                                    Leeds
-                                    <ul>
-                                        <li>Train station</li>
-                                        <li>Town hall</li>
-                                        <li>Headrow</li>
-                                    </ul>
-                                </li>
-                                <li>Bradford</li>
-                                <li>Hull</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    USA
-                    <ul>
-                        <li>
-                            California
-                            <ul>
-                                <li>Los Angeles</li>
-                                <li>San Francisco</li>
-                                <li>Berkeley</li>
-                            </ul>
-                        </li>
-                        <li>Nevada</li>
-                        <li>Oregon</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        
-
-        <div class="wrapper">
-            <h4>Form compnents</h4>
+            <h3>Form compnents</h3>
 
             <form id="demo">
-                <div>
-                    <label for="password">Password: </label>
-                    <input-password id="password" name="password" placeholder="Enter password" required></input-password>
+                <div class="row">
+                    <div class="col-left auto">
+                        <label for="password">Password: </label>
+                        <input-password id="password" name="password" placeholder="Enter password" required></input-password>
+                    </div>
+                    <div class="auto accordion">
+                        <div class="tab notecard info">
+                            <input type="checkbox" name="accordion-1" id="fip">
+                            <label for="fip" class="tab__label">Password Toggle</label>
+                            <div class="tab__content">
+                                <div class="content">
+                                    <p>The `&lt;input-password&gt;` web component is a custom, form-associated password input field with a built-in show/hide toggle button.</p>
+
+                                    Key Features
+
+                                    <dl>
+                                    <dt>Password Visibility Toggle:</dt>
+                                    <dd>Includes a button (with an eye icon) to show or hide the password, improving usability for users.</dd>
+
+                                    <dt>Form-Associated:</dt>
+                                    <dd>Integrates seamlessly with HTML forms, supporting validation, submission, and reset like a native `<input type="password">`.</dd>
+
+                                    <dt>Custom Validation:</dt>
+                                    <dd>Supports `required`, `minlength`, and `maxlength` attributes, and displays appropriate validation messages.</dd>
+
+                                    <dt>Shadow DOM Encapsulation:</dt>
+                                    <dd>Styles and markup are encapsulated, preventing conflicts with the rest of the page.</dd>
+
+                                    <dt>Accessibility:</dt>
+                                    <dd>- The input and toggle button have `aria-label` and `title` attributes.</dd>
+                                    - The toggle button uses `type="button"` to avoid accidental form submission.
+                                    - Keyboard navigation is preserved.
+
+                                    <dt>Attribute Reflection:</dt>
+                                    <dd>Attributes like `placeholder`, `required`, `disabled`, `minlength`, `maxlength`, and `value` are reflected and kept in sync with the internal input.</dd>
+
+                                    </dl>
+
+                                    Usage Example
+
+                                    <code class="tagbox">`
+                                        &lt;input-password name="password" placeholder="Enter password" required minlength="8" maxlength="32"&gt;&lt;/input-password&gt;
+                                    </code>
+
+                                    <strong>Summary:</strong>
+                                    <p>`&lt;input-password&gt;` is a robust, accessible, and user-friendly password input component for web forms, with built-in show/hide functionality and full support for form validation and accessibility.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
               
-                <div>
-                    <label for="comment">Comment: </label><br />
-                    <textarea is="textarea-count" id="comment" name="comment" placeholder="Type your comment here..." rows="5" cols="50" maxlength="20"></textarea>
+                <div class="row">
+                    <div class="col-left auto">
+                        <label for="comment">Comment: </label><br />
+                        <textarea is="textarea-count" id="comment" name="comment" placeholder="Type your comment here..." rows="5" cols="50" maxlength="20"></textarea>
+                    </div>
+                    <div class="auto accordion">
+                        <div class="tab notecard info">
+                            <input type="checkbox" name="accordion-1" id="ftc">
+                            <label for="ftc" class="tab__label">TextArea Count</label>
+                            <div class="tab__content">
+                                <div class="content">
+                                    <p>The `&lt;textarea is="textarea-count"&gt;` web component is a custom enhanced textarea that displays a live character count and provides user feedback as you type.</p>
+
+                                    Key Features
+
+                                    <dl>
+                                        <dt>Live Character Count:</dt>
+                                            <dd>Shows the current number of characters entered, and (if `maxlength` is set) displays the maximum allowed.</dd>
+
+                                        <dt>Max Length Alert:</dt>
+                                            <dd>When the user reaches the maximum character limit, an alert message appears and an error style is applied.</dd>
+
+                                        <dt>Custom Event (`countchange`):</dt>
+                                            <dd>Dispatches a `countchange` event with details (`textareaId`, `count`, `max`, `remaining`) every time the count updates, making it easy to track multiple counters on the same page.</dd>
+
+                                        <dt>Accessibility:</dt>
+                                            <dd>Uses `aria-describedby` and `aria-live="polite"` for screen reader support.</dd>
+
+                                        <dt>Form Reset Support:</dt>
+                                            <dd>Updates the character count when the parent form is reset.</dd>
+
+                                        <dt>Dynamic Maxlength:</dt>
+                                            <dd>Reacts to changes in the `maxlength` attribute and updates the UI accordingly.</dd>
+
+                                        <dt>Automatic ID Assignment:</dt>
+                                            <dd>Generates a unique ID if none is provided, ensuring each counter is uniquely identifiable.</dd>
+
+                                    </dl>
+
+                                    Usage Example
+
+                                    <code class="tagbox">
+                                        &lt;textarea is="textarea-count" maxlength="100" id="my-textarea"&gt;&lt;/textarea&gt;
+                                    </code>
+
+                                    <strong>Summary:</strong>
+                                    <p>`&lt;textarea is="textarea-count"&gt;` is a drop-in replacement for a standard textarea that adds live character counting, accessibility enhancements, and robust eventing for modern web forms.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="cvc">
-                        Enter your CVC
-                        <popup-info
-                            img="img/alt.png"
-                            data-text="Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card."
-                        ></popup-info>
-                    </label>
-                    <input type="text" id="cvc" name="cvc" />
+
+
+                <div class="row">
+                    <div class="col-left auto">
+                        <label for="cvc">
+                            Enter your CVC
+                            <popup-info
+                                img="img/alt.png"
+                                data-text="Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card."
+                            ></popup-info>
+                        </label>
+                        <input type="number" id="cvc" name="cvc" minlength="3" maxlength="4" />
+                    </div>
+                    <div class="auto accordion">
+                        <div class="tab notecard info">
+                            <input type="checkbox" name="accordion-1" id="fpi">
+                            <label for="fpi" class="tab__label">Popup Info</label>
+                            <div class="tab__content">
+                                <div class="content">
+                                    <p>The `&lt;popup-info&gt;` web component is a custom tooltip/info popup element. It displays an info icon, and when the user hovers over or focuses on the icon, a tooltip with additional information appears.</p>
+
+                                    Key Features
+
+                                    <dl>
+                                    <dt>Accessible Tooltip:</dt>
+                                    <dd>Uses `aria-describedby` and `role="tooltip"` for screen reader support. The icon is keyboard-focusable (`tabindex="0"`), and the tooltip appears on hover, focus, or pressing Enter/Space.</dd>
+
+                                    <dt>Customizable Text:</dt>
+                                    <dd>The tooltip text is set via the `data-text` attribute.</dd>
+
+                                    <dt>Shadow DOM Encapsulation:</dt>
+                                    <dd>Styles and markup are encapsulated using Shadow DOM and adopted stylesheets, preventing style leaks.</dd>
+
+                                    <dt>Unique ARIA IDs:</dt>
+                                    <dd>Each instance generates a unique ID for proper ARIA relationships, supporting multiple tooltips on the same page.</dd>
+
+                                    <dt>Smooth Visuals:</dt>
+                                    <dd>The tooltip fades in/out with a CSS transition and is positioned relative to the icon.</dd>
+
+                                    </dl>
+
+                                    Usage Example
+
+                                    <code class="tagbox">
+                                        &lt;popup-info data-text="This is more information."&gt;&lt;/popup-info&gt;
+                                    </code>
+
+                                    <strong>Summary:</strong>
+                                    <p>`&lt;popup-info&gt;` provides an accessible, reusable, and visually appealing tooltip for displaying extra information in your web applications.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="knob">Volume: </label>
-                    <input-knob
-                        id="knob"
-                        name="knob"
-                        min="0"
-                        max="50"
-                        step="1"
-                        value="25"
-                        label="Volume"
-                        direction="bottom"
-                        sweep="270"
-                        style="
-                        --stroke-width: 2px;
-                        --pointer-stroke-color: red;
-                        --pointer-stroke-width: 8px;
-                        --highlight-stroke-color: green;
-                        --highlight-stroke-width: 8px;
-                        "
-                        ></input-knob>
                 
-                    <input-knob
-                        id="knob2"
-                        name="knob2"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value="50"
-                        label="Volume"
-                        direction="left"
-                        sweep="310"></input-knob>
+                <div class="row">
+                    <div class="col-left auto">
+                        <label for="knob">Volume: </label>
+                        <input-knob
+                            id="knob"
+                            name="knob"
+                            min="0"
+                            max="50"
+                            step="1"
+                            value="25"
+                            label="Volume"
+                            direction="bottom"
+                            sweep="270"
+                            style="
+                            --stroke-width: 2px;
+                            --pointer-stroke-color: red;
+                            --pointer-stroke-width: 8px;
+                            --highlight-stroke-color: green;
+                            --highlight-stroke-width: 8px;
+                            "
+                            ></input-knob>
+                    
+                        <input-knob
+                            id="knob2"
+                            name="knob2"
+                            min="0"
+                            max="100"
+                            step="5"
+                            value="50"
+                            label="Volume"
+                            direction="left"
+                            sweep="310"></input-knob>
+                    </div>
+                    <div class="auto accordion">
+                        <div class="tab notecard info">
+                            <input type="checkbox" name="accordion-1" id="fik">
+                            <label for="fik" class="tab__label">Input knob</label>
+                            <div class="tab__content">
+                                <div class="content">
+                                    <p>The `InputKnob` web component is a **form-associated, accessible circular range input** that allows users to select a numeric value by rotating a knob. It is implemented as a custom element (`&lt;input-knob&gt;`) and can be used in forms just like a native input.</p>
+
+                                    Key Features
+
+                                    <dl>
+                                    <dt>Circular Range Control:</dt>
+                                        <dd>Users can adjust the value by dragging the knob, using touch, or with keyboard arrows.</dd>
+                                    <dt>Form-Associated:</dt>
+                                        <dd>Integrates with forms and supports form reset, disabled state, and value restoration.</dd>
+                                    <dt>Customizable Range:</dt>
+                                        <dd>Supports `min`, `max`, `step`, `sweep` (arc angle), and `direction` (start position: top, right, bottom, left) attributes.</dd>
+                                    <dt>SVG UI:</dt>
+                                        <dd>Renders a circular track, a pointer, and a highlighted arc to indicate the current value.</dd>
+                                    <dt>Accessibility:</dt>
+                                        <dd>Uses ARIA roles and attributes for screen reader support and keyboard navigation.</dd>
+                                    <dt>Events:</dt>
+                                        <dd>Fires standard `input` events on value change and `change` events only on commit (mouse/touch release or Enter key).</dd>
+                                    <dt>Styling:</dt>
+                                        <dd>Exposes CSS custom properties for colors and stroke widths.</dd>
+                                    </dl>
+
+                                    Example Usage
+
+                                    <code class="tagbox">
+                                        &lt;input-knob min="0" max="100" step="5" sweep="270" direction="top"&gt;&lt;/input-knob&gt;
+                                    </code>
+
+                                    Attributes
+
+                                    <ul>
+                                        <li>`min` (number): Minimum value (default: 0)</li>
+                                        <li>`max` (number): Maximum value (default: 100)</li>
+                                        <li>`step` (number): Step increment (default: 1)</li>
+                                        <li>`sweep` (number): Arc angle in degrees (default: 270)</li>
+                                        <li>`direction` (string): Starting direction (`top`, `right`, `bottom`, `left`)</li>
+                                        <li>`value` (number): Current value</li>
+                                    </ul>
+
+                                    Events
+
+                                    <ul>
+                                        <li>`input`: Fired on every value change (while dragging or pressing arrow keys)</li>
+                                        <li>`change`: Fired only when the value is committed (on mouse/touch release or Enter key)</li>
+                                    </ul>
+
+                                    Accessibility
+
+                                    <ul>
+                                        <li>Uses `role="slider"` and ARIA attributes for min, max, value, and label</li>
+                                        <li>Keyboard support: Arrow keys, Home/End, Enter/Space</li>
+                                    </ul>
+
+                                    Styling
+
+                                    Customizable via CSS variables:
+                                    <ul>
+                                        <li>`--stroke-color`: Color of the track</li>
+                                        <li>`--stroke-width`: Width of the track</li>
+                                        <li>`--pointer-stroke-color`: Color of the pointer</li>
+                                        <li>`--pointer-stroke-width`: Width of the pointer</li>
+                                        <li>`--highlight-stroke-color`: Color of the highlighted arc</li>
+                                        <li>`--highlight-stroke-width`: Width of the highlighted arc</li>
+                                    </ul>
+
+                                    <strong><Summary></Summary></strong>
+                                    <p>`&lt;input-knob&gt;` is a modern, accessible, and customizable circular input control suitable for numeric value selection in web forms and UIs.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <signature-pad name="signature" required></signature-pad>
+
+
+
+                <div class="row">
+                    <div class="col-left auto">
+                        <label for="signature">Signature: </label>
+                        <signature-pad name="signature" required></signature-pad>
+                    </div>
+                    <div class="auto accordion">
+                        <div class="tab notecard info">
+                            <label for="fsp" class="tab__label">Signature Pad</label>
+                            <input type="checkbox" name="accordion-1" id="fsp">
+                            <div class="tab__content">
+                                <div class="content">
+                                    <p>The `SignaturePad` web component is a **form-associated custom element** that allows users to draw and capture handwritten signatures directly in the browser. It is designed for use in web forms and provides validation, accessibility, and responsive resizing.</p>
+                                    
+                                    Key Features
+
+                                    <dl>
+                                    <dt>Handwritten Signature Capture:</dt>
+                                        <dd>Users can draw their signature using mouse or touch input on a canvas.</dd>
+                                    <dt>Form Integration:</dt>
+                                        <dd>The component integrates with HTML forms, supporting validation, reset, and form submission with the signature as a PNG file.</dd>
+                                    <dt>Validation:</dt>
+                                        <dd>Supports a `required` attribute and checks for a minimum number of non-empty pixels to ensure a valid signature.</dd>
+                                    <dt>Responsive & High-DPI:</dt>
+                                        <dd>Uses a `ResizeObserver` and device pixel ratio scaling to keep the signature crisp and responsive to container size changes.</dd>
+                                    <dt>Accessibility:</dt>
+                                        <dd>Focus management, keyboard accessibility, and clear validation messages.</dd>
+                                    <dt>Customizable:</dt>
+                                        <dd>Allows configuration of line width and color via attributes.</dd>
+                                    <dt>Events:</dt>
+                                        <dd>Fires `signature-ready` when a signature is captured and `signature-cleared` when cleared.</dd>
+                                    <dt>Clear Button:</dt>
+                                        <dd>Provides a button to clear the signature, with a confirmation prompt.</dd>
+                                    </dl>
+
+                                    Example Usage
+
+                                    <code class="tagbox">
+                                        &lt;signature-pad required line-width="3" line-color="#0077cc"&gt;&lt;/signature-pad&gt;
+                                    </code>
+
+                                    Attributes
+                                    <ul>
+                                        <li>`required`: Makes the signature mandatory for form validation.</li>
+                                        <li>`line-width`: Sets the pen width (default: 2).</li>
+                                        <li>`line-color`: Sets the pen color (default: black).</li>
+                                    </ul>
+
+                                    Events
+                                    <ul>
+                                        <li>`signature-ready`: Fired when a signature is captured and processed. The event detail includes the PNG file.</li>
+                                        <li>`signature-cleared`: Fired when the signature is cleared.</li>
+                                    </ul>
+
+                                    Methods
+                                    <ul>
+                                        <li>`reset()`: Programmatically clears the signature pad.</li>
+                                        <li>`focus()`: Focuses the canvas for accessibility.</li>
+                                    </ul>
+
+                                    Accessibility
+                                    <ul>
+                                        <li>Focusable canvas.</li>
+                                        <li>ARIA validation messages.</li>
+                                        <li>Keyboard accessible clear button.</li>
+                                    </ul>
+
+                                    <strong>Summary:</strong>
+                                    <p>`&lt;signature-pad&gt;` is a robust, accessible, and customizable web component for capturing handwritten signatures in forms, with built-in validation, responsive design, and easy integration.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- <input type="text" name="testtext" required /> -->
@@ -1026,39 +1275,182 @@
 
         <div class="row">
             <div class="col-left auto">
-                <h4>NameX</h4>
-                
+                <h4>Breadcrumb Trail</h4>
+                <breadcrumb-trail home-label="*" separator="/"></breadcrumb-trail>
             </div>
             <div class="auto accordion">
                 <div class="tab notecard info">
-                    <input type="checkbox" name="accordion-2" id="cbxx1">
-                    <label for="cbxx1" class="tab__label">NameX</label>
+                    <input type="checkbox" name="accordion-2" id="cbbt1">
+                    <label for="cbbt1" class="tab__label">Breadcrumb Trail</label>
                     <div class="tab__content">
                         <div class="content">
+                            <p>This web component, `&lt;breadcrumb-trail&gt;`, displays a dynamic breadcrumb navigation trail based on the current URL path.</p>
+
+                            <div class="notecard warning">
+                                <strong>Note:</strong>
+                                <p>
+                                    For demonstration purposes only, the breadcrumb trail uses hard coded URL.
+                                </p>
+                            </div>
+
+                            Key Features
+
+                            <dl>
+                            <dt>Automatic Breadcrumb Generation:</dt>
+                            <dd>Parses the URL path and generates a breadcrumb trail, with each segment as a clickable link (except the last/current page).</dd>
+
+                            <dt>Customizable Home Label and Separator:</dt>
+                            <dd>The first breadcrumb label ("Home" by default) and the separator ("/" by default) can be customized via the `home-label` and `separator` attributes.</dd>
+
+                            <dt>Semantic & Accessible Markup:</dt>
+                            <dd>Uses `&lt;nav aria-label="Breadcrumb"&gt;` and an ordered list (`&lt;ol&gt;`) for accessibility and semantic structure. The current page is marked with `aria-current="page"`.</dd>
+
+                            <dt>Shadow DOM Encapsulation:</dt>
+                            <dd>Styles and markup are encapsulated, preventing style leakage.</dd>
+
+                            <dt>Reactivity:</dt>
+                            <dd>Updates automatically when the browser’s history changes (e.g., back/forward navigation) or when the `home-label` attribute changes.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+                                &lt;breadcrumb-trail home-label="Dashboard" separator=">"&gt;&lt;/breadcrumb-trail&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;breadcrumb-trail&gtl` is a customizable, accessible, and automatically updating breadcrumb navigation component for web apps.</p>
 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Expanding List</h4>
+                <expanding-list>
+                    <ul>
+                        <li>
+                            order list
+                            <ol>
+                                <li>Item 1
+                                    <dl>
+                                        <dt>Definition term</dt>
+                                        <dd>Definition description
+                                            <ul>
+                                                <li>Sub item 1</li>
+                                                <li>Sub item 2</li>
+                                                <li>Sub item 3</li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </li>
+                                <li>Item 2</li>
+                                <li>Item 3</li>
+                            </ol>
+                        </li>
+                        <li>
+                            UK
+                            <ul>
+                                <li>
+                                    Yorkshire
+                                    <ul>
+                                        <li>
+                                            Leeds
+                                            <ul>
+                                                <li>Train station</li>
+                                                <li>Town hall</li>
+                                                <li>Headrow</li>
+                                            </ul>
+                                        </li>
+                                        <li>Bradford</li>
+                                        <li>Hull</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            USA
+                            <ul>
+                                <li>
+                                    California
+                                    <ul>
+                                        <li>Los Angeles</li>
+                                        <li>San Francisco</li>
+                                        <li>Berkeley</li>
+                                    </ul>
+                                </li>
+                                <li>Nevada</li>
+                                <li>Oregon</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </expanding-list>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="cbel1">
+                    <label for="cbel1" class="tab__label">Expanding List</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>This web component, `&lt;expanding-list&gt;`, provides an accessible, interactive expanding/collapsing list UI for nested lists.</p>
+                            
+                            Key Features
+                            <dl>
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                    <dd>All styles and logic are encapsulated, preventing conflicts with the rest of the page.</dd>
 
-    
+                                <dt>Progressive Enhancement:</dt>
+                                    <dd>Takes a nested `&lt;ul&gt;`, `&lt;ol&gt;`, or `&lt;dl&gt;` placed inside the component and enhances it with expand/collapse functionality.</dd>
 
-    <div class="wrapper">
-        <h4>Test</h4>
-        <test-component>
-            <h3>
-                this is my test
-            </h3>
-            <select>
-                <option value="1">Option 1</option>
-                <option value="2">Option 2</option>
-                <option value="3">Option 3</option>
-            </select>
-        </test-component>
+                                <dt>Expand/Collapse Controls:</dt>
+                                    <dd>List items with nested lists show a "+" (collapsed) or "–" (expanded) icon. Clicking the label toggles the visibility of the nested list.</dd>
+
+                                <dt>Accessibility:</dt>
+                                    <dd>Each clickable label is a focusable button (`tabindex="0"`, `role="button"`) and supports keyboard interaction (Enter/Space).</dd>
+
+                                <dt>Customizable Appearance:</dt>
+                                    <dd>Uses CSS custom properties (`--expand-color`, `--expand-size`) for easy theming.</dd>
+
+                                <dt>Event Delegation:</dt>
+                                    <dd>Uses a single event listener for efficient handling of expand/collapse actions.</dd>
+
+                            </dl>
+
+                            Usage Example
+
+                            <code class="tagbox">
+<pre>
+&lt;expanding-list&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Fruits
+            &lt;ul&gt;
+                &lt;li&gt;Apple&lt;/li&gt;
+                &lt;li&gt;Banana&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/li&gt;
+        &lt;li&gt;Vegetables
+            &lt;ul&gt;
+                &lt;li&gt;Carrot&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/expanding-list&gt;
+</pre>
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;expanding-list&gt;` is a reusable, accessible, and styleable component for interactive nested lists, ideal for menus, FAQs, or any expandable content structure.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">

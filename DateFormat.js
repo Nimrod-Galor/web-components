@@ -1,3 +1,32 @@
+/**
+ * DateFormat Web Component
+ * Automatically formats dates with locale awareness and time zone support
+ * 
+ * @customElement date-format
+ * @extends HTMLElement
+ * @fires locale-change - When the display locale changes
+ * 
+ * @property {string} value - The date value to format (timestamp or date string)
+ * @property {string} locale - Locale identifier for formatting
+ * @property {string} dateStyle - Date formatting style (full|long|medium|short)
+ * @property {string} timeStyle - Time formatting style (full|long|medium|short)
+ * @property {string} timeZone - IANA time zone identifier
+ * 
+ * @attr {string} value - Date value to format
+ * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
+ * @attr {string} date-style - Date formatting style
+ * @attr {string} time-style - Time formatting style
+ * @attr {string} time-zone - Time zone identifier
+ * 
+ * @example
+ * <date-format 
+ *   value="2023-12-25T15:00:00" 
+ *   locale="en-US" 
+ *   date-style="full" 
+ *   time-style="short"
+ *   time-zone="America/New_York">
+ * </date-format>
+ */
 class DateFormat extends HTMLElement {
     constructor() {
         super()

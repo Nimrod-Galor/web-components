@@ -1,3 +1,23 @@
+/**
+ * GeoLocation Web Component
+ * Displays the user's current geographic coordinates using the Geolocation API
+ * 
+ * @customElement geo-location
+ * @extends HTMLElement
+ * @csspart status - The container showing location or error status
+ * 
+ * @fires geo-success - When location is successfully retrieved
+ * @fires geo-error - When location retrieval fails
+ * 
+ * @property {GeolocationPosition} position - The last retrieved position
+ * 
+ * @cssprop --geo-font-family - Font family (default: Arial, sans-serif)
+ * @cssprop --geo-success-color - Color for successful location (default: inherit)
+ * @cssprop --geo-error-color - Color for error messages (default: #ff0000)
+ * 
+ * @example
+ * <geo-location></geo-location>
+ */
 class GeoLocation extends HTMLElement {
     constructor() {
         super();
@@ -29,7 +49,7 @@ class GeoLocation extends HTMLElement {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
         const status = this.shadowRoot.getElementById('status')
-        status.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`
+        status.innerHTML = `<strong>Latitude:</strong> ${latitude} °, <strong>Longitude:</strong> ${longitude} °`
     }
 
     _error() {

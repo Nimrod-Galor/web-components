@@ -1,3 +1,45 @@
+/**
+ * VirtualKeyboard Web Component
+ * Creates an on-screen keyboard with multi-language support and physical keyboard sync
+ * 
+ * @customElement virtual-keyboard
+ * @extends HTMLElement
+ * @csspart keyboard - The keyboard container
+ * @csspart lang-switcher - The language selection dropdown
+ * @csspart keys - The keys container
+ * 
+ * @property {string} language - Current keyboard language (en|fr|de|he|ar)
+ * @property {string} target - ID of input/textarea to receive keyboard input
+ * @property {boolean} langSwitcher - Whether to show language switcher
+ * @property {boolean} shift - Current shift key state
+ * @property {boolean} caps - Current caps lock state
+ * @property {Object.<string, Array>} customLayouts - Custom keyboard layouts
+ * 
+ * @attr {string} language - Keyboard language code (default: 'en')
+ * @attr {string} target - Target input element ID
+ * @attr {boolean} langswitcher - Show/hide language switcher
+ * 
+ * @fires input - When a key is pressed with character and current value
+ * @fires change - When input value changes
+ * @fires error - When character insertion fails
+ * 
+ * @cssprop --key-bg-color - Key background color (default: #f7f7f7)
+ * @cssprop --key-border-color - Key border color (default: #ccc)
+ * @cssprop --key-text-color - Key text color (default: inherit)
+ * @cssprop --key-hover-bg - Key hover background (default: #e6e6e6)
+ * @cssprop --key-active-bg - Key active background (default: #add8e6)
+ * 
+ * @example
+ * <!-- Basic usage -->
+ * <virtual-keyboard target="input1"></virtual-keyboard>
+ * 
+ * <!-- With language switcher -->
+ * <virtual-keyboard 
+ *   target="input1" 
+ *   language="fr" 
+ *   langswitcher>
+ * </virtual-keyboard>
+ */
 class WeatherWidget extends HTMLElement {
     constructor() {
         super()

@@ -1,3 +1,24 @@
+/**
+ * PluralRules Web Component
+ * Automatically formats numbers with ordinal indicators based on locale
+ * 
+ * @customElement plural-rules
+ * @extends HTMLElement
+ * @fires locale-change - When the display locale changes
+ * 
+ * @property {string} value - The numeric value to format
+ * @property {string} locale - Locale identifier for formatting
+ * 
+ * @attr {string} value - Numeric value to format
+ * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
+ * 
+ * @example
+ * <!-- Formats as "1st", "2nd", "3rd", etc. in English -->
+ * <plural-rules value="1" locale="en-US"></plural-rules>
+ * 
+ * <!-- Formats as "1er", "2e", etc. in French -->
+ * <plural-rules value="1" locale="fr"></plural-rules>
+ */
 class PluralRules extends HTMLElement{
     constructor(){
         super()

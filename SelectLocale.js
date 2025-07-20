@@ -1,3 +1,33 @@
+/**
+ * RelativeTimeFormat Web Component
+ * Formats time differences into human-readable relative strings using Intl.RelativeTimeFormat
+ * 
+ * @customElement relativetime-format
+ * @extends HTMLElement
+ * @fires locale-change - When the display locale changes
+ * 
+ * @property {string} value - The numeric value to format (negative for past, positive for future)
+ * @property {string} locale - Locale identifier for formatting
+ * @property {string} unit - Time unit (year|quarter|month|week|day|hour|minute|second)
+ * @property {string} fstyle - Formatting style (long|short|narrow)
+ * 
+ * @attr {string} value - Numeric value to format
+ * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
+ * @attr {string} unit - Time unit to use
+ * @attr {string} fstyle - Format style (default: 'short')
+ * 
+ * @example
+ * <!-- "2 days ago" -->
+ * <relativetime-format value="-2" unit="day"></relativetime-format>
+ * 
+ * <!-- "dans 3 heures" -->
+ * <relativetime-format 
+ *   value="3" 
+ *   unit="hour" 
+ *   locale="fr"
+ *   fstyle="long">
+ * </relativetime-format>
+ */
 class SelectLocale extends HTMLElement{
     constructor(){
         super()
@@ -31,16 +61,13 @@ class SelectLocale extends HTMLElement{
         ]
 
         this._supported = Intl.NumberFormat.supportedLocalesOf(locales)
-
         this._displayLocale = this.getAttribute('displayLocale') || 'en-US'
-
         this._createSelectDisplayLocales()
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if(this._isConnected && oldValue !== newValue){
             this._locale = newValue
-            
         }
     }
 

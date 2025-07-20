@@ -1,3 +1,31 @@
+/**
+ * CurrencyConverter Web Component
+ * A custom element that converts amounts between currencies using the Frankfurter API
+ * 
+ * @customElement currency-converter
+ * @extends HTMLElement
+ * @csspart amount - The input field for the source amount
+ * @csspart output - The container showing converted amounts
+ * 
+ * @property {string} locale - Locale for number formatting
+ * @property {string} source - Source currency code (e.g., 'USD')
+ * @property {string[]} target - Array of target currency codes
+ * @property {number} amount - Amount to convert
+ * 
+ * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
+ * @attr {string} source - Source currency code (default: 'USD')
+ * @attr {string} target - Space-separated list of target currencies (default: 'EUR')
+ * @attr {number} amount - Amount to convert (default: 1)
+ * 
+ * @fires input - When the amount changes
+ * 
+ * @example
+ * <currency-converter
+ *   source="USD"
+ *   target="EUR GBP JPY"
+ *   amount="100">
+ * </currency-converter>
+ */
 class CurrencyConverter extends HTMLElement {
     
     constructor() {

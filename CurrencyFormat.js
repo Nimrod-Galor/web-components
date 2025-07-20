@@ -1,3 +1,30 @@
+/**
+ * CurrencyFormat Web Component
+ * Automatically formats and converts currency values with locale awareness
+ * 
+ * @customElement currency-format
+ * @extends HTMLElement
+ * @fires locale-change - When the display locale changes
+ * 
+ * @property {string} value - The numeric value to format
+ * @property {string} currency - Currency code (e.g., 'USD')
+ * @property {string} locale - Locale identifier for formatting
+ * @property {number} minimumFractionDigits - Minimum number of decimal places
+ * @property {number} maximumFractionDigits - Maximum number of decimal places
+ * 
+ * @attr {string} value - Numeric value to format
+ * @attr {string} currency - Currency code (default: based on locale)
+ * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
+ * @attr {number} minimum-fraction-digits - Minimum decimal places
+ * @attr {number} maximum-fraction-digits - Maximum decimal places
+ * 
+ * @csspart currency - The currency symbol/code
+ * @csspart fraction - The decimal portion of the number
+ * 
+ * @example
+ * <currency-format value="1234.56" currency="USD" locale="en-US">
+ * </currency-format>
+ */
 class CurrencyFormat extends HTMLElement {
     constructor() {
         super();

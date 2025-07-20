@@ -1,3 +1,26 @@
+/**
+ * CryptoTicker Web Component
+ * Displays real-time cryptocurrency prices in a scrolling ticker format
+ * 
+ * @customElement crypto-ticker
+ * @extends HTMLElement
+ * @csspart wrapper - The container element for the ticker
+ * @csspart ticker - The scrolling text element
+ * 
+ * @property {string} coins - Comma-separated list of cryptocurrency IDs
+ * @property {string} currency - Currency code for price display
+ * @property {number} interval - Update interval in milliseconds
+ * 
+ * @attr {string} coins - Comma-separated list of cryptocurrency IDs (default: 'bitcoin,ethereum')
+ * @attr {string} currency - Currency code for price display (default: based on locale)
+ * @attr {number} interval - Update interval in milliseconds (default: 300000)
+ * 
+ * @fires locale-change - When the display locale/currency changes
+ * 
+ * @cssprop --cticker-color - Text color (default: #0f0)
+ * @cssprop --cticker-font-size - Font size (default: 1rem)
+ * @cssprop --locale - Current locale for currency selection
+ */
 class CryptoTicker extends HTMLElement {
     constructor() {
         super()

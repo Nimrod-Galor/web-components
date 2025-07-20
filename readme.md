@@ -1,3 +1,238 @@
+## Password Toggle
+
+The `<input-password>` (or `<password-toggle>`) web component is a custom, form-associated password input field with a built-in show/hide toggle button.
+
+---
+
+### Key Features
+
+- **Password Visibility Toggle:**  
+  Includes a button (with an eye icon) to show or hide the password, improving usability for users.
+
+- **Form-Associated:**  
+  Integrates seamlessly with HTML forms, supporting validation, submission, and reset like a native `<input type="password">`.
+
+- **Custom Validation:**  
+  Supports `required`, `minlength`, and `maxlength` attributes, and displays appropriate validation messages.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated, preventing conflicts with the rest of the page.
+
+- **Accessibility:**
+
+  - The input and toggle button have `aria-label` and `title` attributes.
+  - The toggle button uses `type="button"` to avoid accidental form submission.
+  - Keyboard navigation is preserved.
+
+- **Attribute Reflection:**  
+  Attributes like `placeholder`, `required`, `disabled`, `minlength`, `maxlength`, and `value` are reflected and kept in sync with the internal input.
+
+---
+
+### Usage Example
+
+```html
+<input-password
+  name="password"
+  placeholder="Enter password"
+  required
+  minlength="8"
+  maxlength="32"
+></input-password>
+```
+
+---
+
+**Summary:**  
+`<input-password>` is a robust, accessible, and user-friendly password input component for web forms, with built-in show/hide functionality and full support for form validation and accessibility.
+
+## TextArea Count
+
+The `<textarea is="textarea-count">` web component is a custom enhanced textarea that displays a live character count and provides user feedback as you type.
+
+---
+
+### Key Features
+
+- **Live Character Count:**  
+  Shows the current number of characters entered, and (if `maxlength` is set) displays the maximum allowed.
+
+- **Max Length Alert:**  
+  When the user reaches the maximum character limit, an alert message appears and an error style is applied.
+
+- **Custom Event (`countchange`):**  
+  Dispatches a `countchange` event with details (`textareaId`, `count`, `max`, `remaining`) every time the count updates, making it easy to track multiple counters on the same page.
+
+- **Accessibility:**  
+  Uses `aria-describedby` and `aria-live="polite"` for screen reader support.
+
+- **Form Reset Support:**  
+  Updates the character count when the parent form is reset.
+
+- **Dynamic Maxlength:**  
+  Reacts to changes in the `maxlength` attribute and updates the UI accordingly.
+
+- **Automatic ID Assignment:**  
+  Generates a unique ID if none is provided, ensuring each counter is uniquely identifiable.
+
+---
+
+### Usage Example
+
+```html
+<textarea is="textarea-count" maxlength="100" id="my-textarea"></textarea>
+```
+
+---
+
+**Summary:**  
+`<textarea is="textarea-count">` is a drop-in replacement for a standard textarea that adds live character counting, accessibility enhancements, and robust eventing for modern web forms.
+
+## Popup Info
+
+The `<popup-info>` web component is a custom tooltip/info popup element. It displays an info icon, and when the user hovers over or focuses on the icon, a tooltip with additional information appears.
+
+---
+
+### Key Features
+
+- **Accessible Tooltip:**  
+  Uses `aria-describedby` and `role="tooltip"` for screen reader support. The icon is keyboard-focusable (`tabindex="0"`), and the tooltip appears on hover, focus, or pressing Enter/Space.
+
+- **Customizable Text:**  
+  The tooltip text is set via the `data-text` attribute.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated using Shadow DOM and adopted stylesheets, preventing style leaks.
+
+- **Unique ARIA IDs:**  
+  Each instance generates a unique ID for proper ARIA relationships, supporting multiple tooltips on the same page.
+
+- **Smooth Visuals:**  
+  The tooltip fades in/out with a CSS transition and is positioned relative to the icon.
+
+---
+
+### Usage Example
+
+```html
+<popup-info data-text="This is more information."></popup-info>
+```
+
+---
+
+**Summary:**  
+`<popup-info>` provides an accessible, reusable, and visually appealing tooltip for displaying extra information in your web applications.
+
+## Input Knob
+
+The `InputKnob` web component is a **form-associated, accessible circular range input** that allows users to select a numeric value by rotating a knob. It is implemented as a custom element (`<input-knob>`) and can be used in forms just like a native input.
+
+### Key Features
+
+- **Circular Range Control:** Users can adjust the value by dragging the knob, using touch, or with keyboard arrows.
+- **Form-Associated:** Integrates with forms and supports form reset, disabled state, and value restoration.
+- **Customizable Range:** Supports `min`, `max`, `step`, `sweep` (arc angle), and `direction` (start position: top, right, bottom, left) attributes.
+- **SVG UI:** Renders a circular track, a pointer, and a highlighted arc to indicate the current value.
+- **Accessibility:** Uses ARIA roles and attributes for screen reader support and keyboard navigation.
+- **Events:** Fires standard `input` events on value change and `change` events only on commit (mouse/touch release or Enter key).
+- **Styling:** Exposes CSS custom properties for colors and stroke widths.
+
+### Example Usage
+
+```html
+<input-knob min="0" max="100" step="5" sweep="270" direction="top"></input-knob>
+```
+
+### Attributes
+
+- `min` (number): Minimum value (default: 0)
+- `max` (number): Maximum value (default: 100)
+- `step` (number): Step increment (default: 1)
+- `sweep` (number): Arc angle in degrees (default: 270)
+- `direction` (string): Starting direction (`top`, `right`, `bottom`, `left`)
+- `value` (number): Current value
+
+### Events
+
+- `input`: Fired on every value change (while dragging or pressing arrow keys)
+- `change`: Fired only when the value is committed (on mouse/touch release or Enter key)
+
+### Accessibility
+
+- `role="slider"` and ARIA attributes for min, max, value, and label
+- Keyboard support: Arrow keys, Home/End, Enter/Space
+
+### Styling
+
+Customizable via CSS variables:
+
+- `--stroke-color`
+- `--stroke-width`
+- `--pointer-stroke-color`
+- `--pointer-stroke-width`
+- `--highlight-stroke-color`
+- `--highlight-stroke-width`
+
+---
+
+**Summary:**  
+`<input-knob>` is a modern, accessible, and customizable circular input control suitable for numeric value selection in web forms and UIs.
+
+## Signature Pad
+
+The `SignaturePad` web component is a **form-associated custom element** that allows users to draw and capture handwritten signatures directly in the browser. It is designed for use in web forms and provides validation, accessibility, and responsive resizing.
+
+---
+
+### Key Features
+
+- **Handwritten Signature Capture:** Users can draw their signature using mouse or touch input on a canvas.
+- **Form Integration:** The component integrates with HTML forms, supporting validation, reset, and form submission with the signature as a PNG file.
+- **Validation:** Supports a `required` attribute and checks for a minimum number of non-empty pixels to ensure a valid signature.
+- **Responsive & High-DPI:** Uses a `ResizeObserver` and device pixel ratio scaling to keep the signature crisp and responsive to container size changes.
+- **Accessibility:** Focus management, keyboard accessibility, and clear validation messages.
+- **Customizable:** Allows configuration of line width and color via attributes.
+- **Events:** Fires `signature-ready` when a signature is captured and `signature-cleared` when cleared.
+- **Clear Button:** Provides a button to clear the signature, with a confirmation prompt.
+
+---
+
+### Example Usage
+
+```html
+<signature-pad required line-width="3" line-color="#0077cc"></signature-pad>
+```
+
+### Attributes
+
+- `required`: Makes the signature mandatory for form validation.
+- `line-width`: Sets the pen width (default: 2).
+- `line-color`: Sets the pen color (default: black).
+
+### Events
+
+- `signature-ready`: Fired when a signature is captured and processed. The event detail includes the PNG file.
+- `signature-cleared`: Fired when the signature is cleared.
+
+### Methods
+
+- `reset()`: Programmatically clears the signature pad.
+- `focus()`: Focuses the canvas for accessibility.
+
+### Accessibility
+
+- Focusable canvas.
+- ARIA validation messages.
+- Keyboard accessible clear button.
+
+---
+
+**Summary:**  
+`<signature-pad>` is a robust, accessible, and customizable web component for capturing handwritten signatures in forms, with built-in validation, responsive design, and easy integration.
+
+##
+
 ## SELECT LOCALES
 
 This web component, `<select-local>`, provides a dropdown menu for selecting a locale (language and region code) supported by the browser.
@@ -494,3 +729,94 @@ This web component, `<virtual-keyboard>`, provides an on-screen, multi-language 
 
 **Summary:**  
 `<virtual-keyboard>` is a robust, accessible, and highly configurable on-screen keyboard component, ideal for multilingual web apps, touch interfaces, and accessibility solutions.
+
+## Breadcrumb Trail
+
+This web component, `<breadcrumb-trail>`, displays a dynamic breadcrumb navigation trail based on the current URL path.
+
+---
+
+### Key Features
+
+- **Automatic Breadcrumb Generation:**  
+  Parses the URL path and generates a breadcrumb trail, with each segment as a clickable link (except the last/current page).
+
+- **Customizable Home Label and Separator:**  
+  The first breadcrumb label ("Home" by default) and the separator ("/" by default) can be customized via the `home-label` and `separator` attributes.
+
+- **Semantic & Accessible Markup:**  
+  Uses `<nav aria-label="Breadcrumb">` and an ordered list (`<ol>`) for accessibility and semantic structure. The current page is marked with `aria-current="page"`.
+
+- **Shadow DOM Encapsulation:**  
+  Styles and markup are encapsulated, preventing style leakage.
+
+- **Reactivity:**  
+  Updates automatically when the browser’s history changes (e.g., back/forward navigation) or when the `home-label` attribute changes.
+
+---
+
+### Usage Example
+
+```html
+<breadcrumb-trail home-label="Dashboard" separator=">"></breadcrumb-trail>
+```
+
+---
+
+**Summary:**  
+`<breadcrumb-trail>` is a customizable, accessible, and automatically updating breadcrumb navigation component for web apps.
+
+## Expanding List
+
+This web component, `<expanding-list>`, provides an accessible, interactive expanding/collapsing list UI for nested lists.
+
+---
+
+### Key Features
+
+- **Shadow DOM Encapsulation:**  
+  All styles and logic are encapsulated, preventing conflicts with the rest of the page.
+
+- **Progressive Enhancement:**  
+  Takes a nested `<ul>`, `<ol>`, or `<dl>` placed inside the component and enhances it with expand/collapse functionality.
+
+- **Expand/Collapse Controls:**  
+  List items with nested lists show a "+" (collapsed) or "–" (expanded) icon. Clicking the label toggles the visibility of the nested list.
+
+- **Accessibility:**  
+  Each clickable label is a focusable button (`tabindex="0"`, `role="button"`) and supports keyboard interaction (Enter/Space).
+
+- **Customizable Appearance:**  
+  Uses CSS custom properties (`--expand-color`, `--expand-size`) for easy theming.
+
+- **Event Delegation:**  
+  Uses a single event listener for efficient handling of expand/collapse actions.
+
+---
+
+### Usage Example
+
+```html
+<expanding-list>
+  <ul>
+    <li>
+      Fruits
+      <ul>
+        <li>Apple</li>
+        <li>Banana</li>
+      </ul>
+    </li>
+    <li>
+      Vegetables
+      <ul>
+        <li>Carrot</li>
+      </ul>
+    </li>
+  </ul>
+</expanding-list>
+```
+
+---
+
+**Summary:**  
+`<expanding-list>` is a reusable, accessible, and styleable component for interactive nested lists, ideal for menus, FAQs, or any expandable content structure.
