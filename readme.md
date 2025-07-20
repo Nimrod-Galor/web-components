@@ -1,3 +1,45 @@
+This is a **Web Components Library** showcasing modern, reusable custom HTML elements built with native web standards.
+
+## Project Overview
+
+A comprehensive collection of **16 custom web components** organized into three main categories:
+
+### 🎯 **Form Components**
+
+- **Input Password** - Password field with show/hide toggle
+- **TextArea Count** - Live character counter for textareas
+- **Input Knob** - Circular range slider with touch/mouse/keyboard support
+- **Signature Pad** - Canvas-based signature capture with form integration
+- **Popup Info** - Accessible tooltip component
+
+### 🌍 **Internationalization Components**
+
+- **Locale Selector** - Language/region picker
+- **Number/Currency/Date Formatters** - Locale-aware data formatting
+- **Duration/Relative Time** - Time-based formatting
+- **Plural Rules** - Ordinal number formatting (1st, 2nd, 3rd...)
+
+### 🔧 **Widgets & Utilities**
+
+- **Currency Converter** - Live exchange rates
+- **Weather Widget** - Location-based weather display
+- **Crypto Ticker** - Animated cryptocurrency prices
+- **Virtual Keyboard** - Multi-language on-screen keyboard
+- **GeoLocation** - Browser location access
+- **Breadcrumb Trail** - Dynamic navigation breadcrumbs
+- **Expanding List** - Collapsible nested lists
+
+## Key Features
+
+✅ **Form-associated** - Native form integration  
+✅ **Accessible** - ARIA support, keyboard navigation  
+✅ **Encapsulated** - Shadow DOM styling  
+✅ **Reactive** - Attribute change detection  
+✅ **Modern** - ES6+ classes, native APIs  
+✅ **Demo Page** - Interactive showcase with documentation
+
+Perfect for building modern, accessible web applications with reusable, standards-compliant components.
+
 ## Password Toggle
 
 The `<input-password>` (or `<password-toggle>`) web component is a custom, form-associated password input field with a built-in show/hide toggle button.
