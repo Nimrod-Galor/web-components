@@ -772,6 +772,64 @@ This web component, `<virtual-keyboard>`, provides an on-screen, multi-language 
 **Summary:**  
 `<virtual-keyboard>` is a robust, accessible, and highly configurable on-screen keyboard component, ideal for multilingual web apps, touch interfaces, and accessibility solutions.
 
+## Auto Search
+
+The `<auto-search>` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.
+
+---
+
+## Key Features
+
+- **Autocomplete Input:** As you type, it fetches suggestions from a remote API and displays them in a dropdown.
+- **Local Caching:** Previous searches are stored in localStorage and shown as suggestions (visually distinct from API results).
+- **Form Integration:** Works seamlessly with native HTML forms, supporting validation, reset, and submission.
+- **Accessibility:** Implements ARIA roles, keyboard navigation (arrows, Enter, Tab, Escape), and screen reader support.
+- **Customizable:** Supports attributes for API endpoint, minimum input length, maximum results, and clear-on-submit.
+- **Security:** Escapes HTML in suggestions to prevent XSS.
+- **Styling:** Uses Shadow DOM and CSS custom properties for easy theming. Cached suggestions are styled differently (e.g., italic, lighter color).
+- **Events:** Emits a `search` event when a search is submitted.
+
+---
+
+## Example Usage
+
+```html
+<auto-search
+  id="searchEl"
+  name="searchEl"
+  api-endpoint="http://localhost:3000/suggestions?q="
+  min-length="2"
+  max-results="12"
+  clear-on-submit
+  style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
+></auto-search>
+```
+
+---
+
+## How It Works
+
+1. **User types in the input.**
+2. If the input length meets the minimum, suggestions are fetched from the API and local cache.
+3. Suggestions are shown in a dropdown; cached items appear first and are visually distinct.
+4. User can navigate suggestions with keyboard or mouse.
+5. Selecting a suggestion or submitting the form emits a `search` event and saves the query to cache.
+6. Works with form validation and reset.
+
+---
+
+## Accessibility & UX
+
+- ARIA roles: `combobox`, `listbox`, `option`
+- Keyboard: Arrow keys, Enter, Tab, Escape, Home/End
+- Screen reader friendly
+- Loading spinner for async fetch
+
+---
+
+**Summary:**  
+`<auto-search>` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.
+
 ## Breadcrumb Trail
 
 This web component, `<breadcrumb-trail>`, displays a dynamic breadcrumb navigation trail based on the current URL path.

@@ -29,6 +29,7 @@
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="GeoLocation.js"></script>
     <script defrer src="BreadcrumbTrail.js"></script>
+    <script defrer src="AutoSearch.js"></script>
 
 
     <style>
@@ -220,6 +221,15 @@
         }
 
 
+        form#searchForm{
+            display: flex;
+            button{
+                border-radius: 0 2px 2px 0;
+                border: 1px outset buttonborder;
+                border-left: 0;
+                cursor: pointer;
+            }
+        }
        
 
     </style>
@@ -1288,6 +1298,96 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Auto Search</h4>
+                <form onsubmit="event.preventDefault(); console.log(searchEl.value)" id="searchForm">
+                    <auto-search
+                        id="searchEl"
+                        name="searchEl"
+                        api-endpoint="http://localhost:3000/suggestions?q="
+                        min-length="2"
+                        max-results="12"
+                        clear-on-submit
+                        style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
+                    ></auto-search>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="wxas">
+                    <label for="wxas" class="tab__label">Auto Search</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>The `&lt;auto-search&gt;` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.</p>
+
+                        Key Features
+                        <dl>
+                            <dt>Autocomplete Input:</dt>
+                            <dd>As you type, it fetches suggestions from a remote API and displays them in a dropdown.</dd>
+                            <dt>Local Caching:</dt>
+                            <dd>Previous searches are stored in localStorage and shown as suggestions (visually distinct from API results).</dd>
+                            <dt>Form Integration:</dt>
+                            <dd>Works seamlessly with native HTML forms, supporting validation, reset, and submission.</dd>
+                            <dt>Accessibility:</dt>
+                            <dd>Implements ARIA roles, keyboard navigation (arrows, Enter, Tab, Escape), and screen reader support.</dd>
+                            <dt>Customizable:</dt>
+                            <dd>Supports attributes for API endpoint, minimum input length, maximum results, and clear-on-submit.</dd>
+                            <dt>Security:</dt>
+                            <dd>Escapes HTML in suggestions to prevent XSS.</dd>
+                            <dt>Styling:</dt>
+                            <dd>Uses Shadow DOM and CSS custom properties for easy theming. Cached suggestions are styled differently (e.g., italic, lighter color).</dd>
+                            <dt>Events:</dt>
+                            <dd>Emits a `search` event when a search is submitted.</dd>
+                        </dl>
+
+                        Example Usage
+
+                        <code class="tagbox">
+                        &lt;auto-search
+                        id="searchEl"
+                        name="searchEl"
+                        api-endpoint="http://localhost:3000/suggestions?q="
+                        min-length="2"
+                        max-results="12"
+                        clear-on-submit
+                        style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
+                        &gt;&lt;/auto-search&gt;
+                        </code>
+
+                        How It Works
+
+                        <ol>
+                            <li>User types in the input.</li>
+                            <li>If the input length meets the minimum, suggestions are fetched from the API and local cache.</li>
+                            <li>Suggestions are shown in a dropdown; cached items appear first and are visually distinct.</li>
+                            <li>User can navigate suggestions with keyboard or mouse.</li>
+                            <li>Selecting a suggestion or submitting the form emits a `search` event and saves the query to cache.</li>
+                            <li>Works with form validation and reset.</li>
+                        </ol>
+
+                        Accessibility & UX
+
+                        <ul>
+                            <li>ARIA roles: `combobox`, `listbox`, `option`</li>
+                            <li>Keyboard: Arrow keys, Enter, Tab, Escape, Home/End</li>
+                            <li>Screen reader friendly</li>
+                            <li>Loading spinner for async fetch</li>
+                        </ul>
+
+                        <strong>Summary:</strong>
+                        <p>`&lt;auto-search&gt;` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.</p>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
         <div class="row">
             <div class="col-left auto">
                 <h4>GEO Location</h4>
@@ -1509,7 +1609,10 @@
                 </div>
             </div>
         </div>
+
+        
     </div>
+
 
     <script type="text/javascript">
         document.getElementById('demo').addEventListener('submit', e => {
