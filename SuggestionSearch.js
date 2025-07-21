@@ -1,17 +1,17 @@
 /**
- * AutoSearch web component - A form-associated custom element that provides
+ * SuggestionSearch web component - A form-associated custom element that provides
  * autocomplete functionality with API integration, local caching, and accessibility support.
  * 
  * @extends HTMLElement
  * @example
- * <auto-search 
+ * <suggestion-search 
  *   api-endpoint="https://api.example.com/search?q=" 
  *   min-length="2" 
  *   max-results="5"
  *   required>
- * </auto-search>
+ * </suggestion-search>
  */
-class AutoSearch extends HTMLElement {
+class SuggestionSearch extends HTMLElement {
     static formAssociated = true
 
     static {
@@ -101,11 +101,11 @@ class AutoSearch extends HTMLElement {
     }
 
     get minLength() {
-        return parseInt(this.getAttribute('min-length') || AutoSearch.MIN_QUERY_LENGTH, 10)
+        return parseInt(this.getAttribute('min-length') || SuggestionSearch.MIN_QUERY_LENGTH, 10)
     }
 
     get maxResults() {
-        return parseInt(this.getAttribute('max-results') || AutoSearch.MAX_RESULTS, 10)
+        return parseInt(this.getAttribute('max-results') || SuggestionSearch.MAX_RESULTS, 10)
     }
 
     checkValidity() {
@@ -139,8 +139,8 @@ class AutoSearch extends HTMLElement {
         this.activeIndex = -1
         this.isLoading = false
 
-        const id = `input-${AutoSearch._uuid()}`
-        const listId = `suggestions-${AutoSearch._uuid()}`
+        const id = `input-${SuggestionSearch._uuid()}`
+        const listId = `suggestions-${SuggestionSearch._uuid()}`
 
         this.shadowRoot.innerHTML = `
             <style>
@@ -302,7 +302,7 @@ class AutoSearch extends HTMLElement {
         clearTimeout(this.debounceTimer)
         this.debounceTimer = setTimeout(() => {
             this.fetchSuggestions(val)
-        }, AutoSearch.DEBOUNCE_DELAY)
+        }, SuggestionSearch.DEBOUNCE_DELAY)
     }
 
   
@@ -456,7 +456,7 @@ class AutoSearch extends HTMLElement {
         const current = this.cache  // Get current cache
         const cacheItem = { query, timestamp: Date.now() }
     
-        const updated = [cacheItem, ...current].slice(0, AutoSearch.CACHE_SIZE)
+        const updated = [cacheItem, ...current].slice(0, SuggestionSearch.CACHE_SIZE)
         this.cache = updated  // Use setter correctly
     }
 
@@ -508,5 +508,5 @@ class AutoSearch extends HTMLElement {
 
 }
 
-customElements.define('auto-search', AutoSearch)
+customElements.define('suggestion-search', SuggestionSearch)
 

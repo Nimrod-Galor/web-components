@@ -29,7 +29,7 @@
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="GeoLocation.js"></script>
     <script defrer src="BreadcrumbTrail.js"></script>
-    <script defrer src="AutoSearch.js"></script>
+    <script defrer src="SuggestionSearch.js"></script>
 
 
     <style>
@@ -1303,7 +1303,7 @@
             <div class="col-left auto">
                 <h4>Auto Search</h4>
                 <form onsubmit="event.preventDefault(); console.log(searchEl.value)" id="searchForm">
-                    <auto-search
+                    <suggestion-search
                         id="searchEl"
                         name="searchEl"
                         api-endpoint="http://localhost:3000/suggestions?q="
@@ -1311,7 +1311,7 @@
                         max-results="12"
                         clear-on-submit
                         style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
-                    ></auto-search>
+                    ></suggestion-search>
                     <button type="submit">Search</button>
                 </form>
             </div>
@@ -1321,7 +1321,7 @@
                     <label for="wxas" class="tab__label">Auto Search</label>
                     <div class="tab__content">
                         <div class="content">
-                            <p>The `&lt;auto-search&gt;` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.</p>
+                            <p>The `&lt;suggestion-search&gt;` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.</p>
 
                         Key Features
                         <dl>
@@ -1346,7 +1346,7 @@
                         Example Usage
 
                         <code class="tagbox">
-                        &lt;auto-search
+                        &lt;suggestion-search
                         id="searchEl"
                         name="searchEl"
                         api-endpoint="http://localhost:3000/suggestions?q="
@@ -1354,7 +1354,7 @@
                         max-results="12"
                         clear-on-submit
                         style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
-                        &gt;&lt;/auto-search&gt;
+                        &gt;&lt;/suggestion-search&gt;
                         </code>
 
                         How It Works
@@ -1378,7 +1378,7 @@
                         </ul>
 
                         <strong>Summary:</strong>
-                        <p>`&lt;auto-search&gt;` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.</p>
+                        <p>`&lt;suggestion-search&gt;` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.</p>
 
 
                         </div>

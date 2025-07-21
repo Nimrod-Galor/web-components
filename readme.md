@@ -772,9 +772,9 @@ This web component, `<virtual-keyboard>`, provides an on-screen, multi-language 
 **Summary:**  
 `<virtual-keyboard>` is a robust, accessible, and highly configurable on-screen keyboard component, ideal for multilingual web apps, touch interfaces, and accessibility solutions.
 
-## Auto Search
+## Suggestion Search
 
-The `<auto-search>` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.
+The `<suggestion-search>` web component is a **form-associated, accessible autocomplete input** that provides real-time search suggestions from both an API and local cache. It is designed for use in modern web forms and applications.
 
 ---
 
@@ -794,7 +794,7 @@ The `<auto-search>` web component is a **form-associated, accessible autocomplet
 ## Example Usage
 
 ```html
-<auto-search
+<suggestion-search
   id="searchEl"
   name="searchEl"
   api-endpoint="http://localhost:3000/suggestions?q="
@@ -802,14 +802,14 @@ The `<auto-search>` web component is a **form-associated, accessible autocomplet
   max-results="12"
   clear-on-submit
   style="--input-bg: #fefefe; --list-hover-bg: #e6f7ff;"
-></auto-search>
+></suggestion-search>
 ```
 
 ---
 
 ## How It Works
 
-1. **User types in the input.**
+1. User types in the input.
 2. If the input length meets the minimum, suggestions are fetched from the API and local cache.
 3. Suggestions are shown in a dropdown; cached items appear first and are visually distinct.
 4. User can navigate suggestions with keyboard or mouse.
@@ -828,7 +828,7 @@ The `<auto-search>` web component is a **form-associated, accessible autocomplet
 ---
 
 **Summary:**  
-`<auto-search>` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.
+`<suggestion-search>` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.
 
 ## Breadcrumb Trail
 
