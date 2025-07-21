@@ -719,6 +719,38 @@ This web component, `<crypto-ticker>`, displays a live, animated ticker of crypt
 **Summary:**  
 `<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.
 
+## Calendar Picker
+
+Here’s a description for the `<calendar-picker>` web component:
+
+---
+
+### `<calendar-picker>` Web Component
+
+**Purpose:**  
+A form-associated, locale-aware calendar date picker for web forms and applications.
+
+**Key Features:**
+
+- **Date Selection:** Allows users to select a date from a visual calendar grid.
+- **Month & Year Navigation:** Dropdowns and buttons for changing month and year.
+- **Week Numbers:** Optionally displays ISO week numbers.
+- **Resizable:** Users can resize the calendar via drag.
+- **Locale Support:** Month and weekday names adapt to the specified locale.
+- **Accessibility:** Keyboard navigation (arrows, Home/End, Enter/Space), ARIA roles, and focus management.
+- **Form Integration:** Works with native forms, supports validation, and exposes a `value` property.
+- **Customizable:** Theming via CSS custom properties (colors, sizing, border radius, etc.).
+- **Shadow DOM:** Encapsulated styles and markup.
+
+**Usage Example:**
+
+```html
+<calendar-picker locale="ar-EG"></calendar-picker>
+```
+
+**Summary:**  
+`<calendar-picker>` is a modern, accessible, and customizable calendar date picker web component, ideal for forms and internationalized applications.
+
 ## Ip Info
 
 The `<client-ip>` web component displays the user's public IP address and related location information by fetching data from an external API (such as ipinfo.io). It is designed to be accessible, visually styled, and easy to integrate into any web page.

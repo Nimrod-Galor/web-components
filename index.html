@@ -27,6 +27,7 @@
 
 
     <script defrer src="VirtualKeyboard.js"></script>
+    <script defrer src="CalendarPicker.js"></script>
     <script defrer src="ClientIP.js"></script>
     <script defrer src="GeoLocation.js"></script>
     <script defrer src="BreadcrumbTrail.js"></script>
@@ -1385,6 +1386,56 @@
                         <strong>Summary:</strong>
                         <p>`&lt;suggestion-search&gt;` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.</p>
 
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Calendar Picker</h4>
+                <calendar-picker locale="ar-EG"></calendar-picker>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="cp1">
+                    <label for="cp1" class="tab__label">Calendar Picker</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>A form-associated, locale-aware calendar date picker for web forms and applications.</p>
+
+                            Key Features:
+
+                            <dl>
+                                <dt>Date Selection:</dt>
+                                    <dd>Allows users to select a date from a visual calendar grid.</dd>
+                                <dt>Month & Year Navigation:</dt>
+                                    <dd>Dropdowns and buttons for changing month and year.</dd> 
+                                <dt>Week Numbers:</dt>
+                                    <dd>Optionally displays ISO week numbers.</dd>
+                                <dt>Resizable:</dt>
+                                    <dd>>Users can resize the calendar via drag.</dd>
+                                <dt>Locale Support:</dt>
+                                    <dd>Month and weekday names adapt to the specified locale.</dd>
+                                <dt>Accessibility:</dt>
+                                    <dd>Keyboard navigation (arrows, Home/End, Enter/Space), ARIA roles, and focus management.</dd>
+                                <dt>Form Integration:</dt>
+                                    <dd>Works with native forms, supports validation, and exposes a `value` property.</dd>
+                                <dt>Customizable:</dt>
+                                    <dd>Theming via CSS custom properties (colors, sizing, border radius, etc.).</dd>
+                                <dt>Shadow DOM:</dt>
+                                    <dd>Encapsulated styles and markup.</dd>
+                            </dl>
+
+                            Usage Example:
+                            <code class="tagbox">
+                                &lt;calendar-picker locale="ar-EG"&gt;&lt;/calendar-picker&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;calendar-picker&gt;` is a modern, accessible, and customizable calendar date picker web component, ideal for forms and internationalized applications.</p>
 
                         </div>
                     </div>
