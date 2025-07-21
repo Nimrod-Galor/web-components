@@ -83,13 +83,33 @@ class CryptoTicker extends HTMLElement {
 
     async _fetchData(retries = 3) {
         try {
-            const url = `https://api.coingecko.com/api/v3/simple/price?ids=${this.coins}&vs_currencies=${this.currency}`;
+            const url = `https://api.coingecko.com/api/v3/simple/price?ids=${this.coins}&vs_currencies=${this.currency}`
+            const cacheKey = `crypto-ticker:${this.coins}:${this.currency}`;
+            const now = Date.now();
+            // Try to load from cache first
+            const cachedRaw = localStorage.getItem(cacheKey);
+            if (cachedRaw) {
+                try {
+                    const cached = JSON.parse(cachedRaw);
+                    if (cached.expires > now) {
+                        this._updateTicker(cached.data);
+                        return // Use cached data if not expired
+                    }
+                } catch (e) {
+                    // Ignore cache parse errors
+                }
+            }
             const res = await fetch(url);
             if (!res.ok){
                 throw new Error(`HTTP error! status: ${res.status}`)
             }
-            const data = await res.json()
-            this._updateTicker(data)
+            const data = await res.json();
+            // Save to cache with expiration
+            localStorage.setItem(cacheKey, JSON.stringify({
+                data,
+                expires: now + this.interval
+            }));
+            this._updateTicker(data);
         } catch (e) {
             console.error('Error fetching crypto prices:', e)
             if (retries > 0) {
