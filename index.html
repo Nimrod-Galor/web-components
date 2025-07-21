@@ -27,6 +27,7 @@
 
 
     <script defrer src="VirtualKeyboard.js"></script>
+    <script defrer src="ClientIP.js"></script>
     <script defrer src="GeoLocation.js"></script>
     <script defrer src="BreadcrumbTrail.js"></script>
     <script defrer src="SuggestionSearch.js"></script>
@@ -262,8 +263,11 @@
             <dd>
                 <ul>
                     <li><strong>Locale Selector</strong> - Language/region picker</li>
-                    <li><strong>Number/Currency/Date Formatters</strong> - Locale-aware data formatting</li>
-                    <li><strong>Duration/Relative Time</strong> - Time-based formatting</li>
+                    <li><strong>NumberFormatter</strong> - Locale-aware data formatting</li>
+                    <li><strong>Currency Formatter</strong> - Locale-aware data formatting</li>
+                    <li><strong>Date Formatter</strong> - Locale-aware data formatting</li>
+                    <li><strong>Duration</strong> - Time-based formatting</li>
+                    <li><strong>Relative Time</strong> - Time-based formatting</li>
                     <li><strong>Plural Rules</strong> - Ordinal number formatting (1st, 2nd, 3rd...)</li>
                 </ul>
             </dd>
@@ -275,6 +279,7 @@
                     <li><strong>Weather Widget</strong> - Location-based weather display</li>
                     <li><strong>Crypto Ticker</strong> - Animated cryptocurrency prices</li>
                     <li><strong>Virtual Keyboard</strong> - Multi-language on-screen keyboard</li>
+                    <li><strong>IP Info</strong> - IP address geolocation information</li>
                     <li><strong>GeoLocation</strong> - Browser location access</li>
                     <li><strong>Breadcrumb Trail</strong> - Dynamic navigation breadcrumbs</li>
                     <li><strong>Expanding List</strong> - Collapsible nested lists</li>
@@ -1380,6 +1385,53 @@
                         <strong>Summary:</strong>
                         <p>`&lt;suggestion-search&gt;` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.</p>
 
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Ip Info</h4>
+                <client-ip></client-ip>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="cbgl1">
+                    <label for="cbgl1" class="tab__label">Ip Info</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>The `<client-ip>` web component displays the user's public IP address and related location information by fetching data from an external API (such as ipinfo.io). It is designed to be accessible, visually styled, and easy to integrate into any web page.</p>
+                            Key Features:
+                            <dl>
+                                <dt>Automatic IP Lookup:</dt>
+                                <dd>Fetches and displays the user's IP address, city, region, country, and optionally ISP and coordinates.</dd>
+
+                                <dt>Configurable:</dt>
+                                <dd>Supports attributes to change the API endpoint (`api-url`), and to show/hide coordinates (`show-coords`) and organization/ISP info (`show-org`).</dd>
+
+                                <dt>Accessibility:</dt>
+                                <dd>Uses ARIA roles and live regions for screen reader support.</dd>
+
+                                <dt>Error Handling:</dt>
+                                <dd>Displays user-friendly error messages if the API fails or the user is offline.</dd>
+
+                                <dt>Shadow DOM Encapsulation:</dt>
+                                <dd>Styles and markup are isolated from the rest of the page.</dd>
+
+                                <dt>Responsive Design:</dt>
+                                <dd>Styled for clarity and adapts to different layouts.</dd>
+                            </dl>
+
+                            Example Usage:
+                            <code class="tagbox">
+                                &lt;client-ip show-coords show-org&gt;&lt;/client-ip&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;client-ip&gt;` is a simple, accessible, and customizable web component for displaying a user's IP address and location info, with built-in error handling and privacy-friendly design.</p>
 
                         </div>
                     </div>

@@ -2,7 +2,7 @@ This is a **Web Components Library** showcasing modern, reusable custom HTML ele
 
 ## Project Overview
 
-A comprehensive collection of **16 custom web components** organized into three main categories:
+A comprehensive collection of **20+ custom web components** organized into three main categories:
 
 ### 🎯 **Form Components**
 
@@ -718,6 +718,62 @@ This web component, `<crypto-ticker>`, displays a live, animated ticker of crypt
 
 **Summary:**  
 `<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.
+
+## Ip Info
+
+The `<client-ip>` web component displays the user's public IP address and related location information by fetching data from an external API (such as ipinfo.io). It is designed to be accessible, visually styled, and easy to integrate into any web page.
+
+---
+
+**Key Features:**
+
+- **Automatic IP Lookup:** Fetches and displays the user's IP address, city, region, country, and optionally ISP and coordinates.
+- **Configurable:** Supports attributes to change the API endpoint (`api-url`), and to show/hide coordinates (`show-coords`) and organization/ISP info (`show-org`).
+- **Accessibility:** Uses ARIA roles and live regions for screen reader support.
+- **Error Handling:** Displays user-friendly error messages if the API fails or the user is offline.
+- **Shadow DOM Encapsulation:** Styles and markup are isolated from the rest of the page.
+- **Responsive Design:** Styled for clarity and adapts to different layouts.
+
+---
+
+**Example Usage:**
+
+```html
+<client-ip show-coords show-org></client-ip>
+```
+
+---
+
+**Summary:**  
+`<client-ip>` is a simple, accessible, and customizable web component for displaying a user's IP address and location info, with built-in error handling and privacy-friendly design.
+
+## GEO Location
+
+The `<geo-location>` web component displays the user's current geographic coordinates (latitude and longitude) using the browser's Geolocation API.
+
+---
+
+**Key Features:**
+
+- **Automatic Location Lookup:** On load, attempts to retrieve and display the user's latitude and longitude.
+- **Accessibility:** Uses semantic markup and status messages for screen readers.
+- **Error Handling:** Shows a clear message if location access fails or is unsupported.
+- **Custom Events:** Fires `geo-success` when location is retrieved and `geo-error` if retrieval fails.
+- **Styling:** Supports CSS custom properties for font and colors.
+- **Encapsulation:** Uses Shadow DOM for style and markup isolation.
+
+---
+
+**Example Usage:**
+
+```html
+<geo-location></geo-location>
+```
+
+---
+
+**Summary:**  
+`<geo-location>` is a simple, accessible, and privacy-friendly web component for displaying a user's geographic coordinates, with built-in error handling and easy integration.
 
 ## Virtual Keyboard
 
