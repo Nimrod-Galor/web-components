@@ -8,23 +8,28 @@ A comprehensive collection of **20+ custom web components** organized into three
 
 - **Input Password** - Password field with show/hide toggle
 - **TextArea Count** - Live character counter for textareas
+- **Popup Info** - Accessible tooltip component
 - **Input Knob** - Circular range slider with touch/mouse/keyboard support
 - **Signature Pad** - Canvas-based signature capture with form integration
-- **Popup Info** - Accessible tooltip component
 
 ### 🌍 **Internationalization Components**
 
 - **Locale Selector** - Language/region picker
 - **Number/Currency/Date Formatters** - Locale-aware data formatting
-- **Duration/Relative Time** - Time-based formatting
+- **Duration** - Time-based formatting
 - **Plural Rules** - Ordinal number formatting (1st, 2nd, 3rd...)
+- **Relative Time** - Locale-aware formatting for phrases like "2 days ago" or "in 3 weeks".
 
 ### 🔧 **Widgets & Utilities**
 
-- **Currency Converter** - Live exchange rates
-- **Weather Widget** - Location-based weather display
-- **Crypto Ticker** - Animated cryptocurrency prices
+- **Currency Converter** - Live exchange rates.
+- **Weather Widget** - Location-based weather display.
+- **Crypto Ticker** - Animated cryptocurrency prices.
+- **Lightbox Viewer** - Responsive image/video viewer with modal overlay, keyboard navigation, and touch support.
 - **Virtual Keyboard** - Multi-language on-screen keyboard
+- **Suggestion Search** - Accessible autocomplete input with API and local cache suggestions.
+- **Calendar Picker** - Locale-aware, accessible date picker with month/year navigation, week numbers, and form integration
+- **IP Info** - Displays the user's public IP address and related location information.
 - **GeoLocation** - Browser location access
 - **Breadcrumb Trail** - Dynamic navigation breadcrumbs
 - **Expanding List** - Collapsible nested lists
@@ -719,93 +724,33 @@ This web component, `<crypto-ticker>`, displays a live, animated ticker of crypt
 **Summary:**  
 `<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.
 
-## Calendar Picker
+## Lightbox Viewer
 
-Here’s a description for the `<calendar-picker>` web component:
-
----
-
-### `<calendar-picker>` Web Component
-
-**Purpose:**  
-A form-associated, locale-aware calendar date picker for web forms and applications.
+The `<image-lightbox>` web component is a modern, accessible, and feature-rich image viewer for the web. It allows users to click on thumbnail images (provided via slot) and view them in a fullscreen overlay with advanced navigation and zoom capabilities.
 
 **Key Features:**
 
-- **Date Selection:** Allows users to select a date from a visual calendar grid.
-- **Month & Year Navigation:** Dropdowns and buttons for changing month and year.
-- **Week Numbers:** Optionally displays ISO week numbers.
-- **Resizable:** Users can resize the calendar via drag.
-- **Locale Support:** Month and weekday names adapt to the specified locale.
-- **Accessibility:** Keyboard navigation (arrows, Home/End, Enter/Space), ARIA roles, and focus management.
-- **Form Integration:** Works with native forms, supports validation, and exposes a `value` property.
-- **Customizable:** Theming via CSS custom properties (colors, sizing, border radius, etc.).
-- **Shadow DOM:** Encapsulated styles and markup.
+- **Overlay Lightbox:** Opens images in a modal overlay with keyboard and mouse/touch navigation.
+- **Navigation:** Supports previous/next buttons, arrow keys, and swipe gestures for moving between images.
+- **Zoom:** Users can zoom in/out with click, mouse wheel, pinch gesture, or the 'z' keyboard shortcut.
+- **Magnifier:** Mouse hover shows a magnifying glass for detailed inspection of the image.
+- **Accessibility:** Implements ARIA roles, focus trapping, keyboard navigation, and live region for captions.
+- **Performance:** Uses debounced magnifier updates, lazy loads thumbnails, and preloads adjacent images.
+- **Custom Events:** Emits events like `lightbox-open`, `lightbox-close`, `lightbox-change`, and `lightbox-error` for integration.
+- **Responsive & Touch-Friendly:** Works well on both desktop and mobile devices.
 
 **Usage Example:**
 
 ```html
-<calendar-picker locale="ar-EG"></calendar-picker>
+<image-lightbox>
+  <img src="thumbs/photo1.jpg" alt="Photo 1" />
+  <img src="thumbs/photo2.jpg" alt="Photo 2" />
+  <!-- more images -->
+</image-lightbox>
 ```
 
 **Summary:**  
-`<calendar-picker>` is a modern, accessible, and customizable calendar date picker web component, ideal for forms and internationalized applications.
-
-## Ip Info
-
-The `<client-ip>` web component displays the user's public IP address and related location information by fetching data from an external API (such as ipinfo.io). It is designed to be accessible, visually styled, and easy to integrate into any web page.
-
----
-
-**Key Features:**
-
-- **Automatic IP Lookup:** Fetches and displays the user's IP address, city, region, country, and optionally ISP and coordinates.
-- **Configurable:** Supports attributes to change the API endpoint (`api-url`), and to show/hide coordinates (`show-coords`) and organization/ISP info (`show-org`).
-- **Accessibility:** Uses ARIA roles and live regions for screen reader support.
-- **Error Handling:** Displays user-friendly error messages if the API fails or the user is offline.
-- **Shadow DOM Encapsulation:** Styles and markup are isolated from the rest of the page.
-- **Responsive Design:** Styled for clarity and adapts to different layouts.
-
----
-
-**Example Usage:**
-
-```html
-<client-ip show-coords show-org></client-ip>
-```
-
----
-
-**Summary:**  
-`<client-ip>` is a simple, accessible, and customizable web component for displaying a user's IP address and location info, with built-in error handling and privacy-friendly design.
-
-## GEO Location
-
-The `<geo-location>` web component displays the user's current geographic coordinates (latitude and longitude) using the browser's Geolocation API.
-
----
-
-**Key Features:**
-
-- **Automatic Location Lookup:** On load, attempts to retrieve and display the user's latitude and longitude.
-- **Accessibility:** Uses semantic markup and status messages for screen readers.
-- **Error Handling:** Shows a clear message if location access fails or is unsupported.
-- **Custom Events:** Fires `geo-success` when location is retrieved and `geo-error` if retrieval fails.
-- **Styling:** Supports CSS custom properties for font and colors.
-- **Encapsulation:** Uses Shadow DOM for style and markup isolation.
-
----
-
-**Example Usage:**
-
-```html
-<geo-location></geo-location>
-```
-
----
-
-**Summary:**  
-`<geo-location>` is a simple, accessible, and privacy-friendly web component for displaying a user's geographic coordinates, with built-in error handling and easy integration.
+`<image-lightbox>` provides a professional, accessible, and highly interactive image viewing experience, suitable for galleries, portfolios, and any site needing advanced image presentation.
 
 ## Virtual Keyboard
 
@@ -917,6 +862,94 @@ The `<suggestion-search>` web component is a **form-associated, accessible autoc
 
 **Summary:**  
 `<suggestion-search>` is a robust, accessible, and user-friendly autocomplete component for web forms, supporting both API and cached suggestions, with full keyboard and form support.
+
+## Calendar Picker
+
+Here’s a description for the `<calendar-picker>` web component:
+
+---
+
+### `<calendar-picker>` Web Component
+
+**Purpose:**  
+A form-associated, locale-aware calendar date picker for web forms and applications.
+
+**Key Features:**
+
+- **Date Selection:** Allows users to select a date from a visual calendar grid.
+- **Month & Year Navigation:** Dropdowns and buttons for changing month and year.
+- **Week Numbers:** Optionally displays ISO week numbers.
+- **Resizable:** Users can resize the calendar via drag.
+- **Locale Support:** Month and weekday names adapt to the specified locale.
+- **Accessibility:** Keyboard navigation (arrows, Home/End, Enter/Space), ARIA roles, and focus management.
+- **Form Integration:** Works with native forms, supports validation, and exposes a `value` property.
+- **Customizable:** Theming via CSS custom properties (colors, sizing, border radius, etc.).
+- **Shadow DOM:** Encapsulated styles and markup.
+
+**Usage Example:**
+
+```html
+<calendar-picker locale="ar-EG"></calendar-picker>
+```
+
+**Summary:**  
+`<calendar-picker>` is a modern, accessible, and customizable calendar date picker web component, ideal for forms and internationalized applications.
+
+## Ip Info
+
+The `<client-ip>` web component displays the user's public IP address and related location information by fetching data from an external API (such as ipinfo.io). It is designed to be accessible, visually styled, and easy to integrate into any web page.
+
+---
+
+**Key Features:**
+
+- **Automatic IP Lookup:** Fetches and displays the user's IP address, city, region, country, and optionally ISP and coordinates.
+- **Configurable:** Supports attributes to change the API endpoint (`api-url`), and to show/hide coordinates (`show-coords`) and organization/ISP info (`show-org`).
+- **Accessibility:** Uses ARIA roles and live regions for screen reader support.
+- **Error Handling:** Displays user-friendly error messages if the API fails or the user is offline.
+- **Shadow DOM Encapsulation:** Styles and markup are isolated from the rest of the page.
+- **Responsive Design:** Styled for clarity and adapts to different layouts.
+
+---
+
+**Example Usage:**
+
+```html
+<client-ip show-coords show-org></client-ip>
+```
+
+---
+
+**Summary:**  
+`<client-ip>` is a simple, accessible, and customizable web component for displaying a user's IP address and location info, with built-in error handling and privacy-friendly design.
+
+## GEO Location
+
+The `<geo-location>` web component displays the user's current geographic coordinates (latitude and longitude) using the browser's Geolocation API.
+
+---
+
+**Key Features:**
+
+- **Automatic Location Lookup:** On load, attempts to retrieve and display the user's latitude and longitude.
+- **Accessibility:** Uses semantic markup and status messages for screen readers.
+- **Error Handling:** Shows a clear message if location access fails or is unsupported.
+- **Custom Events:** Fires `geo-success` when location is retrieved and `geo-error` if retrieval fails.
+- **Styling:** Supports CSS custom properties for font and colors.
+- **Encapsulation:** Uses Shadow DOM for style and markup isolation.
+
+---
+
+**Example Usage:**
+
+```html
+<geo-location></geo-location>
+```
+
+---
+
+**Summary:**  
+`<geo-location>` is a simple, accessible, and privacy-friendly web component for displaying a user's geographic coordinates, with built-in error handling and easy integration.
 
 ## Breadcrumb Trail
 

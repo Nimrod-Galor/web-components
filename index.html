@@ -26,6 +26,7 @@
     <script defrer src="CryptoTicker.js"></script>
 
 
+    <script defrer src="ImageLightbox.js"></script>
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="CalendarPicker.js"></script>
     <script defrer src="ClientIP.js"></script>
@@ -41,7 +42,7 @@
             margin-top: 20px;
             text-decoration: underline;
         }
-        h3{
+        h2{
             color: #ff9800;
             text-decoration: underline;
         }
@@ -305,7 +306,7 @@
         </div>
         
         <div class="wrapper">
-            <h3>Form compnents</h3>
+            <h2>Form compnents</h2>
 
             <form id="demo">
                 <div class="row">
@@ -666,7 +667,7 @@
     </div>
 
     <div class="wrapper">
-        <h3>Formating components</h3>
+        <h2>Formating components</h2>
         <div class="notecard info">
             <p><strong>Locales</strong> in JavaScript (and computing in general) represent <strong>language + region + cultural formatting preferences</strong>.</p>
             <p>Locales affect how things are <strong>displayed</strong> to the user, such as: Numbers, Dates, Currencies and Plural forms.</p>
@@ -1072,7 +1073,7 @@
     </div>
 
     <div class="wrapper">
-        <h3>Widgets</h3>
+        <h2>Widgets</h2>
         <div class="row">
             <div class="col-left auto">
                 <h4>Currency Converter</h4>
@@ -1237,10 +1238,74 @@
                 </div>
             </div>
         </div>
-    </div>
     
-    <div class="wrapper">
-        <h3>Other</h3>
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Lightbox viewer</h4>
+                    <image-lightbox>
+                        <img src="/img/thumbs/robot1.jpg" data-srcset="img/large/robot1.jpg 1024w, img/medium/robot1.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
+                        <img src="/img/thumbs/robot2.jpg" data-srcset="img/large/robot2.jpg 1024w, img/medium/robot2.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
+                        <img src="/img/thumbs/robot3.jpg" data-srcset="img/large/robot3.jpg 1024w, img/medium/robot3.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    </image-lightbox>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="lbv1">
+                    <label for="lbv1" class="tab__label">Lightbox viewer</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>The `&lt;image-lightbox&gt;` web component is a modern, accessible, and feature-rich image viewer for the web. It allows users to click on thumbnail images (provided via slot) and view them in a fullscreen overlay with advanced navigation and zoom capabilities.</p>
+
+                            Key Features:
+                            <dl>
+                            <dt>Lazy Loading:</dt>
+                                <dd>Automatically lazy loads images based on viewport visibility, improving performance.</dd>
+
+                            <dt>Overlay Lightbox:</dt>
+                                <dd>Opens images in a modal overlay with keyboard and mouse/touch navigation.</dd>
+
+                            <dt>Navigation:</dt>
+                                <dd>Supports previous/next buttons, arrow keys, and swipe gestures for moving between images.</dd>
+
+                            <dt>Zoom:</dt>
+                                <dd>Users can zoom in/out with click, mouse wheel, pinch gesture, or the 'z' keyboard shortcut.</dd>
+
+                            <dt>Magnifier:</dt>
+                                <dd>Mouse hover shows a magnifying glass for detailed inspection of the image.</dd>
+
+                            <dt>Accessibility:</dt>
+                                <dd>Implements ARIA roles, focus trapping, keyboard navigation, and live region for captions.</dd>
+
+                            <dt>Performance:</dt>
+                                <dd>Uses debounced magnifier updates, lazy loads thumbnails, and preloads adjacent images.</dd>
+
+                            <dt>Custom Events:</dt>
+                                <dd>Emits events like `lightbox-open`, `lightbox-close`, `lightbox-change`, and `lightbox-error` for integration.</dd>
+
+                            <dt>Responsive & Touch-Friendly:</dt>
+                                <dd>Works well on both desktop and mobile devices.</dd>
+                            </dl>
+
+                            Usage Example:
+                            <code class="tagbox">
+                            &lt;image-lightbox&gt;
+                            &lt;img src="thumbs/photo1.jpg" alt="Photo 1"&gt;
+                            &lt;img src="thumbs/photo2.jpg" alt="Photo 2"&gt;
+                            &lt;!-- more images --&gt;
+                            &lt;/image-lightbox&gt;
+                            </code>
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;image-lightbox&gtl` provides a professional, accessible, and highly interactive image viewing experience, suitable for galleries, portfolios, and any site needing advanced image presentation.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <div class="row">
             <div class="col-left auto">
                 <h4>Virtual Keyboard</h4>
