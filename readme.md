@@ -752,6 +752,59 @@ The `<image-lightbox>` web component is a modern, accessible, and feature-rich i
 **Summary:**  
 `<image-lightbox>` provides a professional, accessible, and highly interactive image viewing experience, suitable for galleries, portfolios, and any site needing advanced image presentation.
 
+## Image Gallery
+
+The `ImageGallery` web component is a modern, accessible, and highly customizable image gallery for the web. It allows you to display a set of thumbnail images, and when a thumbnail is selected (by click or keyboard), a larger preview image is shown. The component supports flexible thumbnail orientation (left, right, top, or bottom of the preview), keyboard navigation, loading spinners, error handling, and custom events for integration.
+
+### **Key Features**
+
+- **Shadow DOM encapsulation**: Styles and markup are scoped to the component.
+- **Customizable layout**: Use the `thumbnails-orientation` attribute to place thumbnails on any side of the preview (`left`, `right`, `top`, `bottom`).
+- **Responsive and accessible**: Keyboard navigation (arrow keys, Enter/Space), ARIA roles, and focus management.
+- **Loading spinner**: Shows a spinner overlay while the preview image is loading.
+- **Error handling**: If the large image fails to load, falls back to the thumbnail or shows an error state.
+- **Selected thumbnail styling**: The active thumbnail is visually highlighted.
+- **Custom events**: Fires `preview-change-complete` and `preview-error` events for integration with other scripts.
+- **CSS custom properties**: Easily theme the gallery with CSS variables.
+
+### **Usage Example**
+
+```html
+<image-gallery thumbnails-orientation="left">
+  <img src="thumbs/photo1.jpg" data-large="large/photo1.jpg" alt="Photo 1" />
+  <img src="thumbs/photo2.jpg" data-large="large/photo2.jpg" alt="Photo 2" />
+</image-gallery>
+```
+
+### **Integration Example**
+
+```javascript
+const gallery = document.querySelector("image-gallery");
+gallery.addEventListener("preview-change-complete", (e) => {
+  console.log("Preview loaded:", e.detail.src);
+});
+gallery.addEventListener("preview-error", (e) => {
+  console.error("Image failed to load:", e.detail.error);
+});
+```
+
+### **Customization**
+
+You can style the gallery using CSS custom properties, for example:
+
+```css
+image-gallery {
+  --selected-color: #ff6b35;
+  --focus-color: #ff6b35;
+  --thumbnail-size: 80px;
+}
+```
+
+---
+
+**In summary:**  
+`<image-gallery>` is a robust, accessible, and flexible web component for displaying image galleries with a modern user experience.
+
 ## Virtual Keyboard
 
 This web component, `<virtual-keyboard>`, provides an on-screen, multi-language virtual keyboard that can be attached to any input or textarea element on the page.

@@ -27,6 +27,7 @@
 
 
     <script defrer src="ImageLightbox.js"></script>
+    <script defrer src="ImageGallery.js"></script>
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="CalendarPicker.js"></script>
     <script defrer src="WorldClock.js"></script>
@@ -254,11 +255,11 @@
             <dt> 🎯 Form Components</dt>
             <dd>
                 <ul>
-                    <li><strong>Input Password</strong> - Password field with show/hide toggle</li>
-                    <li><strong>TextArea Count</strong> - Live character counter for textareas  </li>
-                    <li><strong>Input Knob</strong> - Circular range slider with touch/mouse/keyboard support</li>
-                    <li><strong>Signature Pad</strong> - Canvas-based signature capture with form integration</li>
-                    <li><strong>Popup Info</strong> - Accessible tooltip component</li>
+                    <li><strong><a href="#input-password">Input Password</a></strong> - Password field with show/hide toggle</li>
+                    <li><strong><a href="#textarea-count">TextArea Count</a></strong> - Live character counter for textareas  </li>
+                    <li><strong><a href="#input-knob">Input Knob</a></strong> - Circular range slider with touch/mouse/keyboard support</li>
+                    <li><strong><a href="#signature-pad">Signature Pad</a></strong> - Canvas-based signature capture with form integration</li>
+                    <li><strong><a href="#popup-info">Popup Info</a></strong> - Accessible tooltip component</li>
 
                 </ul>
             </dd>
@@ -266,28 +267,33 @@
             <dt> 🌍 Internationalization Components</dt>
             <dd>
                 <ul>
-                    <li><strong>Locale Selector</strong> - Language/region picker</li>
-                    <li><strong>NumberFormatter</strong> - Locale-aware data formatting</li>
-                    <li><strong>Currency Formatter</strong> - Locale-aware data formatting</li>
-                    <li><strong>Date Formatter</strong> - Locale-aware data formatting</li>
-                    <li><strong>Duration</strong> - Time-based formatting</li>
-                    <li><strong>Relative Time</strong> - Time-based formatting</li>
-                    <li><strong>Plural Rules</strong> - Ordinal number formatting (1st, 2nd, 3rd...)</li>
+                    <li><strong><a href="#locale-selector">Locale Selector</a></strong> - Language/region picker</li>
+                    <li><strong><a href="#number-formatter">NumberFormatter</a></strong> - Locale-aware data formatting</li>
+                    <li><strong><a href="#currency-formatter">Currency Formatter</a></strong> - Locale-aware data formatting</li>
+                    <li><strong><a href="#date-formatter">Date Formatter</a></strong> - Locale-aware data formatting</li>
+                    <li><strong><a href="#duration">Duration</a></strong> - Time-based formatting</li>
+                    <li><strong><a href="#relative-time">Relative Time</a></strong> - Time-based formatting</li>
+                    <li><strong><a href="#plural-rules">Plural Rules</a></strong> - Ordinal number formatting (1st, 2nd, 3rd...)</li>
                 </ul>
             </dd>
 
             <dt> 🔧 Widgets & Utilities</dt>
             <dd>
                 <ul>
-                    <li><strong>Currency Converter</strong> - Live exchange rates</li>
-                    <li><strong>Weather Widget</strong> - Location-based weather display</li>
-                    <li><strong>Crypto Ticker</strong> - Animated cryptocurrency prices</li>
-                    <li><strong>Virtual Keyboard</strong> - Multi-language on-screen keyboard</li>
-                    <li><strong>Calendar Picker</strong> - Date selection with a visual calendar</li>
-                    <li><strong>IP Info</strong> - IP address geolocation information</li>
-                    <li><strong>GeoLocation</strong> - Browser location access</li>
-                    <li><strong>Breadcrumb Trail</strong> - Dynamic navigation breadcrumbs</li>
-                    <li><strong>Expanding List</strong> - Collapsible nested lists</li>
+                    <li><strong><a href="#currency-converter">Currency Converter</a></strong> - Live exchange rates</li>
+                    <li><strong><a href="#weather-widget">Weather Widget</a></strong> - Location-based weather display</li>
+                    <li><strong><a href="#crypto-ticker">Crypto Ticker</a></strong> - Animated cryptocurrency prices</li>
+                    <li><strong><a href="#image-lightbox">Image Lightbox</a></strong> - Responsive image gallery with lightbox effect</li>
+                    <li><strong><a href="#image-gallery">Image Gallery</a></strong> - Responsive image gallery with thumbnails</li>
+                    <li><strong><a href="#virtual-keyboard">Virtual Keyboard</a></strong> - Multi-language on-screen keyboard</li>
+                    <li><strong><a href="#calendar-picker">Calendar Picker</a></strong> - Date selection with a visual calendar</li>
+                    <li><strong><a href="#world-clock">World Clock</a></strong> - Multiple time zone clocks</li>
+                    <li><strong><a href="#ip-info">IP Info</a></strong> - IP address geolocation information</li>
+                    <li><strong><a href="#geolocation">GeoLocation</a></strong> - Browser location access</li>
+                    <li><strong><a href="#breadcrumb-trail">Breadcrumb Trail</a></strong> - Dynamic navigation breadcrumbs</li>
+                    <li><strong><a href="#expanding-list">Expanding List</a></strong> - Collapsible nested lists</li>
+                    <li><strong><a href="#auto-search">Auto Search</a></strong> - Search with suggestions</li>
+                    <li><strong><a href="#scroll-buttons">Scroll Buttons</a></strong> - Page scroll controls</li>
                 </ul>
             </dd>
             </dl>
@@ -308,10 +314,10 @@
         </div>
         
         <div class="wrapper">
-            <h2>Form compnents</h2>
+            <h2>Form components</h2>
 
             <form id="demo">
-                <div class="row">
+                <div class="row" id="input-password">
                     <div class="col-left auto">
                         <label for="password">Password: </label>
                         <input-password id="password" name="password" placeholder="Enter password" required></input-password>
@@ -364,7 +370,7 @@
                     </div>
                 </div>
               
-                <div class="row">
+                <div class="row" id="textarea-count">
                     <div class="col-left auto">
                         <label for="comment">Comment: </label><br />
                         <textarea is="textarea-count" id="comment" name="comment" placeholder="Type your comment here..." rows="5" cols="50" maxlength="20"></textarea>
@@ -419,7 +425,7 @@
                 </div>
 
 
-                <div class="row">
+                <div class="row" id="popup-info">
                     <div class="col-left auto">
                         <label for="cvc">
                             Enter your CVC
@@ -473,7 +479,7 @@
                     </div>
                 </div>
                 
-                <div class="row">
+                <div class="row" id="input-knob">
                     <div class="col-left auto">
                         <label for="knob">Volume: </label>
                         <input-knob
@@ -587,7 +593,7 @@
 
 
 
-                <div class="row">
+                <div class="row" id="signature-pad">
                     <div class="col-left auto">
                         <label for="signature">Signature: </label>
                         <signature-pad name="signature" required></signature-pad>
@@ -676,7 +682,7 @@
             <p>JavaScript provides the Intl object, a set of internationalization APIs to format data according to locale.</p>
             <p>The following web components format data according to selected Locale.</p>
         </div>
-        <div class="row">
+        <div class="row" id="locale-selector">
             <div class="col-left auto">
                 <h4>Select Locale</h4>
                 <select-locale displayLocale="en-US"></select-locale>
@@ -730,7 +736,7 @@
                 
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="number-formatter">
             <div class="col-left auto">
                 <h4>Number Format</h4>
                 <number-format id="num1" class="styled-number">Text is ignored.</number-format>
@@ -783,7 +789,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="currency-formatter">
             <div class="col-left auto">
                 <h4>Currency Format</h4>
                 <currency-format id="num2" class="styled-number" currency="USD">1001311.005</currency-format>
@@ -849,7 +855,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="date-formatter">
             <div class="col-left auto">
                 <h4>Date Format</h4>
                 <date-format id="date1">1752127073</date-format>
@@ -907,7 +913,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="duration">
             <div class="col-left auto">
                 <h4>Duration Format</h4>
                 <duration-format id="duration1" fstyle="long" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
@@ -951,7 +957,7 @@
                             Usage Example
 
                             <code class="tagbox">
-                                &lt;duration-format locale="fr-FR" fstyle="long" hours="2" minutes="30"&gtl&lt;/duration-format&gt;
+                                &lt;duration-format locale="fr-FR" fstyle="long" hours="2" minutes="30"&gt;l&lt;/duration-format&gt;
                             </code>
 
                             <strong>Summary:</strong>
@@ -961,7 +967,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="plural-rules">
             <div class="col-left auto">
                 <h4>Plural Rules</h4>
                 <plural-rules>0</plural-rules>
@@ -1022,7 +1028,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="relative-time">
             <div class="col-left auto">
                 <h4>Relative Time Format</h4>
                 <relativetime-format value="12" unit="day"></relativetime-format>
@@ -1076,7 +1082,8 @@
 
     <div class="wrapper">
         <h2>Widgets</h2>
-        <div class="row">
+        
+        <div class="row" id="currency-converter">
             <div class="col-left auto">
                 <h4>Currency Converter</h4>
                 <currency-converter source="" target="EUR ILS ARS CAD">1</currency-converter>
@@ -1132,7 +1139,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="weather-widget">
             <div class="col-left auto">
                 <h4>Locale Weather</h4>
                 <weather-widget></weather-widget>
@@ -1185,7 +1192,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="crypto-ticker">
             <div class="col-left auto">
                 <h4>Crypto Ticker</h4>
                 <crypto-ticker style="background-color: #000;display: inline-flex;--cticker-font-size:2.2rem;"></crypto-ticker>
@@ -1241,7 +1248,7 @@
             </div>
         </div>
     
-        <div class="row">
+        <div class="row" id="image-lightbox">
             <div class="col-left auto">
                 <h4>Lightbox viewer</h4>
                     <image-lightbox>
@@ -1306,9 +1313,76 @@
             </div>
         </div>
 
+        <div class="row" id="image-gallery">
+            <div class="col-left auto">
+                <h4>Image Gallery</h4>
+                <image-gallery>
+                    <img src="/img/thumbs/robot1.jpg" data-srcset="img/large/robot1.jpg 1024w, img/medium/robot1.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
+                    <img src="/img/thumbs/robot2.jpg" data-srcset="img/large/robot2.jpg 1024w, img/medium/robot2.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
+                    <img src="/img/thumbs/robot3.jpg" data-srcset="img/large/robot3.jpg 1024w, img/medium/robot3.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                </image-gallery>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="ig1">
+                    <label for="ig1" class="tab__label">Image Gallery</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>The `ImageGallery` web component is a modern, accessible, and highly customizable image gallery for the web. It allows you to display a set of thumbnail images, and when a thumbnail is selected (by click or keyboard), a larger preview image is shown. The component supports flexible thumbnail orientation (left, right, top, or bottom of the preview), keyboard navigation, loading spinners, error handling, and custom events for integration.</p>
+
+                            Key Features
+                            <dl>
+                                <dt>Shadow DOM encapsulation:</dt>
+                                    <dd>Styles and markup are scoped to the component.</dd>
+                                <dt>Customizable layout:</dt>
+                                    <dd>Use the `thumbnails-orientation` attribute to place thumbnails on any side of the preview (`left`, `right`, `top`, `bottom`).</dd>
+                                <dt>Responsive and accessible:</dt>
+                                    <dd>Keyboard navigation (arrow keys, Enter/Space), ARIA roles, and focus management.</dd>
+                                <dt>Loading spinner:</dt>
+                                    <dd>Shows a spinner overlay while the preview image is loading.</dd>
+                                <dt>Error handling:</dt>
+                                    <dd>If the large image fails to load, falls back to the thumbnail or shows an error state.</dd>
+                                <dt>Selected thumbnail styling:</dt>
+                                    <dd>The active thumbnail is visually highlighted.</dd>
+                                <dt>Custom events:</dt>
+                                    <dd>Fires `preview-change-complete` and `preview-error` events for integration with other scripts.</dd>
+                                <dt>CSS custom properties:</dt>
+                                    <dd>Easily theme the gallery with CSS variables.</dd>
+                            </dl>
+
+                            Usage Example
+                            <code class="tagbox">
+                                &lt;image-gallery thumbnails-orientation="left"&gt;
+                                &lt;img src="thumbs/photo1.jpg" data-large="large/photo1.jpg" alt="Photo 1"&gt;
+                                &lt;img src="thumbs/photo2.jpg" data-large="large/photo2.jpg" alt="Photo 2"&gt;
+                                &lt;/image-gallery&gt;
+                            </code>
+
+                                                        <strong>Summary:</strong>
+                                                        <p>`<image-gallery>` is a robust, accessible, and flexible web component for displaying image galleries with a modern user experience.</p>
 
 
-        <div class="row">
+                            Customization:
+                            <p>You can style the gallery using CSS custom properties, for example:</p>
+
+                            <p>
+                            image-gallery {
+                            --selected-color: #ff6b35;
+                            --focus-color: #ff6b35;
+                            --thumbnail-size: 80px;
+                            }
+                            </p>
+
+
+                            <strong>Summary:</strong>
+                            <p>`&lt;image-gallery&gt;` is a robust, accessible, and flexible web component for displaying image galleries with a modern user experience.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="virtual-keyboard">
             <div class="col-left auto">
                 <h4>Virtual Keyboard</h4>
                 <div style="display: flex; flex-direction: column; gap: 1rem;align-content: center;">
@@ -1373,7 +1447,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="auto-search">
             <div class="col-left auto">
                 <h4>Auto Search</h4>
                 <form onsubmit="event.preventDefault(); console.log(searchEl.value)" id="searchForm">
@@ -1461,7 +1535,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="calendar-picker">
             <div class="col-left auto">
                 <h4>Calendar Picker</h4>
                 <calendar-picker locale="ar-EG"></calendar-picker>
@@ -1511,7 +1585,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="world-clock">
             <div class="col-left auto">
                 <h4>World Clock</h4>
                 <world-clock cities="New York, London, Tokyo, Jerusalem" style="--world-clock-display: flex; --world-clock-max-width: fit-content;"></world-clock>
@@ -1546,7 +1620,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="ip-info">
             <div class="col-left auto">
                 <h4>IP Info</h4>
                 <client-ip></client-ip>
@@ -1594,7 +1668,7 @@
         </div>
 
         
-        <div class="row">
+        <div class="row" id="geolocation">
             <div class="col-left auto">
                 <h4>GEO Location</h4>
                 <geo-location></geo-location>
@@ -1637,7 +1711,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="breadcrumb-trail">
             <div class="col-left auto">
                 <h4>Breadcrumb Trail</h4>
                 <breadcrumb-trail home-label="*" separator="/"></breadcrumb-trail>
@@ -1693,7 +1767,7 @@
         </div>
 
 
-        <div class="row">
+        <div class="row" id="expanding-list">
             <div class="col-left auto">
                 <h4>Expanding List</h4>
                 <expanding-list>
@@ -1816,7 +1890,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="scroll-buttons">
             <div class="col-left auto">
                 <h4>Scroll Buttons</h4>
                 <scroll-buttons></scroll-buttons>
