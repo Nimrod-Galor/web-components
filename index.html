@@ -29,10 +29,12 @@
     <script defrer src="ImageLightbox.js"></script>
     <script defrer src="VirtualKeyboard.js"></script>
     <script defrer src="CalendarPicker.js"></script>
+    <script defrer src="WorldClock.js"></script>
     <script defrer src="ClientIP.js"></script>
     <script defrer src="GeoLocation.js"></script>
     <script defrer src="BreadcrumbTrail.js"></script>
     <script defrer src="SuggestionSearch.js"></script>
+    <script defrer src="ScrollButtons.js"></script>
 
 
     <style>
@@ -1511,6 +1513,41 @@
 
         <div class="row">
             <div class="col-left auto">
+                <h4>World Clock</h4>
+                <world-clock cities="New York, London, Tokyo, Jerusalem" style="--world-clock-display: flex; --world-clock-max-width: fit-content;"></world-clock>
+                <br />
+                <!-- Default styling -->
+                <world-clock cities="New York, London, Tokyo"></world-clock>
+                <br />
+                <!-- Custom theme -->
+                <world-clock 
+                    cities="Paris, Berlin, Rome"
+                    style="
+                        --world-clock-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        --world-clock-title-color: white;
+                        --world-clock-city-color: white;
+                        --world-clock-time-color: #fff200;
+                        --world-clock-item-bg: rgba(255,255,255,0.1);
+                        --world-clock-border-color: transparent;
+                ">
+                </world-clock>
+
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="wc1">
+                    <label for="wc1" class="tab__label">World Clock</label>
+                    <div class="tab__content">
+                        <div class="content">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-left auto">
                 <h4>IP Info</h4>
                 <client-ip></client-ip>
             </div>
@@ -1779,7 +1816,23 @@
             </div>
         </div>
 
-        
+        <div class="row">
+            <div class="col-left auto">
+                <h4>Scroll Buttons</h4>
+                <scroll-buttons></scroll-buttons>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="sb1">
+                    <label for="sb1" class="tab__label">Scroll Buttons</label>
+                    <div class="tab__content">
+                        <div class="content">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 

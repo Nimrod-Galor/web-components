@@ -1,3 +1,45 @@
+/**
+ * @fileoverview WorldClock Web Component - A customizable world clock displaying time for multiple cities
+ * @version 1.0.0
+ * @author Nimrod Galor
+ */
+
+/**
+ * WorldClock web component that displays current time for multiple cities around the world.
+ * 
+ * @class WorldClock
+ * @extends HTMLElement
+ * 
+ * @example
+ * // Basic usage
+ * <world-clock></world-clock>
+ * 
+ * @example
+ * // Custom cities and locale
+ * <world-clock cities="New York, London, Tokyo" locale="en-US"></world-clock>
+ * 
+ * @example
+ * // With CSS custom properties
+ * <world-clock 
+ *   cities="Paris, Berlin, Rome"
+ *   style="--world-clock-bg: #fff; --world-clock-border-color: #007bff;">
+ * </world-clock>
+ */
+/**
+ * @typedef {Object} WorldClockAttributes
+ * @property {string} cities - Comma-separated list of city names to display
+ * @property {string} locale - BCP 47 language tag for time formatting
+ */
+
+/**
+ * @typedef {Object} CSSCustomProperties
+ * @property {string} --world-clock-font - Font family for the component
+ * @property {string} --world-clock-border-color - Border color
+ * @property {string} --world-clock-bg - Background color
+ * @property {string} --world-clock-padding - Internal padding
+ * @property {string} --world-clock-radius - Border radius
+ * @property {string} --world-clock-max-width - Maximum width
+ */
 class ImageLightbox extends HTMLElement {
   constructor() {
     super();
