@@ -67,35 +67,34 @@ class WorldClock extends HTMLElement {
     this.render();
     this.updateTime();
 
-    // Create styles and append them to the shadow root
-    const sheet = new CSSStyleSheet()
+    // Mobile-first, responsive styles
+    const sheet = new CSSStyleSheet();
     sheet.replaceSync(`
       :host {
         font-family: var(--world-clock-font, 'Roboto Mono', 'Courier New', monospace);
         border: 1px solid var(--world-clock-border-color, #ccc);
         padding: var(--world-clock-padding, 1em);
         border-radius: var(--world-clock-radius, 10px);
-        max-width: var(--world-clock-max-width, fit-content);
+        max-width: 100vw;
         background: var(--world-clock-bg, #f9f9f9);
         display: block;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 0 auto;
       }
-      
       h3 {
         margin: 0 0 0.5em;
         text-align: center;
         color: var(--world-clock-title-color, #333);
         font-weight: 600;
+        font-size: 1.1rem;
       }
-      
       ul {
-        display: var(--world-clock-display, block);
+        display: block;
         gap: 0.5rem;
         list-style: none;
         padding: 0;
         margin: 0;
       }
-      
       li {
         padding: 0.5em 0.75em;
         margin-bottom: 0.25em;
@@ -105,75 +104,88 @@ class WorldClock extends HTMLElement {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.95em;
+        font-size: 1em;
         transition: background-color 0.2s ease;
+        min-width: 0;
+        word-break: break-word;
       }
-      
       li:hover {
         background: var(--world-clock-item-hover, rgba(0,123,255,0.1));
       }
-      
-      li strong {
-        color: var(--world-clock-city-color, #333);
-        font-weight: 500;
-        min-width: 120px;
-      }
-      
-      /* Digital clock styling for time */
-      li::after {
-        content: '';
-        font-family: 'Roboto Mono', 'Courier New', monospace;
-        font-weight: 700;
-        color: var(--world-clock-time-color, #007bff);
-        letter-spacing: 0.5px;
-      }
-      
-      /* Grid layout option */
-      .grid-layout ul {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 0.5rem;
-      }
-      
-      /* Compact horizontal layout */
-      .compact ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-      
-      .compact li {
-        flex: 1;
-        min-width: 140px;
-        padding: 0.4em 0.6em;
-        text-align: center;
-        flex-direction: column;
-        gap: 0.2em;
-      }
-
-      .clock-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .error {
-        color: red;
-        font-weight: bold;
-      }
-
       .city {
         color: var(--world-clock-city-color, #333);
         font-weight: 500;
-        min-width: 120px;
+        min-width: 90px;
+        font-size: 1em;
+        flex: 1 1 40%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-
       .time {
         color: var(--world-clock-time-color, #007bff);
         font-weight: 700;
         letter-spacing: 0.5px;
+        font-size: 1.1em;
+        flex: 1 1 60%;
+        text-align: right;
       }
-
+      .clock-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+      @media (max-width: 600px) {
+        :host {
+          padding: 0.5em;
+          border-radius: 6px;
+          font-size: 0.98em;
+        }
+        h3 {
+          font-size: 1em;
+        }
+        li {
+          font-size: 0.98em;
+          padding: 0.4em 0.5em;
+        }
+        .city, .time {
+          font-size: 0.98em;
+        }
+      }
+      @media (min-width: 700px) {
+        :host {
+          max-width: 500px;
+          padding: 2em;
+        }
+        h3 {
+          font-size: 1.3rem;
+        }
+        li {
+          font-size: 1.0em;
+          padding: 0.7em 1.2em;
+        }
+        .city, .time {
+          font-size: 1.0em;
+        }
+      }
+      @media (min-width: 1000px) {
+        :host {
+          max-width: 700px;
+        }
+        ul {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 0.7rem;
+        }
+        li {
+          margin-bottom: 0;
+        }
+      }
       @media (prefers-color-scheme: dark) {
         :host {
           --world-clock-bg: #2d3748;
@@ -185,7 +197,7 @@ class WorldClock extends HTMLElement {
           --world-clock-item-hover: rgba(99,179,237,0.1);
         }
       }
-    `)
+    `);
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
     const citiesAttr = this.getAttribute('cities');
@@ -212,7 +224,7 @@ class WorldClock extends HTMLElement {
   startClock() {
     clearInterval(this.updateInterval);
     this.updateTime();
-    this.updateInterval = setInterval(() => this.updateTime(), 1000);
+    // this.updateInterval = setInterval(() => this.updateTime(), 1000);
   }
 
   updateTime() {

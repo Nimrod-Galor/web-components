@@ -1,0 +1,197 @@
+h1{
+            color: #000;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+        h2{
+            color: #ff9800;
+            text-decoration: underline;
+        }
+        h4{
+            color: #0085f2;
+        }
+        .wrapper{
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        .notecard {
+            padding: 1rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 1px 2px #2b2a330d;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .notecard.info.tab label:before {
+            background-color: #0085f2;
+            content: "";
+            display: block;
+            height: 1rem;
+            left: 1rem;
+            -webkit-mask-image: url(/img/default.png);
+            mask-image: url(/img/default.png);
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            position: absolute;
+            width: 1rem;
+        }
+
+        .info{
+            background-color: #c3e4ff;
+            border-left: 2px solid #0085f2;
+        }
+
+        .warning{
+            background-color: #ffe0b3;
+            border-left: 2px solid #ff9800;
+        }
+
+        .row{
+            margin: 5px 0;
+            padding: 0.525rem 0;
+            display: flex;
+            gap:20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .auto{
+            flex: 1;
+        }
+
+        dt{
+            font-weight: 600;
+        }
+
+        .tagbox{
+            display: block;
+            width:fit-content;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #d5d5d5;
+            border: 1px solid #757575;
+        }
+
+        form#demo div{
+            margin: 10px 0;
+        }
+
+        .styled-number{
+            font-size: 16px;
+        }
+
+
+        .styled-number .currency {
+            top: -.5em;
+            font-size: 1rem;
+            position: relative;
+            font-weight: bold;
+            color: #000;
+            margin: 0 0.2em;
+        }
+
+        .styled-number .fraction {
+            top: -.5em;
+            font-size: 13px;
+            position: relative;
+            color: #6f7373;
+            text-decoration: underline;
+            margin-left: 0.2rem;
+        }
+
+        .styled-number .decimal {
+            display: none;
+        }
+
+
+        /* Accordion */
+        /* Core styles/functionality */
+        .tab {
+            position: relative;
+        
+            input {
+                position: absolute;
+                opacity: 0;
+                z-index: -1;
+
+                &:checked ~ .tab__content {
+                    max-height: 1000rem;
+                    transition: max-height 1s ease-in-out;
+                }
+
+                &:checked + .tab__label::after {
+                    transform: rotate(270deg);
+                }
+
+                 /* Arrow animation */
+                &:not(:checked) + .tab__label:hover::after {
+                    animation: bounce .5s infinite;
+                }
+
+                @keyframes bounce {
+                    25% {
+                        transform: rotate(90deg) translate(.25rem);
+                    }
+                    75% {
+                        transform: rotate(90deg) translate(-.25rem);
+                    }
+                }
+            }
+        }
+
+        .tab__content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+
+            .content {
+                padding: 0 0.5rem;
+            }
+        }
+        
+
+        /* Visual styles */
+        .accordion {
+            overflow: hidden;
+        }
+        .tab__label,
+        .tab__close {
+            display: flex;
+            cursor: pointer;
+        }
+
+        .tab__label {
+            justify-content: space-between;
+            padding: 0.2rem 2rem;
+            &::after {
+                content: "\276F";
+                width: 1em;
+                height: 1em;
+                text-align: center;
+                transform: rotate(90deg);
+                transition: all 0.35s;
+            }
+        }
+
+
+        .tab__close {
+            justify-content: flex-end;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+
+        form#searchForm{
+            display: flex;
+            button{
+                border-radius: 0 2px 2px 0;
+                border: 1px outset buttonborder;
+                border-left: 0;
+                cursor: pointer;
+            }
+        }

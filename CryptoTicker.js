@@ -58,13 +58,67 @@ class CryptoTicker extends HTMLElement {
         this.attachShadow({ mode: 'open' })
         this._initIntlNF()
         this._render()
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+            :host {
+                    display: block;
+                    width: 100%;
+                    box-sizing: border-box;
+                    /* Allow parent to control max width if desired */
+                    max-width: 100vw;
+                }
+                .wrapper {
+                    color: var(--cticker-color, #0f0);
+                    font-size: var(--cticker-font-size, 1rem);
+                    padding: 8px 4px;
+                    font-family: monospace;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    box-sizing: border-box;
+                    width: 100%;
+                }
+                .ticker {
+                    display: inline-block;
+                    min-width: 100%;
+                    padding-left: 100%;
+                    transform: translateZ(0);
+                    will-change: transform;
+                    animation: scroll var(--cticker-scroll-duration, 20s) linear infinite;
+                    font-size: 1em;
+                }
+                @keyframes scroll {
+                    from { transform: translateX(0) }
+                    to { transform: translateX(-100%) }
+                }
+                /* Mobile-first: ticker is always readable and fits screen */
+                @media (max-width: 600px) {
+                    .wrapper {
+                        font-size: 0.95rem;
+                        padding: 6px 2px;
+                    }
+                    .ticker {
+                        font-size: 0.95em;
+                    }
+                }
+                @media (min-width: 700px) {
+                    .wrapper {
+                        font-size: 1.15rem;
+                        padding: 10px 16px;
+                    }
+                    .ticker {
+                        font-size: 1.1em;
+                    }
+                }
+            `);
+        this.shadowRoot.adoptedStyleSheets = [sheet];
         this._fetchData()
         this._interval = setInterval(() => this._fetchData(), this.interval) // update every 5 minute
 
         // listen to language select change event
-        window.addEventListener('locale-change', (e) => {
-            this.currency = this.#LOCAL_TO_CURRENCY[e.detail.locale].toLowerCase()
-        })
+        this._onLocaleChange = (e) => {
+            this.currency = this.#LOCAL_TO_CURRENCY[e.detail.locale].toLowerCase();
+        };
+        window.addEventListener('locale-change', this._onLocaleChange)
     }
 
     disconnectedCallback() {
@@ -112,54 +166,41 @@ class CryptoTicker extends HTMLElement {
             this._updateTicker(data);
         } catch (e) {
             console.error('Error fetching crypto prices:', e)
+            const ticker = this.shadowRoot.querySelector('.ticker');
             if (retries > 0) {
                 setTimeout(() => this._fetchData(retries - 1), 2000);
+                if (ticker) {
+                    ticker.textContent = 'Retrying...';
+                    ticker.setAttribute('aria-label', 'Retrying to load crypto price data');
+                    ticker.setAttribute('title', 'Retrying to load crypto price data');
+                }
             } else {
-                const ticker = this.shadowRoot.querySelector('.ticker');
-                ticker.textContent = 'Failed to load prices';
-                ticker.setAttribute('aria-label', 'Crypto price data unavailable');
+                if (ticker) {
+                    ticker.textContent = 'Failed to load prices';
+                    ticker.setAttribute('aria-label', 'Crypto price data unavailable');
+                    ticker.setAttribute('title', 'Crypto price data unavailable');
+                }
             }
         }
     }
 
     _updateTicker(data) {
-        const currency = this.currency.toUpperCase()
+        const currency = this.currency.toUpperCase();
 
         const items = Object.entries(data).map(([coin, price]) => {
-            const formatted = this._formatter.format(price[this.currency.toLowerCase()])
-            return `${coin.toUpperCase()}: ${formatted}`
-        })
-        
-        const label = `Crypto prices: ${items.join(', ')}`
-        const ticker = this.shadowRoot.querySelector('.ticker')
-        ticker.textContent = items.join(' | ')
-        ticker.setAttribute('aria-label', label)
+            const formatted = this._formatter.format(price[this.currency.toLowerCase()]);
+            return `${coin.toUpperCase()}: ${formatted}`;
+        });
+
+        const label = `Crypto prices: ${items.join(', ')}`;
+        const ticker = this.shadowRoot.querySelector('.ticker');
+        ticker.textContent = items.join(' | ');
+        ticker.setAttribute('aria-label', label);
+        ticker.setAttribute('role', 'status');
     }
 
     _render() {
         this.shadowRoot.innerHTML = `
-            <style>
-                .wrapper {
-                    color: var(--cticker-color, #0f0);
-                    font-size: var(--cticker-font-size, 1rem);
-                    padding: 8px;
-                    font-family: monospace;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    box-sizing: border-box;
-                }
-                .ticker {
-                    display: inline-block;
-                    padding-left: 100%;
-                    transform: translateZ(0);
-                    will-change: transform;
-                    animation: scroll 20s linear infinite;
-                }
-                @keyframes scroll {
-                    from { transform: translateX(0) }
-                    to { transform: translateX(-100%) }
-                }
-            </style>
             <div class="wrapper"><div class="ticker">Loading...</div></div>
         `
     }

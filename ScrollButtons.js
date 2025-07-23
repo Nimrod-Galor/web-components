@@ -8,7 +8,7 @@ class ScrollButtons extends HTMLElement {
         const sheet = new CSSStyleSheet()
         sheet.replaceSync(`
             :host {
-            position: fixed;
+            position: absolute;
             right: 50px;
             z-index: 9999;
           }

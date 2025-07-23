@@ -35,26 +35,29 @@ class ImageGallery extends HTMLElement {
     connectedCallback() {
         this.attachShadow({ mode: 'open' });
 
-        // Create styles and append them to the shadow root
+        // Mobile-first, responsive styles
         const sheet = new CSSStyleSheet();
         sheet.replaceSync(`
             :host {
-                --gallery-max-width: 900px;
+                --gallery-max-width: 100vw;
                 --gallery-gap: 0.5rem;
-                --thumbnail-size: 70px;
+                --thumbnail-size: 72px;
                 --thumbnail-border-radius: 6px;
                 --preview-border-radius: 8px;
                 --focus-color: #007bff;
                 --selected-color: #007bff;
                 --selected-border-width: 3px;
                 display: block;
-                font-family: sans-serif;
+                font-family: system-ui, sans-serif;
                 max-width: var(--gallery-max-width);
-                margin: auto;
+                margin: 0 auto;
+                box-sizing: border-box;
+                padding: 0.5rem;
             }
             .gallery-layout {
                 display: flex;
                 flex-direction: column;
+                gap: var(--gallery-gap);
             }
             .preview-wrapper {
                 position: relative;
@@ -62,6 +65,7 @@ class ImageGallery extends HTMLElement {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                min-height: 180px;
             }
             .spinner {
                 display: none;
@@ -101,15 +105,21 @@ class ImageGallery extends HTMLElement {
             }
             .preview {
                 width: 100%;
+                max-width: 100vw;
                 height: auto;
                 margin-bottom: 1rem;
                 border-radius: var(--preview-border-radius);
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 flex: 1 1 auto;
+                background: #f8f9fa;
+                object-fit: contain;
+                aspect-ratio: 16/9;
             }
             .thumbs {
                 display: flex;
                 gap: var(--gallery-gap);
+                overflow-x: auto;
+                padding-bottom: 0.25rem;
             }
             .thumbs.row, .thumbs.reverse-row {
                 flex-direction: row;
@@ -122,13 +132,13 @@ class ImageGallery extends HTMLElement {
                 margin-right: 0;
             }
             .thumbs.row, .thumbs.reverse-row {
-                margin-top: 1rem;
+                margin-top: 0.5rem;
             }
             .thumbs.column {
-                margin-right: 1rem;
+                margin-right: 0.5rem;
             }
             .thumbs.reverse-column {
-                margin-left: 1rem;
+                margin-left: 0.5rem;
             }
             ::slotted(img) {
                 cursor: pointer;
@@ -140,6 +150,8 @@ class ImageGallery extends HTMLElement {
                 height: var(--thumbnail-size);
                 object-fit: cover;
                 border: 2px solid transparent;
+                background: #f1f3f4;
+                flex-shrink: 0;
             }
             ::slotted(img:hover), ::slotted(img:focus) {
                 transform: scale(1.05);
@@ -161,6 +173,19 @@ class ImageGallery extends HTMLElement {
             .preview.error {
                 border: 2px solid #ff4444;
             }
+            @media (min-width: 600px) {
+                :host {
+                    --gallery-max-width: 600px;
+                }
+                .preview {
+                    aspect-ratio: 16/9;
+                }
+            }
+            @media (min-width: 900px) {
+                :host {
+                    --gallery-max-width: 900px;
+                }
+            }
         `);
         this.shadowRoot.adoptedStyleSheets = [sheet];
 
@@ -175,7 +200,7 @@ class ImageGallery extends HTMLElement {
         `;
 
         const preview = this.shadowRoot.getElementById('previewImage');
-        this._spinner = this.shadowRoot.getElementById('spinner'); // <-- store spinner as a property
+        this._spinner = this.shadowRoot.getElementById('spinner');
         const slot = this.shadowRoot.querySelector('slot');
         this.updateOrientation();
 
@@ -220,20 +245,18 @@ class ImageGallery extends HTMLElement {
         slot.addEventListener('slotchange', updatePreview);
         updatePreview();
 
-        // Preload large images for better UX
-        const preloadImages = () => {
-            const thumbnails = slot.assignedElements().filter(el => el.tagName === 'IMG');
-            thumbnails.forEach(thumb => {
-                const largeSrc = thumb.getAttribute('data-large');
-                if (largeSrc) {
-                    const img = new Image();
-                    img.src = largeSrc;
-                }
-            });
-        };
-        
-        // Preload after initial render
-        setTimeout(preloadImages, 100);
+        // Preload large images for better UX (optional)
+        // const preloadImages = () => {
+        //     const thumbnails = slot.assignedElements().filter(el => el.tagName === 'IMG');
+        //     thumbnails.forEach(thumb => {
+        //         const largeSrc = thumb.getAttribute('data-large');
+        //         if (largeSrc) {
+        //             const img = new Image();
+        //             img.src = largeSrc;
+        //         }
+        //     });
+        // };
+        // setTimeout(preloadImages, 100);
     }
 
     disconnectedCallback() {
@@ -287,7 +310,10 @@ class ImageGallery extends HTMLElement {
         }
     }
 
-    
+    /**
+     * Responsive, mobile-first image logic.
+     * Uses srcset/sizes for best performance.
+     */
     copyImageAttributes(source, target) {
         // Remove active state from all thumbnails
         const slot = this.shadowRoot.querySelector('slot');
@@ -300,19 +326,37 @@ class ImageGallery extends HTMLElement {
 
         target.classList.add('loading');
         target.classList.remove('error');
-        if (this._spinner) this._spinner.classList.add('active'); // <-- use this._spinner
+        if (this._spinner) this._spinner.classList.add('active');
 
-        target.src = source.getAttribute('data-large') || (source.src ? source.src.replace('thumbs/', 'large/') : '') || source.src;
-        target.srcset = source.getAttribute('data-large-srcset') || source.getAttribute('srcset') || '';
-        target.sizes = source.getAttribute('sizes') || '100vw';
+        // Responsive image logic
+        const largeSrcset = source.getAttribute('data-large-srcset');
+        const largeSrc = source.getAttribute('data-large');
+        const largeSizes = source.getAttribute('data-large-sizes') || source.getAttribute('sizes') || '(max-width: 600px) 100vw, (max-width: 1200px) 80vw, 900px';
+
+        if (largeSrcset) {
+            target.srcset = largeSrcset;
+            // Set src to the SMALLEST image in the srcset (first entry)
+            const firstSrc = largeSrcset.split(',')[0].trim().split(' ')[0];
+            target.src = firstSrc;
+            target.sizes = largeSizes;
+        } else if (largeSrc) {
+            target.src = largeSrc;
+            target.srcset = '';
+            target.sizes = '';
+        } else {
+            target.src = source.src;
+            target.srcset = source.getAttribute('srcset') || '';
+            target.sizes = source.getAttribute('sizes') || '';
+        }
+
         target.alt = source.getAttribute('alt') || '';
 
         target.onload = () => {
             target.classList.remove('loading');
-            if (this._spinner) this._spinner.classList.remove('active'); // <-- use this._spinner
+            if (this._spinner) this._spinner.classList.remove('active');
             this.dispatchEvent(new CustomEvent('preview-change-complete', {
                 detail: {
-                    src: target.src,
+                    src: target.currentSrc || target.src,
                     alt: target.alt,
                     thumbnail: source
                 }
@@ -323,22 +367,15 @@ class ImageGallery extends HTMLElement {
             target.classList.remove('loading');
             target.classList.add('error');
             if (this._spinner) this._spinner.classList.remove('active');
-            
-            // Try fallback to original src
-            const fallbackSrc = source.getAttribute('src');
-            if (fallbackSrc && target.src !== fallbackSrc) {
-                target.src = fallbackSrc;
-                target.srcset = '';
-            } else {
-                // Show placeholder or error message
-                target.alt = 'Image failed to load';
-            }
-            
+            // Try fallback to original thumbnail
+            target.src = source.src;
+            target.srcset = '';
+            target.sizes = '';
             this.dispatchEvent(new CustomEvent('preview-error', {
                 detail: {
                     thumbnail: source,
                     error: 'Failed to load large image',
-                    fallbackUsed: !!fallbackSrc
+                    fallbackUsed: true
                 }
             }));
         };

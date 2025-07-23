@@ -38,211 +38,125 @@
     <script defrer src="ScrollButtons.js"></script>
 
 
+    <link rel="stylesheet" href="./style.css" />
+
     <style>
-        h1{
-            color: #000;
-            text-align: center;
-            margin-top: 20px;
-            text-decoration: underline;
+        /* Mobile-first base styles */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, sans-serif;
+            background: #fafbfc;
+            color: #222;
+            font-size: 16px;
+            line-height: 1.5;
         }
-        h2{
-            color: #ff9800;
-            text-decoration: underline;
+        .wrapper {
+            max-width: 100vw;
+            padding: 1rem 0.5rem;
+            margin: 0 auto;
         }
-        h4{
-            color: #0085f2;
+        h1, h2, h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
-        .wrapper{
-            max-width: 1600px;
-            margin: auto;
-        }
-
-        .notecard {
-            padding: 1rem;
-            border-radius: 0.25rem;
-            box-shadow: 0 1px 2px #2b2a330d;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-        
-        .notecard.info.tab label:before {
-            background-color: #0085f2;
-            content: "";
-            display: block;
-            height: 1rem;
-            left: 1rem;
-            -webkit-mask-image: url(/img/default.png);
-            mask-image: url(/img/default.png);
-            -webkit-mask-position: center;
-            mask-position: center;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            position: absolute;
-            width: 1rem;
-        }
-
-        .info{
-            background-color: #c3e4ff;
-            border-left: 2px solid #0085f2;
-        }
-
-        .warning{
-            background-color: #ffe0b3;
-            border-left: 2px solid #ff9800;
-        }
-
-        .row{
-            margin: 5px 0;
-            padding: 0.525rem 0;
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.3rem; }
+        h4 { font-size: 1.1rem; }
+        .row {
             display: flex;
-            gap:20px;
-            border-bottom: 1px solid #ccc;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 1rem;
         }
-
-        .auto{
-            flex: 1;
+        .col-left, .auto {
+            width: 100%;
+            min-width: 0;
         }
-
-        dt{
+        .col-left label, .col-left h4 {
             font-weight: 600;
         }
-
-        .tagbox{
-            display: block;
-            width:fit-content;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #d5d5d5;
-            border: 1px solid #757575;
+        .accordion {
+            margin-top: 1rem;
         }
-
-        form#demo div{
-            margin: 10px 0;
-        }
-
-        .styled-number{
-            font-size: 16px;
-        }
-
-
-        .styled-number .currency {
-            top: -.5em;
+        .tab__label {
             font-size: 1rem;
-            position: relative;
-            font-weight: bold;
-            color: #000;
-            margin: 0 0.2em;
         }
-
-        .styled-number .fraction {
-            top: -.5em;
-            font-size: 13px;
-            position: relative;
-            color: #6f7373;
-            text-decoration: underline;
-            margin-left: 0.2rem;
+        .tab__content {
+            padding: 0.5rem 0;
         }
-
-        .styled-number .decimal {
+        .tagbox {
+            display: block;
+            background: #f4f4f4;
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-family: "Fira Mono", "Consolas", monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin: 2rem 0 1rem 0;
+        }
+        /* Responsive tweaks for larger screens */
+        @media (min-width: 700px) {
+            .wrapper {
+                max-width: 1600px;
+                padding: 2rem 1.5rem;
+            }
+            .row {
+                flex-direction: row;
+                gap: 2rem;
+                align-items: flex-start;
+            }
+            .col-left {
+                width: 55%;
+            }
+            .auto {
+                width: 45%;
+            }
+        }
+        /* Make tables, code, and images responsive */
+        img, video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+        code, pre {
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        /* Accordion and tab tweaks for mobile */
+        .tab__content {
+            overflow-x: auto;
+        }
+        /* Improve button and input touch targets */
+        button, input, select, textarea {
+            font-size: 1em;
+            border-radius: 4px;
+            padding: 0.5em;
+        }
+        /* Hide scrollbars on mobile for horizontal scroll areas */
+        .thumbs::-webkit-scrollbar {
             display: none;
         }
-
-
-        /* Accordion */
-        /* Core styles/functionality */
-        .tab {
-            position: relative;
-        
-            input {
-                position: absolute;
-                opacity: 0;
-                z-index: -1;
-
-                &:checked ~ .tab__content {
-                    max-height: 1000rem;
-                    transition: max-height 1s ease-in-out;
-                }
-
-                &:checked + .tab__label::after {
-                    transform: rotate(270deg);
-                }
-
-                 /* Arrow animation */
-                &:not(:checked) + .tab__label:hover::after {
-                    animation: bounce .5s infinite;
-                }
-
-                @keyframes bounce {
-                    25% {
-                        transform: rotate(90deg) translate(.25rem);
-                    }
-                    75% {
-                        transform: rotate(90deg) translate(-.25rem);
-                    }
-                }
-            }
+        .thumbs {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        .tab__content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-
-            .content {
-                padding: 0 0.5rem;
-            }
-        }
-        
-
-        /* Visual styles */
-        .accordion {
-            overflow: hidden;
-        }
-        .tab__label,
-        .tab__close {
-            display: flex;
-            cursor: pointer;
-        }
-
-        .tab__label {
-            justify-content: space-between;
-            padding: 0.2rem 2rem;
-            &::after {
-                content: "\276F";
-                width: 1em;
-                height: 1em;
-                text-align: center;
-                transform: rotate(90deg);
-                transition: all 0.35s;
-            }
-        }
-
-
-        .tab__close {
-            justify-content: flex-end;
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-        }
-
-
-        form#searchForm{
-            display: flex;
-            button{
-                border-radius: 0 2px 2px 0;
-                border: 1px outset buttonborder;
-                border-left: 0;
-                cursor: pointer;
-            }
-        }
-       
-
     </style>
+
     <title>Web Components</title>
 </head>
 <body style="--locale: en-US">
-    <div>
+    
         <h1>Web Components</h1>
 
         <div class="wrapper">
@@ -672,7 +586,7 @@
                 <button type="submit">Submit</button>
             </form>
         </div>
-    </div>
+    
 
     <div class="wrapper">
         <h2>Formating components</h2>
@@ -1252,9 +1166,15 @@
             <div class="col-left auto">
                 <h4>Lightbox viewer</h4>
                     <image-lightbox>
-                        <img src="/img/thumbs/robot1.jpg" data-srcset="img/large/robot1.jpg 1024w, img/medium/robot1.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
-                        <img src="/img/thumbs/robot2.jpg" data-srcset="img/large/robot2.jpg 1024w, img/medium/robot2.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
-                        <img src="/img/thumbs/robot3.jpg" data-srcset="img/large/robot3.jpg 1024w, img/medium/robot3.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-1.jpg" data-large="img/large/pexels-1.jpg" data-large-srcset="img/large/pexels-1.jpg 1024w, img/medium/pexels-1.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
+                        <img src="/img/thumbs/pexels-2.jpg" data-large="img/large/pexels-2.jpg" data-large-srcset="img/large/pexels-2.jpg 1024w, img/medium/pexels-2.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
+                        <img src="/img/thumbs/pexels-3.jpg" data-large="img/large/pexels-3.jpg" data-large-srcset="img/large/pexels-3.jpg 1024w, img/medium/pexels-3.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-4.jpg" data-large="img/large/pexels-4.jpg" data-large-srcset="img/large/pexels-4.jpg 1024w, img/medium/pexels-4.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-5.jpg" data-large="img/large/pexels-5.jpg" data-large-srcset="img/large/pexels-5.jpg 1024w, img/medium/pexels-5.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-6.jpg" data-large="img/large/pexels-6.jpg" data-large-srcset="img/large/pexels-6.jpg 1024w, img/medium/pexels-6.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-7.jpg" data-large="img/large/pexels-7.jpg" data-large-srcset="img/large/pexels-7.jpg 1024w, img/medium/pexels-7.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-8.jpg" data-large="img/large/pexels-8.jpg" data-large-srcset="img/large/pexels-8.jpg 1024w, img/medium/pexels-8.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="/img/thumbs/pexels-9.jpg" data-large="img/large/pexels-8.jpg" data-large-srcset="img/large/pexels-8.jpg 1024w, img/medium/pexels-9.jpg 640w" data-large-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
                     </image-lightbox>
             </div>
             <div class="auto accordion">
@@ -1317,9 +1237,15 @@
             <div class="col-left auto">
                 <h4>Image Gallery</h4>
                 <image-gallery>
-                    <img src="/img/thumbs/robot1.jpg" data-srcset="img/large/robot1.jpg 1024w, img/medium/robot1.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
-                    <img src="/img/thumbs/robot2.jpg" data-srcset="img/large/robot2.jpg 1024w, img/medium/robot2.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
-                    <img src="/img/thumbs/robot3.jpg" data-srcset="img/large/robot3.jpg 1024w, img/medium/robot3.jpg 640w" data-sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-1.jpg" data-large="img/large/pexels-1.jpg" data-large-srcset="img/medium/pexels-1.jpg 640w, img/large/pexels-1.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
+                    <img src="/img/thumbs/pexels-2.jpg" data-large="img/large/pexels-2.jpg" data-large-srcset="img/medium/pexels-2.jpg 640w, img/large/pexels-2.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
+                    <img src="/img/thumbs/pexels-3.jpg" data-large="img/large/pexels-3.jpg" data-large-srcset="img/medium/pexels-3.jpg 640w, img/large/pexels-3.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-4.jpg" data-large="img/large/pexels-4.jpg" data-large-srcset="img/medium/pexels-4.jpg 640w, img/large/pexels-4.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-5.jpg" data-large="img/large/pexels-5.jpg" data-large-srcset="img/medium/pexels-5.jpg 640w, img/large/pexels-5.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-6.jpg" data-large="img/large/pexels-6.jpg" data-large-srcset="img/medium/pexels-6.jpg 640w, img/large/pexels-6.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-7.jpg" data-large="img/large/pexels-7.jpg" data-large-srcset="img/medium/pexels-7.jpg 640w, img/large/pexels-7.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-8.jpg" data-large="img/large/pexels-8.jpg" data-large-srcset="img/medium/pexels-8.jpg 640w, img/large/pexels-8.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    <img src="/img/thumbs/pexels-9.jpg" data-large="img/large/pexels-8.jpg" data-large-srcset="img/medium/pexels-9.jpg 640w, img/large/pexels-8.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
                 </image-gallery>
             </div>
             <div class="auto accordion">
@@ -1352,14 +1278,14 @@
 
                             Usage Example
                             <code class="tagbox">
-                                &lt;image-gallery thumbnails-orientation="left"&gt;
-                                &lt;img src="thumbs/photo1.jpg" data-large="large/photo1.jpg" alt="Photo 1"&gt;
-                                &lt;img src="thumbs/photo2.jpg" data-large="large/photo2.jpg" alt="Photo 2"&gt;
-                                &lt;/image-gallery&gt;
+&lt;image-gallery thumbnails-orientation="left"&gt;
+    &lt;img src="thumbs/photo1.jpg" data-large="large/photo1.jpg" alt="Photo 1"&gt;
+    &lt;img src="thumbs/photo2.jpg" data-large="large/photo2.jpg" alt="Photo 2"&gt;
+&lt;/image-gallery&gt;
                             </code>
 
-                                                        <strong>Summary:</strong>
-                                                        <p>`<image-gallery>` is a robust, accessible, and flexible web component for displaying image galleries with a modern user experience.</p>
+                            <strong>Summary:</strong>
+                            <p>`&lt;image-gallery&gt;` is a robust, accessible, and flexible web component for displaying image galleries with a modern user experience.</p>
 
 
                             Customization:
@@ -1907,6 +1833,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="footer">
+        <p>© 2023 Web Components Showcase</p>
     </div>
 
 
