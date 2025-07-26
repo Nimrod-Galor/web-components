@@ -33,44 +33,8 @@ class DateFormat extends HTMLElement {
     }
 
     #_render = true
-
-    connectedCallback() {
-        requestAnimationFrame(() => {
-            this._initIntlNF()
-            this.observer = new MutationObserver(() => {
-                if(this.#_render){
-                    this.value = this.textContent.trim()
-                }else{
-                    this.#_render = true
-                }
-            })
-            this.observer.observe(this, { childList: true, characterData: true, subtree: true, })
-            this._format()
-        })
-
-        // listen to language select change event
-        window.addEventListener('locale-change', (e) => {
-            this.locale = e.detail.locale
-        })
-    }
-
-    disconnectedCallback() {
-        if (this.observer) {
-            this.observer.disconnect()
-        }
-        window.removeEventListener('locale-change', this._onLocaleChange)
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
-            if(name != 'value'){
-                this._initIntlNF()
-            }
-            this.#_render = true
-            requestAnimationFrame(() => this._format())
-        }
-    }
-
+    #VALID_STYLES = ['full', 'long', 'medium', 'short'];
+    
     static get observedAttributes() {
         return ['value', 'locale', 'date-style', 'time-style', 'time-zone']
     }
@@ -96,7 +60,11 @@ class DateFormat extends HTMLElement {
     }
 
     set dateStyle(value) {
-        this.setAttribute('date-style', value)
+        
+        if (value && !this.#VALID_STYLES.includes(value)) {
+            throw new Error(`Invalid date-style: ${value}. Must be one of: ${this.#VALID_STYLES.join(', ')}`);
+        }
+        this.setAttribute('date-style', value);
     }
 
     get timeStyle() {
@@ -104,6 +72,10 @@ class DateFormat extends HTMLElement {
     }
 
     set timeStyle(value) {
+        
+        if (value && !this.#VALID_STYLES.includes(value)) {
+            throw new Error(`Invalid time-style: ${value}. Must be one of: ${this.#VALID_STYLES.join(', ')}`);
+        }
         this.setAttribute('time-style', value)
     }
 
@@ -112,13 +84,59 @@ class DateFormat extends HTMLElement {
     }
 
     set timeZone(value) {
-        this.setAttribute('time-zone', value)
+        try {
+            // Test if time zone is valid
+            Intl.DateTimeFormat('en', { timeZone: value });
+            this.setAttribute('time-zone', value);
+        } catch (e) {
+            throw new Error(`Invalid time-zone: ${value}. Must be a valid IANA time zone identifier.`);
+        }
+    }
+
+    connectedCallback() {
+        requestAnimationFrame(() => {
+            this._initIntlNF()
+            this.observer = new MutationObserver(() => {
+                if(this.#_render){
+                    this.value = this.textContent.trim()
+                }else{
+                    this.#_render = true
+                }
+            })
+            this.observer.observe(this, { childList: true, characterData: true, subtree: true, })
+            this._format()
+        })
+
+        // listen to language select change event
+        window.addEventListener('locale-change', this._onLocaleChange)
+    }
+    
+    disconnectedCallback() {
+        if (this.observer) {
+            this.observer.disconnect()
+            this.observer = null
+        }
+        window.removeEventListener('locale-change', this._onLocaleChange)
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue) {
+            if(name != 'value'){
+                this._initIntlNF()
+            }
+            this.#_render = true
+            requestAnimationFrame(() => this._format())
+        }
     }
 
     _format() {
-
         if(!this.value){
             this.value = this.textContent.trim()
+        }
+
+        if (!this.value || !this.value.trim()) {
+            console.error('No date provided')
+            return
         }
         
         let date
@@ -131,19 +149,10 @@ class DateFormat extends HTMLElement {
             date = new Date(this.value)
         }
 
-        if (isNaN(date)){
+        if (isNaN(date)) {
+            console.error('Invalid date')
             return
         }
-
-        // const locale = this.getAttribute('locale') || undefined
-
-        // const options = {
-        //     dateStyle: this.getAttribute('date-style') || undefined,
-        //     timeStyle: this.getAttribute('time-style') || undefined,
-        //     timeZone: this.getAttribute('time-zone') || undefined
-        // }
-
-        // const formatted = new Intl.DateTimeFormat(locale, options).format(date)
 
         this.#_render = false
 
@@ -152,8 +161,12 @@ class DateFormat extends HTMLElement {
         this.textContent = formatted
         this.setAttribute('aria-label', formatted)
         this.setAttribute('title', formatted)
+        this.setAttribute('role', 'text')
     }
 
+    _onLocaleChange = (e) => {
+        this.locale = e.detail.locale;
+    }
 
     _initIntlNF(){
         const options = {

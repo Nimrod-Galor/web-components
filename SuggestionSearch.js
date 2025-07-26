@@ -21,12 +21,23 @@ class SuggestionSearch extends HTMLElement {
         this.MAX_RESULTS = 10
     }
 
-    #debounceTimer;
+    // Add private fields for memory management
+    #tempElements = new WeakMap()
+    #registry = new FinalizationRegistry(key => {
+        console.debug(`Cleaning up resources for ${key}`)
+        this.#tempElements.delete(key)
+    })
+    #debounceTimer
     #activeIndex = -1
     #cacheKey = 'search-queries'
+    #suggestionCache = new Map()
 
     constructor() {
-        super();
+        super()
+        // Initialize memory management
+        this._drawFrame = null
+        this._tempCanvases = new Set()
+
         this._boundHandleInput = this._handleInput.bind(this);
         this._boundHandleKeydown = this._handleKeydown.bind(this);
         this._boundHandleClick = this._handleClick.bind(this);
@@ -141,10 +152,18 @@ class SuggestionSearch extends HTMLElement {
             :host {
                 --input-bg: white;
                 --input-color: black;
+                --input-border: #ccc;
+                --input-focus-border: #0066cc;
                 --list-bg: white;
+                --list-border: #ccc;
+                --list-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 --list-hover-bg: #f0f0f0;
-                --border-color: #ccc;
-
+                --list-active-bg: #e0e0e0;
+                --spinner-color: #666;
+                --cache-icon-color: #888;
+                --error-color: #d32f2f;
+                --error-bg: #ffebee;
+                
                 position: relative;
                 display: inline-block;
                 font-family: sans-serif;
@@ -157,6 +176,12 @@ class SuggestionSearch extends HTMLElement {
                 background: var(--input-bg);
                 color: var(--input-color);
                 border: 1px solid var(--border-color);
+            }
+
+            input:focus {
+                outline: none;
+                border-color: var(--input-focus-border);
+                box-shadow: 0 0 0 2px var(--input-focus-border)33;
             }
 
             ul {
@@ -172,6 +197,8 @@ class SuggestionSearch extends HTMLElement {
                 max-height: 150px;
                 overflow-y: auto;
                 z-index: 1000;
+                box-shadow: var(--list-shadow);
+                border-color: var(--list-border);
             }
 
             li {
@@ -182,6 +209,12 @@ class SuggestionSearch extends HTMLElement {
             li.active,
             li:hover {
                 background-color: var(--list-hover-bg);
+            }
+
+            li.error {
+                color: var(--error-color);
+                background-color: var(--error-bg);
+                cursor: default;
             }
 
             .spinner {
@@ -228,10 +261,12 @@ class SuggestionSearch extends HTMLElement {
         const id = `input-${SuggestionSearch._uuid()}`
         const listId = `suggestions-${SuggestionSearch._uuid()}`
 
-
-
+        // Add a visually hidden label for accessibility
         this.shadowRoot.innerHTML = `
-            <input type="text" id="${id}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${listId}">
+            <label id="search-label" for="${id}" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+                Search suggestions input
+            </label>
+            <input type="text" id="${id}" role="combobox" aria-label="Search suggestions input" aria-labelledby="search-label" aria-autocomplete="list" aria-expanded="false" aria-controls="${listId}">
             <div class="spinner hidden" aria-hidden="true"></div>
             <ul id="${listId}" role="listbox" hidden></ul>`
 
@@ -262,7 +297,18 @@ class SuggestionSearch extends HTMLElement {
         if (this.form && this.clearOnSubmit && this._boundSubmitHandler) {
             this.form.removeEventListener('submit', this._boundSubmitHandler)
         }
-        clearTimeout(this.#debounceTimer)
+        // Clean up resources
+        this._cleanup()
+
+        // Clear all references
+        this.input = null
+        this.list = null
+        this.spinner = null
+        this._internals = null
+
+        // Clear caches
+        this.#suggestionCache.clear()
+        this.#tempElements = new WeakMap()
     }
 
     // Store bound handlers
@@ -302,11 +348,13 @@ class SuggestionSearch extends HTMLElement {
                     e.preventDefault()
                     this.#activeIndex = items.length - 1
                     break
-                case 'Tab': // ✅ Add Tab support
+                case 'Tab':
+                    // Only handle Tab if a suggestion is actively highlighted
                     if (this.#activeIndex >= 0 && items[this.#activeIndex]) {
                         e.preventDefault()
                         this._selectSuggestion(items[this.#activeIndex].textContent)
                     }
+                    // Otherwise, allow normal tabbing out
                     return
                 case 'Enter':
                     e.preventDefault()
@@ -385,7 +433,16 @@ class SuggestionSearch extends HTMLElement {
     async fetchSuggestions(query) {
         this._showSpinner(true)
 
+        // Check memory-managed cache first
+        const cachedResults = this._getCachedSuggestions(query)
+        if (cachedResults) {
+            this.renderSuggestions(cachedResults)
+            this._showSpinner(false)
+            return
+        }
+
         let apiSuggestions = []
+        let apiError = null
         if (this.apiEndpoint) {
             try {
                 const res = await fetch(this.apiEndpoint + encodeURIComponent(query))
@@ -400,22 +457,42 @@ class SuggestionSearch extends HTMLElement {
                     apiSuggestions = []
                 }
             } catch (e) {
+                apiError = e
                 console.warn('API error:', e)
+                // Surface error to user via custom validity
+                if (this._internals) {
+                    this._internals.setValidity(
+                        { customError: true },
+                        'Unable to fetch suggestions. Please try again.',
+                        this.input
+                    )
+                }
+                // Optionally show a message in the suggestion list
+                this.renderSuggestions([
+                    { value: 'Unable to fetch suggestions. Please try again.', type: 'error' }
+                ])
+                // Always hide spinner on error
+                this._showSpinner(false)
+                return
             }
         }
 
-        // Mark API suggestions
-        const apiItems = apiSuggestions.map(q => ({ value: q, type: 'api' }))
-        // Mark cache suggestions, but exclude duplicates
-        const cacheMatches = this.cache
-            .map(item => item.query)
-            .filter(q => q.toLowerCase().includes(query.toLowerCase()) && !apiSuggestions.includes(q))
-            .map(q => ({ value: q, type: 'cache' }))
+        if (!apiError) {
+            // Mark API suggestions
+            const apiItems = apiSuggestions.map(q => ({ value: q, type: 'api' }))
+            // Mark cache suggestions, but exclude duplicates
+            const cacheMatches = this.cache
+                .map(item => item.query)
+                .filter(q => q.toLowerCase().includes(query.toLowerCase()) && !apiSuggestions.includes(q))
+                .map(q => ({ value: q, type: 'cache' }))
 
-        // Put cache items before API suggestions
-        const combined = [...cacheMatches, ...apiItems].slice(0, this.maxResults)
+            // Put cache items before API suggestions
+            const combined = [...cacheMatches, ...apiItems].slice(0, this.maxResults)
 
-        this.renderSuggestions(combined)
+            this._cacheSuggestions(query, combined)
+            this.renderSuggestions(combined)
+        }
+
         this._showSpinner(false)
     }
 
@@ -428,6 +505,15 @@ class SuggestionSearch extends HTMLElement {
             .replace(/'/g, "&#39;")
     }
 
+    /**
+     * @typedef {Object} SuggestionItem
+     * @property {string} value - The suggestion text
+     * @property {'api' | 'cache' | 'error'} type - Source of the suggestion
+     */
+
+    /**
+     * @param {SuggestionItem[]} suggestions - Array of suggestion items to render
+     */
     renderSuggestions(suggestions) {
         this.#activeIndex = -1
 
@@ -439,7 +525,7 @@ class SuggestionSearch extends HTMLElement {
         }
 
         this.list.innerHTML = suggestions.map((item, i) =>
-          `<li id="option-${i}" role="option" class="${item.type === 'cache' ? 'cache' : ''}" ${i === this.#activeIndex ? 'aria-selected="true"' : ''}>
+          `<li id="option-${i}" role="option" class="${item.type === 'cache' ? 'cache' : ''}${item.type === 'error' ? ' error' : ''}" ${i === this.#activeIndex ? 'aria-selected="true"' : ''}>
               ${this._escapeHTML(item.value)}
           </li>`
         ).join('')
@@ -462,12 +548,15 @@ class SuggestionSearch extends HTMLElement {
 
     _saveQuery(query) {
         if (!query || this.cache.some(item => item.query.toLowerCase() === query.toLowerCase())) return
-    
-        const current = this.cache  // Get current cache
-        const cacheItem = { query, timestamp: Date.now() }
-    
+
+        // Purge expired cache items before saving
+        const oneDay = 24 * 60 * 60 * 1000
+        const now = Date.now()
+        const current = this.cache.filter(item => now - item.timestamp < oneDay)
+
+        const cacheItem = { query, timestamp: now }
         const updated = [cacheItem, ...current].slice(0, SuggestionSearch.CACHE_SIZE)
-        this.cache = updated  // Use setter correctly
+        this.cache = updated
     }
 
 
@@ -513,6 +602,88 @@ class SuggestionSearch extends HTMLElement {
             items[this.#activeIndex].scrollIntoView({ block: 'nearest' })
         } else {
             this.input.removeAttribute('aria-activedescendant')
+        }
+    }
+
+    /**
+     * Gets or creates a temporary element for text measurement
+     * @private
+     */
+    _getTempElement(key) {
+        let element = this.#tempElements.get(key)?.deref()
+        if (!element) {
+            element = document.createElement('div')
+            const ref = new WeakRef(element)
+            this.#tempElements.set(key, ref)
+            this.#registry.register(element, key)
+        }
+        return element
+    }
+
+    /**
+     * Caches suggestions with weak references
+     * @private
+     */
+    _cacheSuggestions(query, results) {
+        const ref = new WeakRef(results)
+        this.#suggestionCache.set(query, {
+            ref,
+            timestamp: Date.now()
+        })
+    }
+
+    /**
+     * Gets cached suggestions if still available
+     * @private
+     */
+    _getCachedSuggestions(query) {
+        const cached = this.#suggestionCache.get(query)
+        if (!cached) return null
+
+        const results = cached.ref.deref()
+        if (!results) {
+            this.#suggestionCache.delete(query)
+            return null
+        }
+
+        // Check if cache is expired (24 hours)
+        if (Date.now() - cached.timestamp > 24 * 60 * 60 * 1000) {
+            this.#suggestionCache.delete(query)
+            return null
+        }
+
+        return results
+    }
+
+    /**
+     * Cleans up resources and removes references
+     * @private
+     */
+    _cleanup() {
+        // Clear suggestion cache
+        for (const [query, entry] of this.#suggestionCache) {
+            if (!entry.ref.deref()) {
+                this.#suggestionCache.delete(query)
+            }
+        }
+
+        // Clear temporary elements
+        for (const [key, ref] of this.#tempElements) {
+            if (!ref.deref()) {
+                this.#tempElements.delete(key)
+            }
+        }
+
+        // Clear animation frames
+        if (this._drawFrame) {
+            cancelAnimationFrame(this._drawFrame)
+            this._drawFrame = null
+        }
+
+        // Clear debounce timer
+        if (this.#debounceTimer) {
+            clearTimeout(this.#debounceTimer)
+            this.#debounceTimer = null
         }
     }
 

@@ -348,7 +348,7 @@
                                 data-text="Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card."
                             ></popup-info>
                         </label>
-                        <input type="number" id="cvc" name="cvc" minlength="3" maxlength="4" />
+                        <input type="number" id="cvc" name="cvc" minlength="3" maxlength="4" style="appearance: textfield; -moz-appearance: textfield;" />
                     </div>
                     <div class="auto accordion">
                         <div class="tab notecard info">
@@ -830,13 +830,13 @@
         <div class="row" id="duration">
             <div class="col-left auto">
                 <h4>Duration Format</h4>
-                <duration-format id="duration1" fstyle="long" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <duration-format id="duration1" fstyle="long" years="1" months="2" weeks="3" days="4"></duration-format>
                 <br />
-                <duration-format fstyle="long" locale="pt-PT" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <duration-format fstyle="long" locale="pt-PT" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10"></duration-format>
                 <br />
-                <duration-format fstyle="narrow" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10" fractionalDigits="11"></duration-format>
+                <duration-format fstyle="narrow" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7" milliseconds="8" microseconds="9" nanoseconds="10"></duration-format>
                 <br />
-                <duration-format fstyle="digital" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7"></duration-format>
+                <duration-format fstyle="narrow" locale="en-US" years="1" months="2" weeks="3" days="4" hours="5" minutes="6" seconds="7"></duration-format>
             </div>
             <div class="auto accordion">
                 <div class="tab notecard info">
@@ -899,6 +899,28 @@
                 <plural-rules>21</plural-rules>
                 <br />
                 <plural-rules>42</plural-rules>
+                <br />
+                <plural-rules value="1" locale="fr">1</plural-rules>
+                <br />
+                <plural-rules value="2" locale="fr">2</plural-rules>
+                <br />
+                <plural-rules value="1" locale="zh">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="de">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="pt-BR">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="zh">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="ja">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="ko">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="hi">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="ar">1</plural-rules>
+                <br />
+                <plural-rules value="1" locale="th">1</plural-rules>
             </div>
             <div class="auto accordion">
                 <div class="tab notecard info">
@@ -1236,7 +1258,7 @@
         <div class="row" id="image-gallery">
             <div class="col-left auto">
                 <h4>Image Gallery</h4>
-                <image-gallery>
+                <image-gallery thumbnails-orientation="bottom">
                     <img src="/img/thumbs/pexels-1.jpg" data-large="img/large/pexels-1.jpg" data-large-srcset="img/medium/pexels-1.jpg 640w, img/large/pexels-1.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
                     <img src="/img/thumbs/pexels-2.jpg" data-large="img/large/pexels-2.jpg" data-large-srcset="img/medium/pexels-2.jpg 640w, img/large/pexels-2.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
                     <img src="/img/thumbs/pexels-3.jpg" data-large="img/large/pexels-3.jpg" data-large-srcset="img/medium/pexels-3.jpg 640w, img/large/pexels-3.jpg 1024w" data-large-sizes="(width <= 640px) 640px, 1024px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
@@ -1640,7 +1662,7 @@
         <div class="row" id="breadcrumb-trail">
             <div class="col-left auto">
                 <h4>Breadcrumb Trail</h4>
-                <breadcrumb-trail home-label="*" separator="/"></breadcrumb-trail>
+                <breadcrumb-trail home-label="&#9874;" separator="/"></breadcrumb-trail>
             </div>
             <div class="auto accordion">
                 <div class="tab notecard info">
@@ -1827,7 +1849,78 @@
                     <label for="sb1" class="tab__label">Scroll Buttons</label>
                     <div class="tab__content">
                         <div class="content">
+                            <p>This component provides floating "scroll to top" and "scroll to bottom" buttons for any web page. It is designed for accessibility, mobile-friendliness, and easy integration.</p>
 
+
+                            Features
+                            <dl>
+                            <dt>Floating Buttons:</dt>
+                            <dd>Two circular buttons appear fixed at the bottom right of the viewport.</dd>
+                            <dt>Auto Visibility:</dt>
+                            <dd>
+                                <ul>
+                                <li>The "top" button appears after scrolling down 300px.</li>
+                                <li>The "bottom" button appears unless you are already near the bottom.</li>
+                                </ul>
+                            </dd>
+                            <dt>Smooth Scrolling:</dt>
+                            <dd>Uses smooth scroll if supported by the browser.</dd>
+                            <dt>Accessible:</dt>
+                            <dd>
+                                <ul>
+                                <li>Buttons have `aria-label` and `title` attributes.</li>
+                                <li>Fully keyboard accessible (Enter/Space triggers action).</li>
+                                <li>Focus styles for accessibility.</li>
+                                </ul>
+                            </dd>
+                            <dt>Responsive:</dt>
+                            <dd>Adjusts padding and position for small screens.</dd>
+                            <dt>Customizable:</dt>
+                            <dd>
+                                CSS custom properties for colors, sizes, and positions.
+                            </dd>
+                            <dt>Theming:</dt>
+                            <dd>
+                                Theming via CSS custom properties (e.g., `--scroll-buttons-bg`, `--scroll-buttons-right`).
+                            </dd>
+                            <dt>Shadow DOM:</dt>
+                            <dd>
+                                Styles and markup are encapsulated.
+                                </dd>
+                            <dt>No dependencies:</dt>
+                            <dd>
+                                Pure vanilla JS.
+                            </dd>
+                            </dl>
+
+                            Usage
+
+<code class="tagbox">
+&lt;scroll-buttons&gt;&lt;/scroll-buttons&gt;
+</code>
+
+                            Customization
+                            <p>You can style the component using CSS variables:<br />
+                            <pre>
+scroll-buttons {
+    --scroll-buttons-right: 30px;
+    --scroll-buttons-bg: #222;
+    --scroll-buttons-bg-hover: #444;
+    --scroll-buttons-color: #fff;
+}
+                            </pre>
+                            </p>
+
+                            Accessibility
+
+                            <ul>
+                            <li>Keyboard and screen reader friendly.</li>
+                            <li>Buttons are hidden when not needed.</li>
+                            <li>Focus ring and hover states are visible.</li>
+                            </ul>
+
+                            <strong>Summary:</strong>
+                            <p><code>&lt;scroll-buttons&gt;</code> adds floating, accessible, and customizable scroll-to-top and scroll-to-bottom buttons to your page, improving navigation for all users.</p>
                         </div>
                     </div>
                 </div>

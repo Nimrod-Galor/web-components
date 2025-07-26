@@ -1,31 +1,51 @@
 /**
- * DateFormat Web Component
- * Automatically formats dates with locale awareness and time zone support
+ * DurationFormat Web Component
+ * Automatically formats durations with locale awareness using Intl.DurationFormat (if available)
  * 
- * @customElement date-format
+ * @customElement duration-format
  * @extends HTMLElement
  * @fires locale-change - When the display locale changes
  * 
- * @property {string} value - The date value to format (timestamp or date string)
  * @property {string} locale - Locale identifier for formatting
- * @property {string} dateStyle - Date formatting style (full|long|medium|short)
- * @property {string} timeStyle - Time formatting style (full|long|medium|short)
- * @property {string} timeZone - IANA time zone identifier
+ * @property {string} fstyle - Formatting style ('long' | 'short' | 'narrow')
+ * @property {number} years - Years in the duration
+ * @property {number} months - Months in the duration
+ * @property {number} weeks - Weeks in the duration
+ * @property {number} days - Days in the duration
+ * @property {number} hours - Hours in the duration
+ * @property {number} minutes - Minutes in the duration
+ * @property {number} seconds - Seconds in the duration
+ * @property {number} milliseconds - Milliseconds in the duration
+ * @property {number} microseconds - Microseconds in the duration
+ * @property {number} nanoseconds - Nanoseconds in the duration
+ 
  * 
- * @attr {string} value - Date value to format
  * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
- * @attr {string} date-style - Date formatting style
- * @attr {string} time-style - Time formatting style
- * @attr {string} time-zone - Time zone identifier
+ * @attr {string} fstyle - Formatting style ('long' | 'short' | 'narrow', default: 'short')
+ * @attr {number} years
+ * @attr {number} months
+ * @attr {number} weeks
+ * @attr {number} days
+ * @attr {number} hours
+ * @attr {number} minutes
+ * @attr {number} seconds
+ * @attr {number} milliseconds
+ * @attr {number} microseconds
+ * @attr {number} nanoseconds
+ * @attr {number} fractionalDigits
  * 
  * @example
- * <date-format 
- *   value="2023-12-25T15:00:00" 
- *   locale="en-US" 
- *   date-style="full" 
- *   time-style="short"
- *   time-zone="America/New_York">
- * </date-format>
+ * <duration-format
+ *   locale="en-US"
+ *   fstyle="long"
+ *   years="1"
+ *   months="2"
+ *   days="3"
+ *   hours="4"
+ *   minutes="5"
+ *   seconds="6"
+ *   milliseconds="7">
+ * </duration-format>
  */
 class DurationFormat extends HTMLElement{
     constructor(){
@@ -49,7 +69,12 @@ class DurationFormat extends HTMLElement{
     }
 
     set fstyle(value) {
-        this.setAttribute('fstyle', value)
+        const validStyles = ['long', 'short', 'narrow'];
+        if (value && !validStyles.includes(value)) {
+            console.warn(`Invalid style: ${value}. Using 'short'`);
+            value = 'short';
+        }
+        this.setAttribute('fstyle', value);
     }
 
     get years() {
@@ -57,7 +82,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set years(value) {
-        this.setAttribute('years', value)
+        const validated = this._validateDurationUnit(value, 'years');
+        this.setAttribute('years', validated);
     }
 
     get months() {
@@ -65,7 +91,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set months(value) {
-        this.setAttribute('months', value)
+        const validated = this._validateDurationUnit(value, 'months');
+        this.setAttribute('months', validated);
     }
 
     get weeks() {
@@ -73,7 +100,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set weeks(value) {
-        this.setAttribute('weeks', value)
+        const validated = this._validateDurationUnit(value, 'weeks');
+        this.setAttribute('weeks', validated);
     }
 
     get days() {
@@ -81,7 +109,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set days(value) {
-        this.setAttribute('days', value)
+        const validated = this._validateDurationUnit(value, 'days');
+        this.setAttribute('days', validated);
     }
 
     get hours() {
@@ -89,7 +118,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set hours(value) {
-        this.setAttribute('hours', value)
+        const validated = this._validateDurationUnit(value, 'hours');
+        this.setAttribute('hours', validated);
     }
 
     get minutes() {
@@ -97,7 +127,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set minutes(value) {
-        this.setAttribute('minutes', value)
+        const validated = this._validateDurationUnit(value, 'minutes');
+        this.setAttribute('minutes', validated);
     }
 
     get seconds() {
@@ -105,7 +136,8 @@ class DurationFormat extends HTMLElement{
     }
 
     set seconds(value) {
-        this.setAttribute('seconds', value)
+        const validated = this._validateDurationUnit(value, 'seconds');
+        this.setAttribute('seconds', validated);
     }
 
     get milliseconds() {
@@ -137,7 +169,13 @@ class DurationFormat extends HTMLElement{
     }
 
     set fractionalDigits(value) {
-        this.setAttribute('fractionalDigits', value)
+        const num = Number(value);
+        if (isNaN(num) || num < 0 || num > 20) {
+            console.warn(`Invalid fractionalDigits: ${value}. Using default.`);
+            this.removeAttribute('fractionalDigits');
+            return;
+        }
+        this.setAttribute('fractionalDigits', value);
     }
 
     connectedCallback() {
@@ -147,9 +185,7 @@ class DurationFormat extends HTMLElement{
         })
 
         // listen to language select change event
-        window.addEventListener('locale-change', (e) => {
-            this.locale = e.detail.locale
-        })
+        window.addEventListener('locale-change', this._onLocaleChange)
     }
 
     disconnectedCallback() {
@@ -170,19 +206,22 @@ class DurationFormat extends HTMLElement{
         }
     }
 
+    _onLocaleChange = (e) => {
+        this.locale = e.detail.locale;
+    };
+
     _format(){
         const duration = {
-            years: this.years,
-            months: this.months,
-            weeks: this.weeks,
-            days: this.days,
-            hours: this.hours,
-            minutes: this.minutes,
-            seconds: this.seconds,
-            milliseconds: this.milliseconds,
-            microseconds: this.microseconds,
-            nanoseconds: this.nanoseconds,
-            fractionalDigits: this.fractionalDigits
+            years: Number(this.years) || 0,
+            months: Number(this.months) || 0,
+            weeks: Number(this.weeks) || 0,
+            days: Number(this.days) || 0,
+            hours: Number(this.hours) || 0,
+            minutes: Number(this.minutes) || 0,
+            seconds: Number(this.seconds) || 0,
+            milliseconds: Number(this.milliseconds) || 0,
+            microseconds: Number(this.microseconds) || 0,
+            nanoseconds: Number(this.nanoseconds) || 0
         }
 
         const formatted = this._formatter.format(duration)
@@ -192,8 +231,50 @@ class DurationFormat extends HTMLElement{
         this.setAttribute('title', formatted)
     }
 
-    _initIntlNF(){
-        this._formatter = new Intl.DurationFormat(this.locale, { style: this.fstyle })
+    _createFallbackFormatter() {
+        return {
+            format: (duration) => {
+                const parts = [];
+                const style = this.fstyle;
+                
+                // Style-aware formatting
+                const formats = {
+                    long: { y: ' years', mo: ' months', d: ' days', h: ' hours', m: ' minutes', s: ' seconds' },
+                    short: { y: 'y', mo: 'mo', d: 'd', h: 'h', m: 'm', s: 's' },
+                    narrow: { y: 'Y', mo: 'M', d: 'D', h: 'H', m: 'm', s: 's' }
+                };
+                
+                const units = formats[style] || formats.short;
+                
+                if (duration.years) parts.push(`${duration.years}${units.y}`);
+                if (duration.months) parts.push(`${duration.months}${units.mo}`);
+                if (duration.days) parts.push(`${duration.days}${units.d}`);
+                if (duration.hours) parts.push(`${duration.hours}${units.h}`);
+                if (duration.minutes) parts.push(`${duration.minutes}${units.m}`);
+                if (duration.seconds) parts.push(`${duration.seconds}${units.s}`);
+                
+                return parts.join(style === 'long' ? ', ' : ' ') || '0' + units.s;
+            }
+        };
+    }
+
+    _initIntlNF() {
+        try {
+            this._formatter = new Intl.DurationFormat(this.locale, { style: this.fstyle });
+        } catch (error) {
+            console.warn('Failed to create Intl.DurationFormat, falling back to custom formatter:', error);
+            this._formatter = this._createFallbackFormatter();
+        }
+    }
+
+    // Create a helper method for duration unit validation
+    _validateDurationUnit(value, unit) {
+        const num = Number(value);
+        if (isNaN(num)) {
+            console.warn(`Invalid ${unit}: ${value}. Using 0.`);
+            return 0;
+        }
+        return num;
     }
 }
 

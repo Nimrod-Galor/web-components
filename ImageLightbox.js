@@ -1,53 +1,42 @@
 /**
- * @fileoverview WorldClock Web Component - A customizable world clock displaying time for multiple cities
- * @version 1.0.0
- * @author Nimrod Galor
- */
-
-/**
- * WorldClock web component that displays current time for multiple cities around the world.
+ * ImageLightbox Web Component
+ * A responsive, accessible image lightbox with touch support, zoom, and fullscreen
  * 
- * @class WorldClock
+ * @customElement image-lightbox
  * @extends HTMLElement
  * 
- * @example
- * // Basic usage
- * <world-clock></world-clock>
- * 
- * @example
- * // Custom cities and locale
- * <world-clock cities="New York, London, Tokyo" locale="en-US"></world-clock>
- * 
- * @example
- * // With CSS custom properties
- * <world-clock 
- *   cities="Paris, Berlin, Rome"
- *   style="--world-clock-bg: #fff; --world-clock-border-color: #007bff;">
- * </world-clock>
- */
-/**
- * @typedef {Object} WorldClockAttributes
- * @property {string} cities - Comma-separated list of city names to display
- * @property {string} locale - BCP 47 language tag for time formatting
+ * @fires lightbox-open - Fired when lightbox opens. Detail: { index, src, alt }
+ * @fires lightbox-close - Fired when lightbox closes.
+ * @fires lightbox-change - Fired when image changes. Detail: { index, src, alt }
+ * @fires lightbox-error - Fired when there is an error loading an image. Detail: { index, src, fallbackUsed }
  */
 
-/**
- * @typedef {Object} CSSCustomProperties
- * @property {string} --world-clock-font - Font family for the component
- * @property {string} --world-clock-border-color - Border color
- * @property {string} --world-clock-bg - Background color
- * @property {string} --world-clock-padding - Internal padding
- * @property {string} --world-clock-radius - Border radius
- * @property {string} --world-clock-max-width - Maximum width
- */
 class ImageLightbox extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    
+    this.lastFocusedThumbnail = null; // Move this inside the class
+
+    
 
     this.shadowRoot.innerHTML = `
-      <style>
-        ::slotted(img) {
+      <slot></slot>
+
+      <div class="overlay" id="lightboxOverlay" role="dialog" aria-modal="true" tabindex="-1">
+        <div class="image-container" id="imageContainer">
+          <button class="arrow left" id="prevBtn" aria-label="Previous image">&#8592;</button>
+          <img id="lightboxImage" src="" alt="">
+          <div class="magnifier" id="magnifier"></div>
+          <button class="arrow right" id="nextBtn" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="caption" id="lightboxCaption" aria-live="polite"></div>
+      </div>
+    `;
+
+    const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+          ::slotted(img) {
           cursor: pointer;
           max-width: 100px;
           margin: 5px;
@@ -185,20 +174,25 @@ class ImageLightbox extends HTMLElement {
           transform: translateX(100%) scale(0.8);
           opacity: 0;
         }
-      </style>
 
-      <slot></slot>
+        .overlay img.loading::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 30px;
+          height: 30px;
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid #007bff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
 
-      <div class="overlay" id="lightboxOverlay" role="dialog" aria-modal="true" tabindex="-1">
-        <div class="image-container" id="imageContainer">
-          <button class="arrow left" id="prevBtn" aria-label="Previous image">&#8592;</button>
-          <img id="lightboxImage" src="" alt="">
-          <div class="magnifier" id="magnifier"></div>
-          <button class="arrow right" id="nextBtn" aria-label="Next image">&#8594;</button>
-        </div>
-        <div class="caption" id="lightboxCaption" aria-live="polite"></div>
-      </div>
-    `;
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }`)
+    this.shadowRoot.adoptedStyleSheets = [sheet];
 
     this.currentIndex = -1;
     this.thumbnails = [];
@@ -213,7 +207,6 @@ class ImageLightbox extends HTMLElement {
     this._currentScale = 1;
     this._thumbnailObserver = null;
 
-    // Fix: Move this to connectedCallback since lightboxImage/magnifier don't exist yet
     this._debouncedMagnifier = null;
   }
 
@@ -234,8 +227,16 @@ class ImageLightbox extends HTMLElement {
     const lightboxImage = this.shadowRoot.getElementById('lightboxImage');
     const magnifier = this.shadowRoot.getElementById('magnifier');
 
+    
+    const slot = this.shadowRoot.querySelector('slot');
+    const overlay = this.shadowRoot.getElementById('lightboxOverlay');
+    const lightboxCaption = this.shadowRoot.getElementById('lightboxCaption');
+    const prevBtn = this.shadowRoot.getElementById('prevBtn');
+    const nextBtn = this.shadowRoot.getElementById('nextBtn');
+    const container = this.shadowRoot.getElementById('imageContainer');
+    
     // Then create debounced function
-    this._debouncedMagnifier = this._debounce((e) => {
+    this._debouncedMagnifier = this._debounce((e, container) => {
       if (!lightboxImage.src || this.zoomed) {
         magnifier.style.display = 'none';
         return;
@@ -252,20 +253,15 @@ class ImageLightbox extends HTMLElement {
       magnifier.style.backgroundPosition = `${percentX}% ${percentY}%`;
       magnifier.style.display = 'block';
     }, 16); // ~60fps
-
-    const slot = this.shadowRoot.querySelector('slot');
-    const overlay = this.shadowRoot.getElementById('lightboxOverlay');
-    const lightboxCaption = this.shadowRoot.getElementById('lightboxCaption');
-    const prevBtn = this.shadowRoot.getElementById('prevBtn');
-    const nextBtn = this.shadowRoot.getElementById('nextBtn');
-    const container = this.shadowRoot.getElementById('imageContainer');
-
+    
     const preloadAdjacentImages = (index) => {
       [-1, 1].forEach(offset => {
         const adjacentIndex = index + offset;
         if (adjacentIndex >= 0 && adjacentIndex < this.thumbnails.length) {
-          const img = new Image();
-          img.src = this.thumbnails[adjacentIndex].getAttribute('src').replace('thumbs/', 'large/');
+          const img = this.thumbnails[adjacentIndex];
+          const fallbackSrc = img.getAttribute('data-large') || img.getAttribute('src').replace('thumbs/', 'large/');
+          const preloadImg = new Image();
+          preloadImg.src = fallbackSrc;
         }
       });
     };
@@ -280,12 +276,12 @@ class ImageLightbox extends HTMLElement {
         const img = this.thumbnails[index];
         const srcset = img.getAttribute('data-srcset');
         const sizes = img.getAttribute('data-sizes');
-        const fallbackSrc = img.getAttribute('src').replace('thumbs/', 'large/');
+        const fallbackSrc = img.getAttribute('data-large') || img.getAttribute('src').replace('thumbs/', 'large/');
         const alt = img.getAttribute('alt') || 'Image';
 
         lightboxImage.removeAttribute('srcset');
         lightboxImage.removeAttribute('sizes');
-        lightboxImage.src = ''; // force reload
+        lightboxImage.src = ''; 
         if (srcset) lightboxImage.setAttribute('srcset', srcset);
         if (sizes) lightboxImage.setAttribute('sizes', sizes);
 
@@ -297,8 +293,18 @@ class ImageLightbox extends HTMLElement {
 
         lightboxImage.onerror = () => {
           lightboxCaption.textContent = 'Failed to load image';
+          lightboxImage.alt = 'Failed to load image';
+          lightboxImage.classList.remove('loading');
+          
+          // Try fallback to original thumbnail
+          const originalSrc = this.thumbnails[index].src;
+          if (fallbackSrc !== originalSrc) {
+            lightboxImage.src = originalSrc;
+            lightboxCaption.textContent = `${alt} (using thumbnail)`;
+          }
+          
           this.dispatchEvent(new CustomEvent('lightbox-error', {
-            detail: { index, src: fallbackSrc }
+            detail: { index, src: fallbackSrc, fallbackUsed: true }
           }));
         };
 
@@ -343,6 +349,10 @@ class ImageLightbox extends HTMLElement {
       container.removeEventListener('touchend', this._onTouchEnd);
       overlay.removeEventListener('focusin', this._trapFocus);
       this._opened = false;
+      // --- Focus return ---
+      if (this.lastFocusedThumbnail) {
+        setTimeout(() => this.lastFocusedThumbnail.focus(), 0);
+      }
       // Dispatch custom event
       this.dispatchEvent(new CustomEvent('lightbox-close'));
     };
@@ -357,6 +367,7 @@ class ImageLightbox extends HTMLElement {
         this.thumbnails = slot.assignedElements().filter(el => el.tagName === 'IMG');
         const index = this.thumbnails.indexOf(img);
         if (index !== -1) {
+          this.lastFocusedThumbnail = img; // Store for focus return
           updateLightbox(index);
           overlay.classList.add('active');
           this._opened = true;
@@ -397,7 +408,7 @@ class ImageLightbox extends HTMLElement {
 
     // Robust magnifier display logic
     container.addEventListener('mousemove', (e) => {
-      this._debouncedMagnifier(e);
+      this._debouncedMagnifier(e, container); // Add container parameter
     });
 
     container.addEventListener('mouseleave', () => {
@@ -503,15 +514,28 @@ _observeThumbnails() {
     // Clean up event listeners if component is removed while open
     const overlay = this.shadowRoot.getElementById('lightboxOverlay');
     const container = this.shadowRoot.getElementById('imageContainer');
+    
     document.removeEventListener('keydown', this._onKeyDown);
     if (overlay) overlay.removeEventListener('focusin', this._trapFocus);
     if (container) {
       container.removeEventListener('touchstart', this._onTouchStart);
       container.removeEventListener('touchend', this._onTouchEnd);
     }
+    
     if (this._thumbnailObserver) {
-        this._thumbnailObserver.disconnect();
+      this._thumbnailObserver.disconnect();
+      this._thumbnailObserver = null;
     }
+    
+    // Clear any remaining animation frames
+    if (this._debouncedMagnifier && this._debouncedMagnifier.timeoutId) {
+      window.cancelAnimationFrame(this._debouncedMagnifier.timeoutId);
+    }
+    
+    // Clear references
+    this._debouncedMagnifier = null;
+    this.thumbnails = [];
+    this.lastFocusedThumbnail = null;
   }
 
   _onKeyDown(e) {
@@ -571,10 +595,10 @@ _observeThumbnails() {
     const deltaX = endX - this._startX;
 
     if (Math.abs(deltaX) > 50) {
-      // Add haptic feedback if available
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
+        // Enhanced haptic pattern
+        if (navigator.vibrate) {
+            navigator.vibrate([50, 30, 50]);
+        }
       
       if (deltaX > 50 && this.currentIndex > 0) {
         this._updateLightbox(this.currentIndex - 1);

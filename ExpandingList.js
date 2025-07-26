@@ -13,7 +13,6 @@
  * @cssprop --expand-color - Color of expand/collapse icons (default: blue)
  * @cssprop --expand-size - Size of expand/collapse icons (default: 1rem)
  * 
- * @fires toggle - When a list item is expanded or collapsed
  * @property {boolean} delegatesFocus - Whether the component delegates focus
  * 
  * @example
@@ -28,22 +27,58 @@
  *     <li>Item 2</li>
  *   </ul>
  * </expanding-list>
+ *  *
+ * @note
+ * The list passed to <expanding-list> (ul, ol, or dl) will be moved from the light DOM into the shadow DOM.
+ * It will not remain in the light DOM after initialization. All expand/collapse logic and accessibility features
+ * are handled inside the shadow DOM.
  */
 class ExpandingList extends HTMLElement {
   constructor() {
     super()
+    // Bind event handlers once
+    this._handleKeydown = this._handleKeydown.bind(this);
+    this._handleClick = this._handleClick.bind(this);
   }
+
+  static get observedAttributes() {
+    return ['expand-all', 'collapse-all', 'animate'];
+}
+
+attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    
+    switch (name) {
+        case 'expand-all':
+            this._expandAll(newValue !== null);
+            break;
+        case 'collapse-all':
+            this._collapseAll(newValue !== null);
+            break;
+        case 'animate':
+            this._toggleAnimations(newValue !== null);
+            break;
+    }
+}
 
   connectedCallback() {
     this.attachShadow({ mode: "open", delegatesFocus: true })
 
     const list = this.querySelector("ul, ol, dl")
-    if (!list){
-      return
+    if (!list) {
+      console.warn('No list element (<ul>, <ol>, or <dl>) found in expanding-list');
+      return;
     }
 
     // Detach from light DOM and clone for processing
-    const listClone = list.cloneNode(true)
+    // Add error boundary for clone operation
+    let listClone;
+    try {
+        listClone = list.cloneNode(true);
+    } catch (err) {
+        console.error('Failed to clone list:', err);
+        return;
+    }
 
     // Create styles and append them to the shadow root
     const sheet = new CSSStyleSheet()
@@ -96,6 +131,27 @@ class ExpandingList extends HTMLElement {
       ul dd.closed .open::before {
         display: none;
       }
+
+      :host([animate]) ul,
+      :host([animate]) ol,
+      :host([animate]) dl {
+          transition: all 0.3s ease-in-out;
+          overflow: hidden;
+      }
+      
+      :host([animate]) ul[style*="none"],
+      :host([animate]) ol[style*="none"],
+      :host([animate]) dl[style*="none"] {
+          max-height: 0;
+          opacity: 0;
+      }
+      
+      :host([animate]) ul[style*="block"],
+      :host([animate]) ol[style*="block"],
+      :host([animate]) dl[style*="block"] {
+          max-height: 1000px;
+          opacity: 1;
+      }
     `)
 
     this.shadowRoot.adoptedStyleSheets = [sheet]
@@ -114,16 +170,23 @@ class ExpandingList extends HTMLElement {
     lis.forEach((li) => {
     // If this li has a ul as a child, decorate it and add a click handler
       if (li.querySelectorAll("ul, ol, dl").length > 0) {
-        // Add an attribute which can be used  by the style
-        // to show an open or closed icon
         li.setAttribute("class", "closed")
 
-        // Wrap the li element's text in a new span element
-        // so we can assign style and event handlers to the span
-        const childText = li.childNodes[0]
-        if (!childText || childText.nodeType !== Node.TEXT_NODE) {
-          console.warn('Expected text node as first child of li')
-          return
+        let childText = null
+        for (const node of li.childNodes) {
+          if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+            childText = node
+            break
+          }
+        }
+        if (!childText) {
+          // If no text node, fallback to first element or skip
+          if (li.childNodes.length > 0) {
+            childText = li.childNodes[0]
+          } else {
+            console.warn('No suitable child node found in li/dd')
+            return
+          }
         }
         const newSpan = document.createElement("span")
 
@@ -140,12 +203,7 @@ class ExpandingList extends HTMLElement {
 
         // Add keydown handler to the span for accessibility
         // This allows the user to activate the span with Enter or Space
-        newSpan.addEventListener("keydown", (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            newSpan.click()
-          }
-        })
+        newSpan.addEventListener("keydown", this._handleKeydown);
 
         // Add the span and remove the bare text node from the li
         childText.parentNode.insertBefore(newSpan, childText)
@@ -154,33 +212,72 @@ class ExpandingList extends HTMLElement {
     })
 
     // Add single event listener to the list clone
-    listClone.addEventListener("click", (e) => {
-      if (e.target.matches('span[role="button"]')) {
-        const nextul = e.target.nextElementSibling
-        if (!nextul){
-          return
-        }
-
-        // Toggle visible state and update class attribute on ul
-        if (nextul.style.display == "block") {
-          nextul.style.display = "none"
-          nextul.parentNode.classList.remove("open")
-          nextul.parentNode.classList.add("closed")
-        } else {
-          nextul.style.display = "block"
-          nextul.parentNode.classList.remove("closed")
-          nextul.parentNode.classList.add("open")
-        }
-      // nextul.setAttribute('aria-expanded', nextul.style.display == "block" ? 'true' : 'false')
-      }
-    })
+    listClone.addEventListener("click", this._handleClick);
 
     this.shadowRoot.innerHTML = "" // Clear the shadow root
     // Append the modified list clone to the shadow root
     this.shadowRoot.appendChild(listClone)
   }
-}
 
+  disconnectedCallback() {
+      // Clean up event listeners
+      const buttons = this.shadowRoot.querySelectorAll('span[role="button"]');
+      buttons.forEach(button => {
+          button.removeEventListener('keydown', this._handleKeydown);
+      });
+      
+      // Clear shadow root
+      if (this.shadowRoot) {
+          this.shadowRoot.innerHTML = '';
+      }
+  }
+
+  _handleKeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.target.click();
+    }
+  }
+
+  _handleClick = (e) => {
+    if (e.target.matches('span[role="button"]')) {
+      const nextul = e.target.nextElementSibling;
+      if (!nextul){
+        return;
+      }
+
+      const isExpanding = nextul.style.display !== "block";
+
+      // Toggle state
+      nextul.style.display = isExpanding ? "block" : "none";
+      nextul.parentNode.classList.toggle("open", isExpanding);
+      nextul.parentNode.classList.toggle("closed", !isExpanding);
+      e.target.setAttribute('aria-expanded', String(isExpanding));
+      e.target.focus();        
+    }
+  }
+
+  _expandAll(expand) {
+    const items = this.shadowRoot.querySelectorAll('li.closed, dd.closed');
+    items.forEach(item => this._toggleItem(item, expand));
+  }
+
+  _collapseAll(collapse) {
+    const items = this.shadowRoot.querySelectorAll('li.open, dd.open');
+    items.forEach(item => this._toggleItem(item, !collapse));
+  }
+
+  _toggleItem(item, expand) {
+    const ul = item.querySelector('ul, ol, dl');
+    const toggle = item.querySelector('span[role="button"]');
+    if (ul && toggle) {
+      ul.style.display = expand ? 'block' : 'none';
+      item.classList.toggle('open', expand);
+      item.classList.toggle('closed', !expand);
+      toggle.setAttribute('aria-expanded', String(expand));
+    }
+  }
+}
 
 // Define the new element
 customElements.define("expanding-list", ExpandingList)

@@ -1,3 +1,15 @@
+/**
+ * @customElement client-ip
+ * @description Displays client IP address and location information
+ * @attr {string} api-url - Custom API endpoint (default: ipinfo.io)
+ * @attr {boolean} show-coords - Show coordinates
+ * @attr {boolean} show-org - Show ISP/Organization
+ * @cssprop --bg-color - Background color
+ * @cssprop --label-color - Label text color
+ * @fires {CustomEvent} ip-loaded - Fired when IP data is loaded
+ * @example <client-ip show-coords show-org></client-ip>
+ */
+
 class ClientIP extends HTMLElement {
     constructor() {
         super();
@@ -26,27 +38,51 @@ class ClientIP extends HTMLElement {
         const sheet = new CSSStyleSheet()
         sheet.replaceSync(`
             :host {
-            display: block;
-            font-family: sans-serif;
-            max-width: 400px;
-            padding: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: var(--bg-color, #f9f9f9);
+                display: block;
+                font-family: var(--client-ip-font, system-ui, sans-serif);
+                max-width: 100%;
+                padding: 1rem;
+                border: 1px solid var(--client-ip-border, #ddd);
+                border-radius: var(--client-ip-radius, 8px);
+                background: var(--client-ip-bg, #f9f9f9);
+                box-sizing: border-box;
             }
             .loading {
-            text-align: center;
-            color: #666;
+                text-align: center;
+                color: var(--client-ip-loading-color, #666);
+                padding: 1rem;
             }
             .error {
-            color: #d32f2f;
-            text-align: center;
+                color: var(--client-ip-error-color, #d32f2f);
+                text-align: center;
+                padding: 1rem;
+                background: var(--client-ip-error-bg, #ffebee);
+                border-radius: 4px;
             }
             p {
-            margin: 8px 0;
+                margin: 0.5rem 0;
+                word-break: break-word;
+                font-size: 0.9rem;
             }
             strong {
-            color: var(--label-color, #333);
+                color: var(--client-ip-label-color, #333);
+                font-weight: 600;
+            }
+            small {
+                display: block;
+                margin-top: 1rem;
+                color: var(--client-ip-note-color, #666);
+                font-size: 0.75rem;
+                text-align: center;
+            }
+            @media (min-width: 600px) {
+                :host {
+                    max-width: 400px;
+                    padding: 1.5rem;
+                }
+                p {
+                    font-size: 1rem;
+                }
             }
         `)
 

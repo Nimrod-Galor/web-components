@@ -1,52 +1,65 @@
 /**
- * RelativeTimeFormat Web Component
- * Formats time differences into human-readable relative strings using Intl.RelativeTimeFormat
+ * SelectLocale Web Component
  * 
- * @customElement relativetime-format
+ * Renders a dropdown for selecting a display locale from a curated list of supported BCP 47 locale codes.
+ * Uses Intl.NumberFormat and Intl.DisplayNames for filtering and human-friendly display.
+ * Dispatches a 'locale-change' event when the selection changes.
+ * 
+ * @customElement select-locale
  * @extends HTMLElement
- * @fires locale-change - When the display locale changes
  * 
- * @property {string} value - The numeric value to format (negative for past, positive for future)
- * @property {string} locale - Locale identifier for formatting
- * @property {string} unit - Time unit (year|quarter|month|week|day|hour|minute|second)
- * @property {string} fstyle - Formatting style (long|short|narrow)
+ * @property {string} displayLocale - The currently selected locale code (e.g. 'en-US')
  * 
- * @attr {string} value - Numeric value to format
- * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
- * @attr {string} unit - Time unit to use
- * @attr {string} fstyle - Format style (default: 'short')
+ * @attr {string} displayLocale - The selected locale code
+ * 
+ * @fires locale-change - Fired when the user selects a new locale. Event detail: { locale: string }
  * 
  * @example
- * <!-- "2 days ago" -->
- * <relativetime-format value="-2" unit="day"></relativetime-format>
+ * <select-locale displayLocale="fr-FR"></select-locale>
  * 
- * <!-- "dans 3 heures" -->
- * <relativetime-format 
- *   value="3" 
- *   unit="hour" 
- *   locale="fr"
- *   fstyle="long">
- * </relativetime-format>
+ * @csspart select - The <select> element
+ * 
+ * Supported ARIA attributes:
+ * - aria-label
+ * - aria-labelledby
+ * - aria-describedby
  */
-class SelectLocale extends HTMLElement{
-    constructor(){
-        super()
+class SelectLocale extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this._onSelectChange = this._onSelectChange.bind(this);
     }
 
     static get observedAttributes() {
-        return ['displayLocale']
-    }
-
-    get displayLocale() {
-        return this.getAttribute('displayLocale')
+        return ['displayLocale'];
     }
 
     set displayLocale(value) {
-        this.setAttribute('displayLocale', value)
-        this._displayLocale = value
+        if (!value) return;
+        
+        // Validate locale
+        const supported = Intl.NumberFormat.supportedLocalesOf([value]);
+        if (supported.length === 0) {
+            console.warn(`Locale ${value} not supported, falling back to en-US`);
+            value = 'en-US';
+        }
+        
+        // Compare with internal property, not the getter
+        if (value !== this._displayLocale) {
+            this._displayLocale = value;
+            this.setAttribute('displayLocale', value);
+            this._updateSelectedOption();
+        }
+    }
+
+    get displayLocale() {
+        // Return internal property if available, otherwise attribute
+        return this._displayLocale || this.getAttribute('displayLocale');
     }
 
     connectedCallback() {
+        this._isConnected = true;
         const locales = [
             "en-US", "en-GB", "es-ES", "es-MX", "fr-FR", "fr-CA", "de-DE", "pt-BR", "pt-PT", "it-IT",
             "nl-NL", "ru-RU", "zh-CN", "zh-TW", "ja-JP", "ko-KR", "ar-SA", "he-IL", "tr-TR", "pl-PL",
@@ -58,56 +71,125 @@ class SelectLocale extends HTMLElement{
             "de-CH", "de-AT", "it-CH", "ar-EG", "ar-MA", "ar-AE", "ar-IQ", "ar-JO", "zh-HK", "zh-SG",
             "tl-PH", "sw-KE", "af-ZA", "am-ET", "my-MM", "km-KH", "lo-LA", "si-LK", "ne-NP", "ps-AF",
             "dz-BT", "bo-CN", "mn-MN", "yo-NG", "ig-NG", "ha-NE", "nso-ZA", "xh-ZA", "zu-ZA", "ga-IE"
-        ]
+        ];
 
-        this._supported = Intl.NumberFormat.supportedLocalesOf(locales)
-        this._displayLocale = this.getAttribute('displayLocale') || 'en-US'
-        this._createSelectDisplayLocales()
+        this._supported = Intl.NumberFormat.supportedLocalesOf(locales);
+        this._displayLocale = this.getAttribute('displayLocale') || 'en-US';
+        this._renderSelect();
+        // Add styles
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+            :host {
+                display: inline-block;
+            }
+            select {
+                padding: 0.5em;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                font-size: 1em;
+                min-width: 200px;
+            }
+            select:focus {
+                outline: 2px solid #007bff;
+                outline-offset: 2px;
+            }
+        `);
+        this.shadowRoot.adoptedStyleSheets = [sheet];
+    }
+
+    disconnectedCallback() {
+        this._isConnected = false;
+        if (this._select) {
+            this._select.removeEventListener('change', this._onSelectChange);
+            this._select = null;
+        }
+        this._optionsCache = null;
+        this._supported = null;
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if(this._isConnected && oldValue !== newValue){
-            this._locale = newValue
+        if (!this._isConnected || oldValue === newValue) return;
+        if (name === 'displayLocale') {
+            this._displayLocale = newValue;
+            this._updateSelectedOption();
         }
     }
 
-    _createSelectDisplayLocales(){
+    _initializeOptions() {
+        if (!this._optionsCache) {
+            this._optionsCache = this._supported.sort().map(locale => {
+                const option = document.createElement('option');
+                option.value = locale;
+                option.textContent = this._getLocaleName(locale, locale.split('-')[0]);
+                return option;
+            });
+        }
+        return this._optionsCache.map(opt => opt.cloneNode(true));
+    }
+
+    _renderSelect() {
+        // Use Shadow DOM for encapsulation
         const select = document.createElement('select');
-        select.id = "select-display-locals"
-        select.setAttribute('aria-label', 'Select display locale')
-        select.setAttribute('aria-labelledby', 'select-display-locals-label')
-        select.setAttribute('aria-describedby', 'select-display-locals-description')
+        select.id = "select-display-locals";
+        select.setAttribute('aria-label', 'Select display locale');
+        select.setAttribute('aria-labelledby', 'select-display-locals-label');
+        select.setAttribute('aria-describedby', 'select-display-locals-description');
+        select.part = "select";
 
-        select.addEventListener('change', (e) => {
-            this.displayLocale = e.currentTarget.value
-            this._createSelectDisplayLocales()
+        // Remove previous event listener if exists
+        if (this._select) {
+            this._select.removeEventListener('change', this._onSelectChange);
+        }
 
-
-            this.dispatchEvent(new CustomEvent('locale-change', {
-                detail: { locale: e.currentTarget.value },
-                bubbles: true,
-                composed: true // necessary for shadow DOM!
-            }));
-        })
-
-        
-        this._supported.sort().forEach(locale => {
-            const option = document.createElement('option');
-            option.value = locale
-            option.textContent = this._getLocaleName(locale, locale.split('-')[0])
-            option.selected = this._displayLocale === locale
+        // Use cached options
+        const options = this._initializeOptions();
+        options.forEach(option => {
+            option.selected = this._displayLocale === option.value;
             select.appendChild(option);
         });
-        this.innerHTML = '';
-        this.appendChild(select);
+
+        select.value = this._displayLocale;
+        select.addEventListener('change', this._onSelectChange);
+
+        // Clear shadow root and append select
+        this.shadowRoot.innerHTML = '';
+        this.shadowRoot.appendChild(select);
+
+        this._select = select;
+    }
+
+    _onSelectChange(e) {
+        const newLocale = e.currentTarget.value;
+        this.displayLocale = newLocale;
+
+        this.dispatchEvent(new CustomEvent('locale-change', {
+            detail: { locale: newLocale },
+            bubbles: true,
+            composed: true // necessary for shadow DOM!
+        }));
+    }
+
+    _updateSelectedOption() {
+        // Only update selected option, do not re-render select
+        if (this._select) {
+            this._select.value = this._displayLocale;
+            Array.from(this._select.options).forEach(opt => {
+                opt.selected = opt.value === this._displayLocale;
+            });
+        }
     }
 
     _getLocaleName(localeCode, displayLocale = 'en-US') {
-        const [langCode, regionCode] = localeCode.split('-');
-        const langName = new Intl.DisplayNames([displayLocale], { type: 'language' }).of(langCode);
-        const regionName = regionCode ? new Intl.DisplayNames([displayLocale], { type: 'region' }).of(regionCode) : '';
-        return regionCode ? `${langName} (${regionName})` : langName;
+        try {
+            const [langCode, regionCode] = localeCode.split('-');
+            const langName = new Intl.DisplayNames([displayLocale], { type: 'language' }).of(langCode);
+            const regionName = regionCode ? new Intl.DisplayNames([displayLocale], { type: 'region' }).of(regionCode) : '';
+            return regionCode ? `${langName} (${regionName})` : langName;
+        } catch (error) {
+            console.warn(`Failed to get locale name for ${localeCode}:`, error);
+            return localeCode; // Fallback to code itself
+        }
     }
 }
 
-customElements.define('select-locale', SelectLocale)
+customElements.define('select-locale', SelectLocale);

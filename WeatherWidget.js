@@ -1,52 +1,25 @@
 /**
- * VirtualKeyboard Web Component
- * Creates an on-screen keyboard with multi-language support and physical keyboard sync
- * 
- * @customElement virtual-keyboard
+ * WeatherWidget Web Component
+ * Displays current weather for a given location using Open-Meteo API.
+ *
+ * @customElement weather-widget
  * @extends HTMLElement
- * @csspart keyboard - The keyboard container
- * @csspart lang-switcher - The language selection dropdown
- * @csspart keys - The keys container
- * 
- * @property {string} language - Current keyboard language (en|fr|de|he|ar)
- * @property {string} target - ID of input/textarea to receive keyboard input
- * @property {boolean} langSwitcher - Whether to show language switcher
- * @property {boolean} shift - Current shift key state
- * @property {boolean} caps - Current caps lock state
- * @property {Object.<string, Array>} customLayouts - Custom keyboard layouts
- * 
- * @attr {string} language - Keyboard language code (default: 'en')
- * @attr {string} target - Target input element ID
- * @attr {boolean} langswitcher - Show/hide language switcher
- * 
- * @fires input - When a key is pressed with character and current value
- * @fires change - When input value changes
- * @fires error - When character insertion fails
- * 
- * @cssprop --key-bg-color - Key background color (default: #f7f7f7)
- * @cssprop --key-border-color - Key border color (default: #ccc)
- * @cssprop --key-text-color - Key text color (default: inherit)
- * @cssprop --key-hover-bg - Key hover background (default: #e6e6e6)
- * @cssprop --key-active-bg - Key active background (default: #add8e6)
- * 
- * @example
- * <!-- Basic usage -->
- * <virtual-keyboard target="input1"></virtual-keyboard>
- * 
- * <!-- With language switcher -->
- * <virtual-keyboard 
- *   target="input1" 
- *   language="fr" 
- *   langswitcher>
- * </virtual-keyboard>
+ * @attr {number} latitude - Latitude for weather data
+ * @attr {number} longitude - Longitude for weather data
+ * @attr {string} unit - Temperature unit ('celsius' or 'fahrenheit')
+ * @fires error - When weather data cannot be fetched
  */
+
 class WeatherWidget extends HTMLElement {
+    static #API_URL = "https://api.open-meteo.com/v1/forecast"
+
     constructor() {
         super()
+        this.attachShadow({ mode: "open" })
     }
 
     static get observedAttributes() {
-        return ['latitude', 'longitude', 'unit']
+        return ['latitude', 'longitude', 'unit', 'auto-refresh']
     }
 
     get latitude() {
@@ -54,7 +27,11 @@ class WeatherWidget extends HTMLElement {
     }
 
     set latitude(value) {
-        this.setAttribute('latitude', value)
+        const num = Number(value)
+        if (isNaN(num) || num < -90 || num > 90) {
+            throw new Error("Latitude must be a number between -90 and 90.")
+        }
+        this.setAttribute('latitude', num)
     }
 
     get longitude() {
@@ -62,27 +39,78 @@ class WeatherWidget extends HTMLElement {
     }
 
     set longitude(value) {
-        this.setAttribute('longitude', value)
+        const num = Number(value)
+        if (isNaN(num) || num < -180 || num > 180) {
+            throw new Error("Longitude must be a number between -180 and 180.")
+        }
+        this.setAttribute('longitude', num)
     }
 
     get unit() {
-        return this.getAttribute('unit') || 'celsius' //fahrenheit
+        const unit = this.getAttribute('unit');
+        return (unit === 'fahrenheit') ? 'fahrenheit' : 'celsius';
     }
 
     set unit(value) {
+        const valid = (value === 'celsius' || value === 'fahrenheit')
+        if (!valid) {
+            throw new Error("Unit must be 'celsius' or 'fahrenheit'.")
+        }
         this.setAttribute('unit', value)
     }
 
     connectedCallback() {
-        this.attachShadow({ mode: "open" })
-        this.apiUrl = "https://api.open-meteo.com/v1/forecast"
-    
+        this._renderInitialState()
+        
         if (this.latitude && this.longitude) {
             this._fetchWeather()
-        }else{
+        } else {
             this._getUserLocation()
         }
+    }
 
+    _renderInitialState() {
+        const unitSymbol = this.unit === 'celsius' ? '°C' : '°F'
+        this.shadowRoot.innerHTML = `
+            <div class="loading">Loading weather data...</div>
+            <div id="main" class="hide" aria-live="polite">
+                <strong>Temperature:</strong> <span class="temp">--</span><span class="unitSymbol">${unitSymbol}</span><br>
+                <strong>Condition:</strong> <span class="description">Loading...</span>
+            </div>
+        `
+        
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+            :host {
+                font-family: sans-serif;
+                display: inline-block;
+                padding: 1em;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                background: #f0f8ff;
+            }
+            .unitSymbol{
+                font-size: 0.8em;
+                vertical-align: super;
+                color: #555;
+            }
+            .loading {
+                color: #666;
+                padding: 1em;
+                text-align: center;
+            }
+            .hide{
+                display:none;
+            }
+            .error {
+                color: #d32f2f;
+                padding: 1em;
+                text-align: center;
+                background: #ffebee;
+                border-radius: 4px;
+            }
+        `)
+        this.shadowRoot.adoptedStyleSheets = [sheet]
     }
 
     // filepath: c:\Users\Nimrod\Documents\html\web components\WeatherWidget.js
@@ -98,7 +126,7 @@ class WeatherWidget extends HTMLElement {
 
     _getUserLocation() {
         if (!navigator.geolocation) {
-            this.renderError("Geolocation not supported")
+            this._renderError("Geolocation not supported") // ✅ Fix method name
             return
         }
 
@@ -114,49 +142,62 @@ class WeatherWidget extends HTMLElement {
         )
     }
 
+    _showLoading() {
+        this.shadowRoot.querySelector('.loading').classList.remove('hide')
+        this.shadowRoot.querySelector('#main').classList.add('hide')
+    }
 
     async _fetchWeather() {
-        const url = `${this.apiUrl}?latitude=${this.latitude}&longitude=${this.longitude}&current=temperature_2m,weather_code&temperature_unit=${this.unit}`
+        this._showLoading()
+        const url = `${WeatherWidget.#API_URL}?latitude=${this.latitude}&longitude=${this.longitude}&current=temperature_2m,weather_code&temperature_unit=${this.unit}`
+        
+        // Add timeout
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+        
         try {
-            const res = await fetch(url)
+            const res = await fetch(url, { signal: controller.signal })
+            clearTimeout(timeoutId)
+            
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`)
+            }
             const data = await res.json()
+            if (!data.current?.temperature_2m || data.current?.weather_code === undefined) {
+                throw new Error('Invalid API response format')
+            }
             const temp = data.current.temperature_2m
             const code = data.current.weather_code
-
             this._renderWeather(temp, code)
         } catch (error) {
-            this._renderError("Failed to fetch weather")
+            clearTimeout(timeoutId)
+            if (error.name === 'AbortError') {
+                this._renderError('Request timed out. Please try again.')
+            } else {
+                this._renderError(`Failed to fetch weather: ${error.message}`)
+            }
         }
     }
 
     _renderWeather(temp, code) {
         const description = this._weatherCodeToText(code)
-        const unitSymbol = this.unit === 'celsius' ? '°C' : '°F'
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    font-family: sans-serif;
-                    display: inline-block;
-                    padding: 1em;
-                    border: 1px solid #ccc;
-                    border-radius: 8px;
-                    background: #f0f8ff;
-                }
-                .unitSymbol{
-                    font-size: 0.8em;
-                    vertical-align: super;
-                    color: #555;
-                }
-            </style>
-            <div aria-live="polite">
-                <strong>Temperature:</strong> ${temp}<span class="unitSymbol">${unitSymbol}</span><br>
-                <strong>Condition:</strong> ${description}
-            </div>
-        `
+        this.shadowRoot.querySelector('.temp').textContent = temp
+        this.shadowRoot.querySelector('.description').textContent = description
+        this.shadowRoot.querySelector('.loading').classList.add('hide')
+        this.shadowRoot.querySelector('#main').classList.remove('hide')
     }
 
     _renderError(message) {
-        this.shadowRoot.innerHTML = `<p style="color:red">${message}</p>`
+        // Use the CSS class instead of inline styles
+        this.shadowRoot.innerHTML = `<div class="error">${message}</div>`
+    }
+
+    refresh() {
+        if (this.latitude && this.longitude) {
+            this._fetchWeather()
+        } else {
+            this._renderError('No location available for refresh')
+        }
     }
 
     static #WEATHER_DESCRIPTIONS = {

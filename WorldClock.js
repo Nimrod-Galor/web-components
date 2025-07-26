@@ -1,13 +1,21 @@
 /**
  * WorldClock web component - Displays current time for multiple cities
+ * 
  * @customElement world-clock
- * @attr {string} cities - Comma-separated list of cities
- * @attr {string} locale - BCP 47 language tag for time formatting
+ * @attr {string} cities - Comma-separated list of cities or "City|TimeZone" format
+ * @attr {string} locale - BCP 47 language tag for time formatting (e.g., 'en-US', 'de-DE')
+ * 
+ * @example
+ * <world-clock cities="New York,London,Custom City|Asia/Singapore" locale="en-US"></world-clock>
+ * 
+ * @fires time-updated - Fired every second when time updates
+ * @fires world-clock-error - Fired when an error occurs
  */
 class WorldClock extends HTMLElement {
   constructor() {
     super();
-    
+  
+    this.attachShadow({ mode: 'open' });
 
     // Always initialize cityTimeZones here!
     this.cityTimeZones = {
@@ -36,9 +44,7 @@ class WorldClock extends HTMLElement {
 
     // Validate time zones on initialization
     Object.values(this.cityTimeZones).forEach(zone => {
-      try {
-        Intl.DateTimeFormat('en', { timeZone: zone });
-      } catch (e) {
+      if (!WorldClock.#validateTimezone(zone)) {
         console.warn(`Invalid time zone: ${zone}`);
       }
     });
@@ -52,22 +58,18 @@ class WorldClock extends HTMLElement {
     if (oldVal !== newVal){ 
       if (name === 'cities') {
         this.cities = newVal ? newVal.split(',').map(c => c.trim()) : ["New York", "London", "Tokyo"];
+        this._render();
         this.updateTime();
       }
       if (name === 'locale') {
         this.locale = newVal || undefined;
+        this._render();
         this.updateTime();
       }
     }
   }
 
-  connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-    // Render the initial clock
-    this.render();
-    this.updateTime();
-
-    // Mobile-first, responsive styles
+  static #sheet = (() => {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(`
       :host {
@@ -140,6 +142,16 @@ class WorldClock extends HTMLElement {
         color: red;
         font-weight: bold;
       }
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0,0,0,0) !important;
+        border: 0 !important;
+      }
       @media (max-width: 600px) {
         :host {
           padding: 0.5em;
@@ -198,7 +210,14 @@ class WorldClock extends HTMLElement {
         }
       }
     `);
-    this.shadowRoot.adoptedStyleSheets = [sheet];
+    return sheet;
+  })();
+
+  connectedCallback() {
+    
+    this._render();
+    this.updateTime();
+    this.shadowRoot.adoptedStyleSheets = [WorldClock.#sheet];
 
     const citiesAttr = this.getAttribute('cities');
     this.cities = citiesAttr ? citiesAttr.split(',').map(c => c.trim()) : ["New York", "London", "Tokyo"];
@@ -211,6 +230,14 @@ class WorldClock extends HTMLElement {
   disconnectedCallback() {
     clearInterval(this.updateInterval);
     document.removeEventListener('visibilitychange', this._onVisibilityChange);
+    this.updateInterval = null;
+    this.cities = null;
+    
+    // Clear timezone cache when component is removed
+    // Only if this is the last instance of WorldClock
+    if (!document.querySelector('world-clock')) {
+        WorldClock.#timezoneCache.clear();
+    }
   }
 
   _onVisibilityChange() {
@@ -224,47 +251,58 @@ class WorldClock extends HTMLElement {
   startClock() {
     clearInterval(this.updateInterval);
     this.updateTime();
-    // this.updateInterval = setInterval(() => this.updateTime(), 1000);
+    this.updateInterval = setInterval(() => this.updateTime(), 1000);
+
   }
 
   updateTime() {
-    if (!this.isConnected) return; // Early return if not in DOM
+    if (!this.isConnected) return;
     if (!this.cities?.length) {
-      console.warn('WorldClock: No cities configured');
-      return;
+        console.warn('WorldClock: No cities configured');
+        return;
     }
 
     try {
-      const now = new Date();
-      const times = this.cities.map(city => {
-        const zone = this.cityTimeZones[city];
-        if (!zone){
-          return `<li role="listitem" class="error">${city}: Invalid Timezone</li>`;
+        const now = new Date();
+        const times = this.cities.map(cityEntry => {
+            let city = cityEntry;
+            let zone = this.cityTimeZones[cityEntry];
+
+            // Support custom format: "City|TimeZone"
+            if (cityEntry.includes('|')) {
+                const [customCity, customZone] = cityEntry.split('|').map(s => s.trim());
+                city = customCity;
+                zone = customZone;
+            }
+
+            // Use cached validation
+            if (!zone || !WorldClock.#validateTimezone(zone)) {
+                return `<li role="listitem" class="error">${city}: Invalid Timezone</li>`;
+            }
+
+            const time = new Intl.DateTimeFormat(this.locale, {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+                timeZone: zone
+            }).format(now);
+
+            return `
+                <li role="listitem">
+                    <span class="city">${city}</span>
+                    <span class="time">${time}</span>
+                </li>
+            `;
+        });
+
+        const clockList = this.shadowRoot.querySelector('#clock-list');
+        if (clockList) {
+            clockList.innerHTML = times.join('');
         }
-
-        const time = new Intl.DateTimeFormat(this.locale, {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-          timeZone: zone
-        }).format(now);
-
-        return `
-          <li role="listitem">
-            <span class="city">${city}</span>
-            <span class="time">${time}</span>
-          </li>
-        `;
-      });
-
-      const clockList = this.shadowRoot.querySelector('#clock-list');
-      if (clockList) {
-        clockList.innerHTML = times.join('');
-      }
     } catch (error) {
-      console.error('WorldClock: Error updating time', error);
-      this._renderError('Unable to update time');
+        console.error('WorldClock: Error updating time', error);
+        this._renderError('Unable to update time');
     }
   }
 
@@ -279,13 +317,34 @@ class WorldClock extends HTMLElement {
     }
   }
 
-  render() {
+  _render() {
     this.shadowRoot.innerHTML = `
       <div class="clock-container">
         <h3>🌍 World Clock</h3>
-        <ul id="clock-list" role="list" aria-live="polite"></ul>
+        <label id="clock-list-label" class="sr-only" for="clock-list">Current times in selected cities</label>
+        <ul id="clock-list" role="list" aria-labelledby="clock-list-label" aria-live="polite"></ul>
       </div>
     `;
+  }
+
+  // Add static cache at the top of the class
+  static #timezoneCache = new Map();
+
+  // Add validation method
+  static #validateTimezone(zone) {
+      // Return cached result if available
+      if (this.#timezoneCache.has(zone)) {
+          return this.#timezoneCache.get(zone);
+      }
+
+      try {
+          Intl.DateTimeFormat('en', { timeZone: zone });
+          this.#timezoneCache.set(zone, true);
+          return true;
+      } catch (e) {
+          this.#timezoneCache.set(zone, false);
+          return false;
+      }
   }
 }
 

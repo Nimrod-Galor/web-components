@@ -1,3 +1,11 @@
+/**
+ * @customElement breadcrumb-trail
+ * @description Displays a breadcrumb navigation trail based on current URL
+ * @attr {string} home-label - Label for the home/root link (default: "Home")
+ * @attr {string} separator - Separator between breadcrumb items (default: "/")
+ * @example <breadcrumb-trail home-label="Start" separator=">"></breadcrumb-trail>
+ */
+
 class BreadcrumbTrail extends HTMLElement {
     constructor() {
         super()
@@ -17,8 +25,53 @@ class BreadcrumbTrail extends HTMLElement {
 
     connectedCallback() {
         this.attachShadow({ mode: 'open' })
-        this.renderFromUrl()
-        window.addEventListener('popstate', this._onPopState = () => this.renderFromUrl())
+        this._renderFromUrl()
+        // Create styles and append them to the shadow root
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+            nav {
+                font-family: var(--breadcrumb-font, system-ui, sans-serif);
+                font-size: var(--breadcrumb-font-size, 0.8rem);
+                line-height: 1.5;
+            }
+            ol {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.25rem;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            a {
+                text-decoration: none;
+                color: var(--breadcrumb-link-color, #007bff);
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            li + li::before {
+                content: "${this.separator}";
+                padding: 0 0.35em;
+                color: var(--breadcrumb-separator-color, #6c757d);
+            }
+            
+            @media (max-width: 600px) {
+                nav { font-size: 0.8rem; }
+                li + li::before { padding: 0 0.2em; }
+            }
+            @media (min-width: 600px) {
+                nav { 
+                    font-size: var(--breadcrumb-font-size, 0.9rem);
+                }
+                li + li::before { 
+                    padding: 0 0.35em; 
+                }
+            }
+        `)
+        this.shadowRoot.adoptedStyleSheets = [sheet]
+
+        window.addEventListener('popstate', this._onPopState = () => this._renderFromUrl())
     }
 
     disconnectedCallback() {
@@ -26,11 +79,14 @@ class BreadcrumbTrail extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
-        if (name === 'home-label' && oldVal && oldVal !== newVal) {
-            this.renderFromUrl()
+        if (oldVal !== newVal && this.shadowRoot) {
+            if (name === 'home-label' || name === 'separator') {
+                this._renderFromUrl(); // Handle both attributes
+            }
         }
     }
-    renderFromUrl() {
+
+    _renderFromUrl() {
         try{
             // Parse the current URL path
             // *********** comment out the next line to use the actual URL !!!!!!!!!!!!!!!!!!!
@@ -47,7 +103,7 @@ class BreadcrumbTrail extends HTMLElement {
             segments.forEach((segment, index) => {
                 path += `/${segment}`
                 trail.push({
-                    label: this.formatLabel(segment),
+                    label: this._formatLabel(segment),
                     href: index < segments.length - 1 ? path : null, // only intermediate ones are links
                 })
             })
@@ -60,47 +116,34 @@ class BreadcrumbTrail extends HTMLElement {
         }
     }
 
-    formatLabel(segment) {
-        // Convert kebab-case or snake_case to Title Case
-        return segment
-        .replace(/[-_]/g, ' ')
-        .replace(/\b\w/g, char => char.toUpperCase())
+    _formatLabel(segment) {
+        try {
+            return segment
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase());
+        } catch (error) {
+            console.warn('Error formatting label:', error);
+            return segment; // Fallback to original
+        }
     }
 
     _render(trail) {
+        // Escape HTML to prevent XSS
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
         const template = document.createElement('template');
         template.innerHTML = `
-            <style>
-                nav {
-                    font-family: sans-serif;
-                    font-size: 0.9rem;
-                }
-                ol {
-                    display: flex;
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                }
-                li + li::before {
-                    content: "${this.separator}";
-                    padding: 0 0.35em;
-                    color: #999;
-                }
-                a {
-                    text-decoration: none;
-                    color: blue;
-                }
-                a:hover {
-                    text-decoration: underline;
-                }
-            </style>
             <nav aria-label="Breadcrumb">
                 <ol>
                     ${trail.map(item => `
                         <li>
                             ${item.href
-                                ? `<a href="${item.href}">${item.label}</a>` 
-                                : `<span aria-current="page">${item.label}</span>`
+                                ? `<a href="${item.href}">${escapeHtml(item.label)}</a>` 
+                                : `<span aria-current="page">${escapeHtml(item.label)}</span>`
                             }
                         </li>
                     `).join('')}

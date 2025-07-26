@@ -31,7 +31,9 @@ class CurrencyConverter extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' })
+        this._setupStyles()
     }
+
     
     static get observedAttributes() {
       return ['locale', 'source', 'target', 'amount']
@@ -64,13 +66,128 @@ class CurrencyConverter extends HTMLElement {
     get amount() {
         if(!this.hasAttribute('amount')) {
             //initialize amount from text content if not set
-            this.amount = this.textContent.trim() || 1
+            this.amount = this.textContent.trim() || 1;
         }
-        return this.getAttribute('amount')
+        return Number(this.getAttribute('amount'));
     }
 
     set amount(value) {
         this.setAttribute('amount', value)
+    }
+
+    _setupStyles() {
+        this._mainSheet = new CSSStyleSheet();
+        this._loadingSheet = new CSSStyleSheet();
+        this._errorSheet = new CSSStyleSheet();
+
+        // Main component styles
+        this._mainSheet.replaceSync(`
+            :host {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                font-family: var(--currency-font, system-ui, sans-serif);
+                padding: 0.75rem;
+                border: 1px solid var(--currency-border, #ddd);
+                border-radius: var(--currency-radius, 8px);
+                background: var(--currency-bg, #f9f9f9);
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            #amount {
+                flex: 1;
+                min-width: 80px;
+                padding: 0.5rem;
+                border: 1px solid var(--input-border, #ccc);
+                border-radius: 4px;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            .currency-label {
+                font-weight: 600;
+                color: var(--label-color, #333);
+                font-size: 0.9rem;
+            }
+            .output {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .output div {
+                padding: 0.5rem;
+                background: var(--output-bg, white);
+                border-radius: 4px;
+                border-left: 3px solid var(--accent-color, #007bff);
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+            @media (min-width: 600px) {
+                :host {
+                    flex-direction: row;
+                    align-items: flex-start;
+                    gap: 1rem;
+                    padding: 1rem;
+                }
+                .output {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                }
+                .output div {
+                    font-size: 1rem;
+                }
+                .currency-label {
+                    font-size: 1rem;
+                }
+            }
+        `);
+
+        // Loading styles
+        this._loadingSheet.replaceSync(`
+            .loading {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 1rem;
+                color: var(--loading-color, #666);
+            }
+            .spinner {
+                width: 16px;
+                height: 16px;
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid var(--accent-color, #007bff);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `);
+
+        // Error styles
+        this._errorSheet.replaceSync(`
+            .error {
+                color: var(--error-color, #d32f2f);
+                background: var(--error-bg, #ffebee);
+                padding: 0.5rem;
+                border-radius: 4px;
+            }
+            .retry-btn {
+                margin-left: 1rem;
+                padding: 0.25rem 0.5rem;
+                background: var(--retry-bg, #007bff);
+                color: var(--retry-color, white);
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        `);
     }
 
     connectedCallback() {
@@ -90,72 +207,108 @@ class CurrencyConverter extends HTMLElement {
     }
 
     async _fetchConversionRate() {
-        if (!this.source || this.target.length === 0){
-            this._renderError('Source or target currency missing')
-            return
+        if (!this.source || this.target.length === 0) {
+            this._renderError('Source or target currency missing');
+            return;
         }
 
-        const symbols = this.target.join(',')
+        const symbols = this.target.join(',');
+        const cacheKey = `rates-${this.source}-${symbols}`;
+        const now = Date.now();
+        
+        // Check cache first (5-minute expiry)
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                const { data, expires } = JSON.parse(cached);
+                if (expires > now) {
+                    this._rates = data;
+                    this._render();
+                    return;
+                }
+            } catch (e) {
+                // Ignore cache errors
+            }
+        }
 
-        const url = `https://api.frankfurter.app/latest?from=${this.source}&symbols=${symbols}`
+        const url = `https://api.frankfurter.app/latest?from=${this.source}&symbols=${symbols}`;
         
         try {
-            fetch(url)
-            .then(res => {
-                if (!res.ok) {
-                    this._renderError(`API error: ${res.status} ${res.statusText}`);
-                    return
-                }
-                return res.json()
-            })
-            .then(data => {
-                if (data && data.rates != null) {
-                    this._rates = data.rates
-                    this._render()
-                } else {
-                    this._renderError('Invalid API response')
-                }
-            })
+            const res = await fetch(url);
+            if (!res.ok) {
+                this._renderError(`API error: ${res.status} ${res.statusText}`);
+                return;
+            }
+            const data = await res.json();
+            if (data && data.rates != null) {
+                this._rates = data.rates;
+                
+                // Cache the rates
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: data.rates,
+                    expires: now + (5 * 60 * 1000) // 5 minutes
+                }));
+                
+                this._render();
+            } else {
+                this._renderError('Invalid API response');
+            }
         } catch (err) {
-            this._renderError('Network error. Failed to fetch rate')
+            this._renderError('Network error. Failed to fetch rate');
         }
     }
 
     _renderLoading() {
-        this.shadowRoot.innerHTML = `<span>Loading...</span>`
+        this.shadowRoot.adoptedStyleSheets = [this._loadingSheet];
+        this.shadowRoot.innerHTML = `
+            <div class="loading" aria-live="polite">
+                <div class="spinner"></div>
+                <span>Loading exchange rates...</span>
+            </div>
+        `;
     }
 
     _renderError(msg) {
-        this.shadowRoot.innerHTML = `<span style="color:red">Error: ${msg}</span>`
+        this.shadowRoot.adoptedStyleSheets = [this._errorSheet];
+        this.shadowRoot.innerHTML = `
+            <div class="error" role="alert" aria-live="assertive">
+                <strong>Error:</strong> ${msg}
+                <button class="retry-btn">Retry</button>
+            </div>
+        `;
+        
+        this.shadowRoot.querySelector('.retry-btn').addEventListener('click', () => {
+            this._fetchConversionRate();
+        });
     }
 
     _render() {
-        // const converted = (this.amount * this.rate).toFixed(2)
-        const convertedList = this._parseRates()
-        const summary = this._summary()
-
+        this.shadowRoot.adoptedStyleSheets = [this._mainSheet];
         this.shadowRoot.innerHTML = `
-        <style>
-            :host {
-                display: flex;
-                gap:10px;
-            }
-            #amount {
-                justify-items: end;
-                height: fit-content;
-            }
-        </style>
-        <input type='number' id="amount" value="${this.amount}" min="1" aria-label="Amount in ${this.source}" />
-        <label for="amount"> ${this.source}</label> = 
-        <div class="output" aria-label="${summary}" title="${summary}">${convertedList}</div>`
-        this.shadowRoot.querySelector('#amount').addEventListener('input', this._onAmountChange.bind(this))
+            <div class="input-group">
+                <input type='number' id="amount" value="${this.amount}" min="0" step="0.01" 
+                       aria-label="Amount in ${this.source}" part="amount" />
+                <span class="currency-label">${this.source}</span>
+                <span>=</span>
+            </div>
+            <div class="output" aria-label="${this._summary()}" title="${this._summary()}" part="output">
+                ${this._parseRates()}
+            </div>
+        `;
+    
+        this.shadowRoot.querySelector('#amount').addEventListener('input', this._onAmountChange.bind(this));
     }
 
     _onAmountChange(e) {
         const newValue = parseFloat(e.target.value)
-        if (!isNaN(newValue)) {
-            this.amount = newValue
+        // Validate input
+        if (isNaN(newValue) || newValue < 0) {
+            e.target.setCustomValidity('Please enter a valid positive number');
+            return;
         }
+        
+        e.target.setCustomValidity(''); // Clear validation error
+        this.amount = newValue;
     }
 
     _renderConverted() {
@@ -170,17 +323,37 @@ class CurrencyConverter extends HTMLElement {
         output.setAttribute('title', summary)
     }
 
-    _parseRates(){
-        const output = this.target.map(target => {
-                const rate = this._rates[target]
-                if (!rate) {
-                    return `<span style="color:red">No rate for ${target}</span>`
-                }
-                const amount = (Number(this.amount) * rate).toFixed(2);
-                return `<div>${amount} ${target}</div>`;
-            }).join('')
+    _parseRates() {
+        const formatter = new Intl.NumberFormat(this.locale, {
+            style: 'currency',
+            currency: 'USD', // Will be overridden per currency
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 
-        return output || `<span style="color:red">No rates available</span>`
+        return this.target.map(target => {
+            const rate = this._rates[target];
+            if (!rate) {
+                return `<div style="color: var(--error-color, #d32f2f)">No rate for ${target}</div>`;
+            }
+            
+            const amount = Number(this.amount) * rate;
+            
+            try {
+                // Format with proper currency
+                const formatted = new Intl.NumberFormat(this.locale, {
+                    style: 'currency',
+                    currency: target,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount);
+                
+                return `<div>${formatted}</div>`;
+            } catch (e) {
+                // Fallback if currency is not supported
+                return `<div>${amount.toFixed(2)} ${target}</div>`;
+            }
+        }).join('') || `<div style="color: var(--error-color, #d32f2f)">No rates available</div>`;
     }
 
     _summary(){

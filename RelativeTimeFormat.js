@@ -37,85 +37,136 @@ class RelativeTimeFormat extends HTMLElement{
         return ['value', 'locale', 'unit', 'fstyle']
     }
 
+    static VALID_UNITS = ["year", "quarter", "month", "week", "day", "hour", "minute", "second"];
+    static VALID_STYLES = ["long", "short", "narrow"];
+
     get value() {
         return this.getAttribute('value')
     }
 
-    set value(value) {
-        this.setAttribute('value', value)
+    set value(val) {
+        // Accept numbers as well as string numbers
+        if ((typeof val === 'string' && val.trim() !== '' && !isNaN(Number(val))) ||
+            (typeof val === 'number' && !isNaN(val))) {
+            this.setAttribute('value', String(val));
+        } else {
+            this.removeAttribute('value');
+        }
     }
 
     get locale() {
         return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
     }
 
-    set locale(value) {
-        this.setAttribute('locale', value)
+    set locale(val) {
+        if (typeof val === 'string' && val.trim()) {
+            // Check if locale is supported
+            const supported = Intl.RelativeTimeFormat.supportedLocalesOf([val]);
+            if (supported.length > 0) {
+                this.setAttribute('locale', val);
+                return;
+            }
+        }
+        this.setAttribute('locale', 'en-US');
     }
 
     get unit() {
-        return this.getAttribute('unit')// "year", "quarter", "month", "week", "day", "hour", "minute", "second"
+        return this.getAttribute('unit') || 'second'; // Default fallback
     }
 
-    set unit(value) {
-        this.setAttribute('unit', value)
+    set unit(val) {
+        if (RelativeTimeFormat.VALID_UNITS.includes(val)) {
+            this.setAttribute('unit', val)
+        } else {
+            this.removeAttribute('unit')
+        }
     }
 
     get fstyle() {
-        return this.getAttribute('fstyle') || 'short' // long, short, narrow
+        return this.getAttribute('fstyle') || 'short'
     }
 
-    set fstyle(value) {
-        this.setAttribute('fstyle', value)
+    set fstyle(val) {
+        if (RelativeTimeFormat.VALID_STYLES.includes(val)) {
+            this.setAttribute('fstyle', val)
+        } else {
+            this.setAttribute('fstyle', 'short')
+        }
     }
 
     connectedCallback() {
-        requestAnimationFrame(() => {
+        // requestAnimationFrame(() => {
             this._connected = true
             this._initIntlNF()
             this._format()
-        })
+        // })
         
-        // listen to language select change event
-        window.addEventListener('locale-change', (e) => {
-            this.locale = e.detail.locale
-        })
+        window.addEventListener('locale-change', this._onLocaleChange)
+    }
+
+    _onLocaleChange(e){
+        this.locale = e.detail.locale
     }
 
     disconnectedCallback() {
-        window.removeEventListener('locale-change', this._onLocaleChange)
+        window.removeEventListener('locale-change', this._onLocaleChange);
+        this._connected = false;
+        this._formatter = null; // Clear formatter reference
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if(this._connected && oldValue !== newValue){
-            switch(name){
-                case 'locale':
-                    this.locale = newValue
-                    this._initIntlNF()
-                break
-                case 'fstyle':
-                    this.fstyle = newValue
-                    this._initIntlNF()
-                break
-            }
-
-            requestAnimationFrame(() => this._format())
+        if(!this._connected || oldValue === newValue) return;
+        
+        switch(name){
+            case 'locale':
+            case 'fstyle':
+                this[name] = newValue;
+                this._initIntlNF();
+                break;
+            case 'unit':
+            case 'value':
+                this[name] = newValue;
+                break;
         }
+
+        this._format(); // Remove requestAnimationFrame unless needed
     }
 
     _format(){
         if (!this.value || !this.unit){
-            return
+            this.innerText = '';
+            this.removeAttribute('aria-label');
+            this.removeAttribute('title');
+            return;
         }
-        const formatted = this._formatter.format(Number(this.value), this.unit)
-
-        this.innerText = formatted
-        this.setAttribute('aria-label', formatted)
-        this.setAttribute('title', formatted)
+        
+        try {
+            const formatted = this._formatter.format(Number(this.value), this.unit);
+            
+            if (this.childNodes.length === 0) {
+                this.innerText = formatted;
+            }
+            this.setAttribute('aria-label', formatted);
+            this.setAttribute('title', formatted);
+        } catch (error) {
+            console.warn(`Failed to format relative time: ${error.message}`);
+        }
     }
 
     _initIntlNF(){
-        this._formatter = new Intl.RelativeTimeFormat(this.locale, { style: this.fstyle, numeric: 'auto' })
+        try {
+            this._formatter = new Intl.RelativeTimeFormat(this.locale, { 
+                style: this.fstyle, 
+                numeric: 'auto' 
+            });
+        } catch (error) {
+            console.warn(`Failed to initialize RelativeTimeFormat: ${error.message}`);
+            // Fallback to default locale
+            this._formatter = new Intl.RelativeTimeFormat('en-US', {
+                style: 'short',
+                numeric: 'auto'
+            });
+        }
     }
 }
 

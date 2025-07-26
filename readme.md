@@ -1094,3 +1094,56 @@ This web component, `<expanding-list>`, provides an accessible, interactive expa
 
 **Summary:**  
 `<expanding-list>` is a reusable, accessible, and styleable component for interactive nested lists, ideal for menus, FAQs, or any expandable content structure.
+
+## Scroll Buttons
+
+**`<scroll-buttons>` Web Component**
+
+This component provides floating "scroll to top" and "scroll to bottom" buttons for any web page. It is designed for accessibility, mobile-friendliness, and easy integration.
+
+### Features
+
+- **Floating Buttons:** Two circular buttons appear fixed at the bottom right of the viewport.
+- **Auto Visibility:**
+  - The "top" button appears after scrolling down 300px.
+  - The "bottom" button appears unless you are already near the bottom.
+- **Smooth Scrolling:** Uses smooth scroll if supported by the browser.
+- **Accessible:**
+  - Buttons have `aria-label` and `title` attributes.
+  - Fully keyboard accessible (Enter/Space triggers action).
+  - Focus styles for accessibility.
+- **Responsive:** Adjusts padding and position for small screens.
+- **Customizable:**
+  - Theming via CSS custom properties (e.g., `--scroll-buttons-bg`, `--scroll-buttons-right`).
+- **Shadow DOM:** Styles and markup are encapsulated.
+- **No dependencies:** Pure vanilla JS.
+
+### Usage
+
+```html
+<scroll-buttons></scroll-buttons>
+```
+
+### Customization
+
+You can style the component using CSS variables:
+
+```css
+scroll-buttons {
+  --scroll-buttons-right: 30px;
+  --scroll-buttons-bg: #222;
+  --scroll-buttons-bg-hover: #444;
+  --scroll-buttons-color: #fff;
+}
+```
+
+### Accessibility
+
+- Keyboard and screen reader friendly.
+- Buttons are hidden when not needed.
+- Focus ring and hover states are visible.
+
+---
+
+**Summary:**  
+`<scroll-buttons>` adds floating, accessible, and customizable scroll-to-top and scroll-to-bottom buttons to your page, improving navigation for all users.

@@ -31,74 +31,7 @@ class CurrencyFormat extends HTMLElement {
     }
     
     #_render = true
-
-    connectedCallback() {
-        requestAnimationFrame(() => {
-            this._convertValue = true
-            this._initIntlNF()
-            this.observer = new MutationObserver(() => {
-                if(this.#_render){
-                    this.value = this.textContent.replace(/[^\d.-]/g, '').trim()
-                }else{
-                    this.#_render = true
-                }
-            })
-            this.observer.observe(this, { childList: true, characterData: true, subtree: true })
-            this._format()
-        })
-
-        // listen to language select change event
-        window.addEventListener('locale-change', (e) => {
-            this.locale = e.detail.locale
-        })
-    }
-
-    disconnectedCallback() {
-        if (this.observer){
-            this.observer.disconnect()
-        }
-        window.removeEventListener('locale-change', this._onLocaleChange)
-    }
-
-    // This will be called when any of the observed attributes change
-    async attributeChangedCallback(name, oldValue, newValue) {
-        if(oldValue && oldValue !== newValue){
-            if(name === 'currency'){
-                if(this._convertValue){
-                    // If the currency attribute changes, get exchange rate and calculate new value
-                    fetch(`https://api.frankfurter.app/latest?from=${oldValue}&to=${newValue}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response;
-                    }).then(response => response.json())
-                    .then(data => {
-                        const rate = data.rates[newValue]
-                        const num = Number(this.value) * rate
-                        // initialize the formatter with the new currency
-                        this._initIntlNF()
-                        // Set the new value. this will triget new formatting
-                        this.value = num
-                    })
-                    .catch(error => {
-                        console.error('Error fetching exchange rate:', error);
-                        // we need revert back to the old currency without converting the value
-                        this._convertValue = false
-                        this.currency = oldValue
-                    })
-                }else{
-                    this._convertValue = true
-                }
-            } else if(name != 'value'){
-                this._initIntlNF()
-            }
-            this.#_render = true
-            // Reformat the number when attributes change
-            requestAnimationFrame(() => this._format())
-        }
-    }
-    
+        
     static get observedAttributes() {
         return ['value', 'currency', 'locale', 'minimum-fraction-digits', 'maximum-fraction-digits']
     }
@@ -108,7 +41,12 @@ class CurrencyFormat extends HTMLElement {
     }
 
     set value(value) {
-        this.setAttribute('value', value)
+        const num = Number(value);
+        if (isNaN(num)) {
+            console.error('invalid-value! Value must be a number.');
+            return;
+        }
+        this.setAttribute('value', String(num));
     }
 
     get currency() {
@@ -116,7 +54,12 @@ class CurrencyFormat extends HTMLElement {
     }
 
     set currency(value) {
-        this.setAttribute('currency', value)
+        const code = String(value).toUpperCase();
+        if (!/^[A-Z]{3}$/.test(code)) {
+            console.error('invalid-currency! Currency must be a 3-letter code');
+            return;
+        }
+        this.setAttribute('currency', code);
     }
 
     get locale() {
@@ -145,6 +88,73 @@ class CurrencyFormat extends HTMLElement {
         this.setAttribute('maximum-fraction-digits', value)
     }
 
+    connectedCallback() {
+        requestAnimationFrame(() => {
+            this._convertValue = true
+            this._initIntlNF()
+            this.observer = new MutationObserver(() => {
+                if(this.#_render){
+                    this.value = this.textContent.replace(/[^\d.-]/g, '').trim()
+                }else{
+                    this.#_render = true
+                }
+            })
+            this.observer.observe(this, { childList: true, characterData: true, subtree: true })
+            this._format()
+        })
+
+        this._onLocaleChange = (e) => {
+                this.locale = e.detail.locale;
+            };
+
+        // listen to language select change event
+        window.addEventListener('locale-change', this._onLocaleChange)
+    }
+
+    disconnectedCallback() {
+        if (this.observer){
+            this.observer.disconnect()
+            this.observer = null
+        }
+        window.removeEventListener('locale-change', this._onLocaleChange)
+    }
+
+    // This will be called when any of the observed attributes change
+    async attributeChangedCallback(name, oldValue, newValue) {
+        if(oldValue && oldValue !== newValue){
+            if(name === 'currency'){
+                if(this._convertValue){
+                    // If the currency attribute changes, get exchange rate and calculate new value
+                    this._fetchExchangeRate(oldValue, newValue)
+                    .then(rate => {
+                        const num = Number(this.value) * rate
+                        // initialize the formatter with the new currency
+                        this._initIntlNF()
+                        // Set the new value. this will trigger new formatting
+                        this.value = num
+                    })
+                    .catch(error => {
+                        console.error('Error fetching exchange rate:', error);
+                        // Show error to user
+                        this.innerHTML = `<span style="color: var(--error-color, #d32f2f)">Exchange rate error</span>`;
+                        this.setAttribute('aria-label', 'Exchange rate error');
+                        this.setAttribute('title', 'Exchange rate error');
+                        // we need revert back to the old currency without converting the value
+                        this._convertValue = false
+                        this.currency = oldValue
+                    })
+                }else{
+                    this._convertValue = true
+                }
+            } else if(name != 'value'){
+                this._initIntlNF()
+            }
+            this.#_render = true
+            // Reformat the number when attributes change
+            requestAnimationFrame(() => this._format())
+        }
+    }
+
     _format() {
         if(!this.value){
             // If no value is set, try to get it from the text content
@@ -155,13 +165,26 @@ class CurrencyFormat extends HTMLElement {
 
         if (isNaN(num)){
             // Do not format if invalid number
+            this.innerHTML = `<span style="color: var(--error-color, #d32f2f)">Invalid number</span>`;
+            this.setAttribute('aria-label', 'Invalid number');
+            this.setAttribute('title', 'Invalid number');
             return
         }
 
         // set render to false to prevent reformatting while formatting endless loop
         this.#_render = false
         
-        const parts = this._formatter.formatToParts(num)
+        let parts;
+        try {
+            parts = this._formatter.formatToParts(num)
+        } catch (err) {
+            this.innerHTML = `<span style="color: var(--error-color, #d32f2f)">Formatting error</span>`;
+            this.setAttribute('aria-label', 'Formatting error');
+            this.setAttribute('title', 'Formatting error');
+            console.error('CurrencyFormat: Intl.NumberFormat error:', err);
+            return;
+        }
+
         let html = ''
         let title = ''
         
@@ -169,13 +192,13 @@ class CurrencyFormat extends HTMLElement {
         let fractionBuffer = '';
         for (const part of parts) {
             if (part.type === 'currency') {
-                html += `<span class="currency">${part.value}</span>`;
+                html += `<span class="currency" part="currency">${part.value}</span>`;
             } else if (part.type === 'decimal' || part.type === 'fraction') {
                 fractionBuffer += part.value;
             } else {
                 // If there's a buffered fraction, flush it before adding other parts
                 if (fractionBuffer) {
-                    html += `<span class="fraction">${fractionBuffer}</span>`;
+                    html += `<span class="fraction" part="fraction">${fractionBuffer}</span>`;
                     fractionBuffer = '';
                 }
                 html += part.value;
@@ -184,7 +207,7 @@ class CurrencyFormat extends HTMLElement {
         }
         // Flush any remaining fraction at the end
         if (fractionBuffer) {
-            html += `<span class="fraction">${fractionBuffer}</span>`;
+            html += `<span class="fraction" part="fraction">${fractionBuffer}</span>`;
         }
 
         this.innerHTML = html
@@ -193,13 +216,11 @@ class CurrencyFormat extends HTMLElement {
     }
 
     _initIntlNF(){
-        const options = {
-            minimumFractionDigits: parseInt(this.minimumFractionDigits) || undefined,
-            maximumFractionDigits: parseInt(this.maximumFractionDigits) || undefined,
-            style: 'currency',
-            currency: this.currency,
-        };
-
+        const options = { style: 'currency', currency: this.currency };
+        const min = parseInt(this.minimumFractionDigits);
+        const max = parseInt(this.maximumFractionDigits);
+        if (!isNaN(min)) options.minimumFractionDigits = min;
+        if (!isNaN(max)) options.maximumFractionDigits = max;
         this._formatter = new Intl.NumberFormat(this.locale, options)
     }
 
@@ -306,6 +327,35 @@ class CurrencyFormat extends HTMLElement {
             "ga-IE": "EUR"
         }
 
-  }
+    // Add cache property
+    #rateCache = new Map();
+    
+    async _fetchExchangeRate(from, to) {
+        const cacheKey = `${from}-${to}`;
+        const now = Date.now();
+        
+        // Check cache
+        if (this.#rateCache.has(cacheKey)) {
+            const {rate, expires} = this.#rateCache.get(cacheKey);
+            if (expires > now){
+                return rate;
+            }
+        }
+        
+        const response = await fetch(`https://api.frankfurter.app/latest?from=${from}&to=${to}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        const rate = data.rates[to];
+        
+        // Cache rate for 1 hour
+        this.#rateCache.set(cacheKey, {
+            rate,
+            expires: now + (60 * 60 * 1000) // 1 hour in milliseconds
+        });
+        
+        return rate;
+    }
+}
 
-  customElements.define('currency-format', CurrencyFormat)
+customElements.define('currency-format', CurrencyFormat)

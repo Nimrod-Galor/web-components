@@ -23,25 +23,80 @@
  */
 class PopupInfo extends HTMLElement {
   constructor() {
-    super()
+    super();
+    this.attachShadow({ mode: "open" });
+    // Store element references
+    this._icon = null;
+    this._info = null;
+    this._wrapper = null;
+
+    // Bind methods
+    this._onKeydownHandler = this._onKeydown.bind(this);
+    this._onBlurHandler = this._onBlur.bind(this);
+    this._onTouchStart = this._onTouchStart.bind(this);
   }
 
   static get observedAttributes() {
-    return ['data-text']
+    return ['data-text', 'position'];
   }
-  
-  attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'data-text' && this.shadowRoot) {
-      this.shadowRoot.querySelector('.info').textContent = newVal
+
+  get position() {
+    return this.getAttribute('position') || 'top';
+  }
+  set position(val) {
+    if (val) {
+      this.setAttribute('position', val);
+    } else {
+      this.removeAttribute('position');
     }
   }
 
-  connectedCallback() {
-    // Create a shadow root
-    const shadow = this.attachShadow({ mode: "open" })
+  attributeChangedCallback(name, oldVal, newVal) {
+    try {
+      if (name === 'data-text' && this._info) {
+        const text = (newVal?.trim() || '').replace(/[<>]/g, ''); // Basic sanitization
+        this._info.textContent = text;
+        // Hide tooltip if text is empty
+        if (!text) {
+          this._hideTooltip();
+        }
+      }
+      
+      if (name === 'position' && this._info) {
+        this._updatePosition(newVal);
+      }
+    } catch (error) {
+      console.error('Error updating tooltip:', error);
+    }
+  }
 
-     // Create styles and append them to the shadow root
-      const sheet = new CSSStyleSheet()
+  static template = document.createElement('template');
+  static {
+    this.template.innerHTML = `
+      <span class="wrapper" part="wrapper">
+        <span class="icon" tabindex="0" part="icon"></span>
+        <span class="info" role="tooltip" aria-live="polite" part="info"></span>
+      </span>
+    `;
+  }
+
+  connectedCallback() {
+    try {
+      // Clone template instead of using innerHTML
+      const content = PopupInfo.template.content.cloneNode(true);
+      const uniqueId = `info-popup-${Math.random().toString(36).slice(2)}`;
+      
+      const info = content.querySelector('.info');
+      const icon = content.querySelector('.icon');
+      
+      info.id = uniqueId;
+      icon.setAttribute('aria-describedby', uniqueId);
+      info.textContent = this.getAttribute('data-text') || '';
+      
+      this.shadowRoot.appendChild(content);
+
+      // Create styles and append them to the shadow root
+      const sheet = new CSSStyleSheet();
       sheet.replaceSync(`
         :host {
           --popup-bg: white;
@@ -49,6 +104,12 @@ class PopupInfo extends HTMLElement {
           --popup-radius: 10px;
           --popup-shadow: 0 2px 4px rgba(0,0,0,0.2);
           --popup-transition: 0.6s;
+          display: inline-block;
+        }
+
+        :host([disabled]) .icon {
+          opacity: 0.5;
+          pointer-events: none;
         }
 
         .wrapper {
@@ -64,12 +125,103 @@ class PopupInfo extends HTMLElement {
           background: var(--popup-bg);
           border-radius: var(--popup-radius);
           box-shadow: var(--popup-shadow);
-          transition: var(--popup-transition) all;
+          transition: opacity var(--popup-transition), 
+                      transform var(--popup-transition);
           opacity: 0;
           position: absolute;
-          bottom: 20px;
-          left: 10px;
           z-index: 3;
+          pointer-events: none;
+        }
+
+        /* Default position: top */
+        .info {
+          bottom: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%) translateY(10px) scale(0.95);
+        }
+
+        .info.visible {
+          transform: translateX(-50%) translateY(0) scale(1);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .info::after {
+          content: '';
+          position: absolute;
+          border: 6px solid transparent;
+        }
+
+        /* Default arrow: top */
+        .info::after {
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-top-color: var(--popup-bg);
+        }
+
+        /* Bottom position */
+        .info.position-bottom {
+          top: calc(100% + 8px);
+          bottom: auto;
+          transform: translateX(-50%) translateY(-10px) scale(0.95);
+        }
+
+        .info.position-bottom.visible {
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .info.position-bottom::after {
+          top: -12px;
+          bottom: auto;
+          border-top-color: transparent;
+          border-bottom-color: var(--popup-bg);
+        }
+
+        /* Left position */
+        .info.position-left {
+          top: 50%;
+          right: calc(100% + 8px);
+          bottom: auto;
+          left: auto;
+          transform: translateY(-50%) translateX(10px) scale(0.95);
+        }
+
+        .info.position-left.visible {
+          transform: translateY(-50%) translateX(0) scale(1);
+        }
+
+        .info.position-left::after {
+          top: 50%;
+          left: 100%;
+          right: auto;
+          bottom: auto;
+          transform: translateY(-50%);
+          border-top-color: transparent;
+          border-left-color: var(--popup-bg);
+        }
+
+        /* Right position */
+        .info.position-right {
+          top: 50%;
+          left: calc(100% + 8px);
+          bottom: auto;
+          right: auto;
+          transform: translateY(-50%) translateX(-10px) scale(0.95);
+        }
+
+        .info.position-right.visible {
+          transform: translateY(-50%) translateX(0) scale(1);
+        }
+
+        .info.position-right::after {
+          top: 50%;
+          right: 100%;
+          left: auto;
+          bottom: auto;
+          transform: translateY(-50%);
+          border-top-color: transparent;
+          border-right-color: var(--popup-bg);
         }
 
         .icon{
@@ -88,41 +240,99 @@ class PopupInfo extends HTMLElement {
         .icon:focus {
           outline: 2px solid #0078d4;
         }
-          `)
 
-      shadow.adoptedStyleSheets = [sheet]
+        /* Add support for reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .info {
+            transition: none;
+          }
+        }
+      `);
 
-    // Create spans
-    const wrapper = document.createElement("span")
-    wrapper.setAttribute("class", "wrapper")
+      this.shadowRoot.adoptedStyleSheets = [sheet];
 
-    const icon = document.createElement("span")
-    icon.setAttribute("class", "icon")
-    icon.setAttribute("tabindex", 0)
-    const uniqueId = `info-popup-${Math.random().toString(36).slice(2)}`
-    icon.setAttribute("aria-describedby", uniqueId)
-    wrapper.appendChild(icon)
+      // Store references
+      this._wrapper = this.shadowRoot.querySelector('.wrapper');
+      this._icon = this.shadowRoot.querySelector('.icon');
+      this._icon.addEventListener('keydown', this._onKeydownHandler);
+      this._icon.addEventListener('blur', this._onBlurHandler);
+      this._icon.addEventListener('touchstart', this._onTouchStart);
+      this._info = this.shadowRoot.querySelector('.info');
 
-    const info = document.createElement("span")
-    info.setAttribute("class", "info")
-    info.setAttribute("id", uniqueId)
-    info.setAttribute("role", "tooltip")
-    // Take attribute content and put it inside the info span
-    info.textContent = this.getAttribute("data-text")
-    wrapper.appendChild(info)
+      // Apply initial position
+      this._updatePosition(this.getAttribute('position'));
+    } catch (error) {
+      console.error('Failed to initialize popup:', error);
+      // Fallback rendering
+    }
+  }
 
-    icon.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        info.style.opacity = 1
-      }
-    })
-    icon.addEventListener('blur', () => {
-      info.style.opacity = 0
-    })
+  _updatePosition(position) {
+    if (!this._info) return;
+    
+    // Remove existing position classes
+    this._info.classList.remove('position-top', 'position-bottom', 'position-left', 'position-right');
+    
+    // Add new position class (always add a position class for consistency)
+    const validPositions = ['top', 'bottom', 'left', 'right'];
+    const pos = validPositions.includes(position) ? position : 'top';
+    this._info.classList.add(`position-${pos}`);
+  }
 
-    shadow.appendChild(wrapper)
+  _hideTooltip() {
+    if (this._info) {
+      this._info.classList.remove('visible');
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._icon) {
+      this._icon.removeEventListener('keydown', this._onKeydownHandler);
+      this._icon.removeEventListener('blur', this._onBlurHandler);
+      this._icon.removeEventListener('touchstart', this._onTouchStart);
+
+      // Clear references
+      this._icon = null;
+      this._info = null;
+      this._wrapper = null;
+    }
+  }
+
+  _onKeydown(e) {
+    const isVisible = this._info.classList.contains('visible');
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        this._info.classList.add('visible');
+        break;
+      case 'Escape':
+        if (isVisible) {
+          this._info.classList.remove('visible');
+          e.target.blur();
+        }
+        break;
+      case 'Tab':
+        if (isVisible) {
+          this._info.classList.remove('visible');
+        }
+        break;
+    }
+  }
+
+  _onBlur() {
+    this._info.classList.remove('visible');
+  }
+
+  _onTouchStart(e) {
+    e.preventDefault();
+    const isVisible = this._info.classList.contains('visible');
+    if (isVisible) {
+      this._info.classList.remove('visible');
+    } else {
+      this._info.classList.add('visible');
+    }
   }
 }
 
-// Define the new element
-customElements.define("popup-info", PopupInfo)
+customElements.define("popup-info", PopupInfo);
