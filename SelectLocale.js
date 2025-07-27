@@ -50,7 +50,8 @@ class SelectLocale extends HTMLElement {
 
     get displayLocale() {
         // Return internal property if available, otherwise attribute
-        return this.getAttribute('displayLocale') || document.body.getAttribute('data-locale') || 'en-US';
+        const systemLocale = navigator.languages  ? navigator.languages.length ? navigator.languages[0] : navigator.language : undefined;
+        return this.getAttribute('displayLocale') || document.body.getAttribute('data-locale') || systemLocale || 'en-US';
     }
 
     connectedCallback() {
