@@ -192,6 +192,7 @@ form#searchForm{
         border-radius: 0 2px 2px 0;
         border: 1px outset buttonborder;
         border-left: 0;
+        border-radius: 0 5px 5px 0;
         cursor: pointer;
     }
 }

@@ -10,7 +10,6 @@
  * @property {string} locale - Locale identifier for formatting
  * 
  * @attr {string} value - Numeric value to format
- * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
  * 
  * @example
  * <!-- Formats as "1st", "2nd", "3rd", etc. in English -->
@@ -30,7 +29,7 @@ class PluralRules extends HTMLElement{
     }
 
     get locale() {
-        return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US'
     }
 
     set locale(value) {

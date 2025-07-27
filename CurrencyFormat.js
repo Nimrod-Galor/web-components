@@ -14,7 +14,6 @@
  * 
  * @attr {string} value - Numeric value to format
  * @attr {string} currency - Currency code (default: based on locale)
- * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
  * @attr {number} minimum-fraction-digits - Minimum decimal places
  * @attr {number} maximum-fraction-digits - Maximum decimal places
  * 
@@ -63,7 +62,7 @@ class CurrencyFormat extends HTMLElement {
     }
 
     get locale() {
-        return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US'
     }
 
     set locale(value) {

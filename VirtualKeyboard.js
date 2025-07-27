@@ -587,7 +587,7 @@ class VirtualKeyboard extends HTMLElement {
             const langs = Object.keys(layouts)
             const options = langs.map(l => `<option value="${l}" ${l === this.language ? 'selected' : ''}>${l.toUpperCase()}</option>`).join('')
             langSwitcherHTML = `
-                <select id="lang-switcher" aria-label="Select keyboard language" part="lang-switcher" role="combobox">
+                <select id="lang-switcher" part="lang-switcher" role="combobox" aria-label="Select keyboard language">
                     ${options}
                 </select>
             `

@@ -13,7 +13,6 @@
  * @property {string} timeZone - IANA time zone identifier
  * 
  * @attr {string} value - Date value to format
- * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
  * @attr {string} date-style - Date formatting style
  * @attr {string} time-style - Time formatting style
  * @attr {string} time-zone - Time zone identifier
@@ -48,7 +47,7 @@ class DateFormat extends HTMLElement {
     }
     
     get locale() {
-        return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US'
     }
 
     set locale(value) {

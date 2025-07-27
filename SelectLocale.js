@@ -45,17 +45,12 @@ class SelectLocale extends HTMLElement {
             value = 'en-US';
         }
         
-        // Compare with internal property, not the getter
-        if (value !== this._displayLocale) {
-            this._displayLocale = value;
-            this.setAttribute('displayLocale', value);
-            this._updateSelectedOption();
-        }
+        this.setAttribute('displayLocale', value);
     }
 
     get displayLocale() {
         // Return internal property if available, otherwise attribute
-        return this._displayLocale || this.getAttribute('displayLocale');
+        return this.getAttribute('displayLocale') || document.body.getAttribute('data-locale') || 'en-US';
     }
 
     connectedCallback() {
@@ -74,7 +69,6 @@ class SelectLocale extends HTMLElement {
         ];
 
         this._supported = Intl.NumberFormat.supportedLocalesOf(locales);
-        this._displayLocale = this.getAttribute('displayLocale') || 'en-US';
         this._renderSelect();
         // Add styles
         const sheet = new CSSStyleSheet();
@@ -110,7 +104,6 @@ class SelectLocale extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (!this._isConnected || oldValue === newValue) return;
         if (name === 'displayLocale') {
-            this._displayLocale = newValue;
             this._updateSelectedOption();
         }
     }
@@ -143,12 +136,13 @@ class SelectLocale extends HTMLElement {
 
         // Use cached options
         const options = this._initializeOptions();
+        const _displayLocale = this.displayLocale;
         options.forEach(option => {
-            option.selected = this._displayLocale === option.value;
+            option.selected = _displayLocale === option.value;
             select.appendChild(option);
         });
 
-        select.value = this._displayLocale;
+        select.value = _displayLocale;
         select.addEventListener('change', this._onSelectChange);
 
         // Clear shadow root and append select
@@ -172,9 +166,10 @@ class SelectLocale extends HTMLElement {
     _updateSelectedOption() {
         // Only update selected option, do not re-render select
         if (this._select) {
-            this._select.value = this._displayLocale;
+            const _displayLocale = this.displayLocale;
+            this._select.value = _displayLocale;
             Array.from(this._select.options).forEach(opt => {
-                opt.selected = opt.value === this._displayLocale;
+                opt.selected = opt.value === _displayLocale;
             });
         }
     }

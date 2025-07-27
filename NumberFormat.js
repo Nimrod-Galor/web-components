@@ -12,8 +12,6 @@
  * 
  * @fires locale-change - When locale changes globally
  * 
- * @cssvar --locale - Fallback locale if not specified via attribute
- * 
  * @example
  * <number-format value="1234.567" locale="de-DE" minimum-fraction-digits="2">
  * </number-format>
@@ -48,7 +46,7 @@ class NumberFormat extends HTMLElement {
     }
 
     get locale() {
-        return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US'
     }
 
     set locale(value) {

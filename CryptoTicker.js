@@ -19,7 +19,7 @@
  * 
  * @cssprop --cticker-color - Text color (default: #0f0)
  * @cssprop --cticker-font-size - Font size (default: 1rem)
- * @cssprop --locale - Current locale for currency selection
+ 
  */
 class CryptoTicker extends HTMLElement {
     constructor() {
@@ -27,7 +27,7 @@ class CryptoTicker extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['coins', 'currency', 'interval']
+        return ['coins', 'currency', 'interval', 'locale']
     }
 
     get coins() {
@@ -41,9 +41,8 @@ class CryptoTicker extends HTMLElement {
     get currency() {
         const attr = this.getAttribute('currency')
         if (attr) return attr.toLowerCase()
-
-        const locale = getComputedStyle(document.body).getPropertyValue('--locale').trim()
-        return (this.#LOCAL_TO_CURRENCY[locale]?.toLowerCase() || 'usd')
+        
+        return (this.#LOCAL_TO_CURRENCY[this.locale]?.toLowerCase() || 'usd')
     }
 
     set currency(value) {
@@ -52,6 +51,10 @@ class CryptoTicker extends HTMLElement {
 
     get interval() {
         return parseInt(this.getAttribute('interval')) || 5 * 60 * 1000; // default 5 minutes
+    }
+
+    get locale() {
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US';
     }
 
     connectedCallback() {

@@ -12,7 +12,6 @@
  * @property {string} fstyle - Formatting style (long|short|narrow)
  * 
  * @attr {string} value - Numeric value to format
- * @attr {string} locale - Locale identifier (default: from CSS --locale or 'en-US')
  * @attr {string} unit - Time unit to use
  * @attr {string} fstyle - Format style (default: 'short')
  * 
@@ -55,7 +54,7 @@ class RelativeTimeFormat extends HTMLElement{
     }
 
     get locale() {
-        return this.getAttribute('locale') || getComputedStyle(document.body).getPropertyValue('--locale').trim() || 'en-US'
+        return this.getAttribute('locale') || document.body.getAttribute('data-locale') || 'en-US'
     }
 
     set locale(val) {

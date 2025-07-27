@@ -175,7 +175,9 @@ class SuggestionSearch extends HTMLElement {
                 box-sizing: border-box;
                 background: var(--input-bg);
                 color: var(--input-color);
-                border: 1px solid var(--border-color);
+                border: 1px solid var(--border-color, buttonborder);
+                height: 100%;
+                border-radius: 5px 0 0 5px;
             }
 
             input:focus {
@@ -203,7 +205,7 @@ class SuggestionSearch extends HTMLElement {
 
             li {
                 padding: 8px;
-            cursor: pointer;
+                cursor: pointer;
             }
 
             li.active,
