@@ -25,14 +25,19 @@ A comprehensive collection of **20+ custom web components** organized into three
 - **Currency Converter** - Live exchange rates.
 - **Weather Widget** - Location-based weather display.
 - **Crypto Ticker** - Animated cryptocurrency prices.
+- **Image Carousel** - Responsive image carousel
+- **Image Gallery** - A responsive, accessible image gallery component that displays thumbnails and a large preview image.
 - **Lightbox Viewer** - Responsive image/video viewer with modal overlay, keyboard navigation, and touch support.
 - **Virtual Keyboard** - Multi-language on-screen keyboard
+- **World clock** - Display Time in selected cities.
 - **Suggestion Search** - Accessible autocomplete input with API and local cache suggestions.
 - **Calendar Picker** - Locale-aware, accessible date picker with month/year navigation, week numbers, and form integration
 - **IP Info** - Displays the user's public IP address and related location information.
 - **GeoLocation** - Browser location access
 - **Breadcrumb Trail** - Dynamic navigation breadcrumbs
 - **Expanding List** - Collapsible nested lists
+- **Suggestion Search** - Autocomplete input with API and local cache suggestions
+- **Scroll buttons** - Adds floating, accessible "scroll to top" and "scroll to bottom" buttons for easy page navigation.
 
 ## Key Features
 
@@ -723,6 +728,143 @@ This web component, `<crypto-ticker>`, displays a live, animated ticker of crypt
 
 **Summary:**  
 `<crypto-ticker>` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.
+
+ImageCarousel.js:435 Error setting up autoplay: TypeError: this.startAutoplay is not a function
+at ImageCarousel.setupAutoplay (ImageCarousel.js:432:14)
+
+# ImageCarousel Web Component
+
+A modern, accessible, and responsive image carousel built as a native Web Component.  
+Supports touch, keyboard, autoplay, lazy loading, and is easy to use and style.
+
+---
+
+## Features
+
+- **Responsive**: Adapts to mobile, tablet, and desktop layouts
+- **Touch/Swipe Support**: Native swipe gestures on mobile
+- **Keyboard Navigation**: Arrow keys, Home/End, and focusable controls
+- **Autoplay**: Optional, configurable delay, pauses on hover/focus
+- **Lazy Loading**: Efficient image loading with IntersectionObserver
+- **Accessibility**: ARIA roles, live region, focus management, and screen reader support
+- **Custom Events**: Emits `slide-change` event on navigation
+- **Configurable Controls**: Hide arrows, dots, or all controls via attributes
+- **Error Handling**: Graceful fallback for failed images and loading states
+- **Performance Optimized**: Uses Shadow DOM, constructable stylesheets, and ResizeObserver
+
+---
+
+## Usage
+
+### 1. Include the Component
+
+```html
+<script type="module" src="ImageCarousel.js"></script>
+```
+
+### 2. Add to Your HTML
+
+```html
+<image-carousel autoplay="4000">
+  <img src="img1.jpg" alt="First image" />
+  <img src="img2.jpg" alt="Second image" />
+  <img src="img3.jpg" alt="Third image" />
+</image-carousel>
+```
+
+---
+
+## Attributes
+
+| Attribute       | Description                               | Example           |
+| --------------- | ----------------------------------------- | ----------------- |
+| `autoplay`      | Autoplay delay in ms (min 1000), optional | `autoplay="5000"` |
+| `hide-arrows`   | Hide previous/next arrow buttons          |                   |
+| `hide-dots`     | Hide navigation dots                      |                   |
+| `hide-controls` | Hide both arrows and dots                 |                   |
+
+---
+
+## Keyboard Support
+
+- **Left/Right Arrow**: Previous/Next slide
+- **Home/End**: First/Last slide
+- **Tab/Shift+Tab**: Move focus between controls
+
+---
+
+## Events
+
+- **slide-change**: Fired when the active slide changes
+  ```js
+  carousel.addEventListener("slide-change", (e) => {
+    console.log("Current slide:", e.detail.currentIndex + 1);
+  });
+  ```
+
+---
+
+## Public API
+
+```js
+const carousel = document.querySelector("image-carousel");
+carousel.next(); // Go to next slide
+carousel.prev(); // Go to previous slide
+carousel.goToSlide(2); // Go to slide index 2 (third slide)
+carousel.play(); // Start autoplay
+carousel.pause(); // Pause autoplay
+carousel.getCurrentSlide(); // Get current slide index
+carousel.getTotalSlides(); // Get total number of slides
+carousel.logPerformanceReport(); // (If enabled) Log performance stats
+```
+
+---
+
+## Accessibility
+
+- Uses ARIA roles (`region`, `tablist`, `tab`)
+- Live region for announcing slide changes
+- All controls are keyboard accessible and have visible focus
+- Proper alt text on images is recommended
+
+---
+
+## Lazy Loading
+
+To enable lazy loading, use `data-src` instead of `src` and a small placeholder for `src`:
+
+```html
+<image-carousel>
+  <img data-src="large1.jpg" src="placeholder.jpg" alt="..." />
+  <img data-src="large2.jpg" src="placeholder.jpg" alt="..." />
+</image-carousel>
+```
+
+---
+
+## Error Handling
+
+- If an image fails to load, a fallback image and error message are shown.
+- If no slides are present, a loading or error message is displayed.
+
+---
+
+## Styling
+
+The component uses Shadow DOM for encapsulated styles.  
+You can override dimensions using CSS custom properties or by wrapping the component in a container.
+
+---
+
+## Example
+
+```html
+<image-carousel autoplay="3000" hide-dots>
+  <img src="nature1.jpg" alt="Nature 1" />
+  <img src="nature2.jpg" alt="Nature 2" />
+  <img src="nature3.jpg" alt="Nature 3" />
+</image-carousel>
+```
 
 ## Lightbox Viewer
 

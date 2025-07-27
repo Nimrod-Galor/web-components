@@ -29,6 +29,7 @@
     <script defrer src="CryptoTicker.js"></script>
 
 
+    <script defrer src="ImageCarousel.js"></script>
     <script defrer src="ImageLightbox.js"></script>
     <script defrer src="ImageGallery.js"></script>
     <script defrer src="VirtualKeyboard.js"></script>
@@ -154,6 +155,25 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        image-carousel {
+            display: block;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        image-carousel img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* Ensure carousel container is properly sized */
+        .row#image-carousel .col-left {
+            width: 100%;
+        }
     </style>
 
     <title>Web Components</title>
@@ -200,6 +220,7 @@
                     <li><strong><a href="#currency-converter">Currency Converter</a></strong> - Live exchange rates</li>
                     <li><strong><a href="#weather-widget">Weather Widget</a></strong> - Location-based weather display</li>
                     <li><strong><a href="#crypto-ticker">Crypto Ticker</a></strong> - Animated cryptocurrency prices</li>
+                    <li><strong><a href="#image-carousel">Image Carousel</a></strong> - Responsive image slider with touch support</li>
                     <li><strong><a href="#image-lightbox">Image Lightbox</a></strong> - Responsive image gallery with lightbox effect</li>
                     <li><strong><a href="#image-gallery">Image Gallery</a></strong> - Responsive image gallery with thumbnails</li>
                     <li><strong><a href="#virtual-keyboard">Virtual Keyboard</a></strong> - Multi-language on-screen keyboard</li>
@@ -1181,6 +1202,161 @@
                             <strong>Summary:</strong>
                             <p>`&lt;crypto-ticker&gt;` is a modern, accessible, and highly configurable web component for displaying live cryptocurrency prices in any major fiat currency, with automatic locale support and robust error handling.</p>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="image-carousel">
+            <div class="col-left auto">
+                <h4>Image Carousel</h4>
+                    <image-carousel autoplay="5000">
+                        <img src="img/large/pexels-1.jpg" width="1024" height="300" srcset="img/large/pexels-1.jpg 1024w, img/medium/pexels-1.jpg 640w" sizes="(max-width: 640px) 100vw, 640px" alt="NOVA-9 - An advanced reconnaissance unit with adaptive AI and precision vision." />
+                        <img src="img/large/pexels-2.jpg" width="1024" height="300" srcset="img/large/pexels-2.jpg 1024w, img/medium/pexels-2.jpg 640w" sizes="(max-width: 640px) 100vw, 640px" alt="OBSIDIAN-X - A stealth-class combat droid designed for low-light infiltration and silent takedowns." />
+                        <img src="img/large/pexels-3.jpg" width="1024" height="300" srcset="img/large/pexels-3.jpg 1024w, img/medium/pexels-3.jpg 640w" sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                        <img src="img/large/pexels-4.jpg" width="1024" height="300" srcset="img/large/pexels-4.jpg 1024w, img/medium/pexels-4.jpg 640w" sizes="(max-width: 640px) 100vw, 640px" alt="AZURE-7 - A high-altitude atmospheric drone with real-time data mapping and cloud-layer navigation." />
+                    </image-carousel>
+            </div>
+            <div class="auto accordion">
+                <div class="tab notecard info">
+                    <input type="checkbox" name="accordion-2" id="ic1">
+                    <label for="ic1" class="tab__label">Image Carousel</label>
+                    <div class="tab__content">
+                        <div class="content">
+                            <p>A modern, accessible, and responsive image carousel built as a native Web Component. <br />
+                                Supports touch, keyboard, autoplay, lazy loading, and is easy to use and style.</p>
+
+                                <strong>Key Features</strong>
+                                <dl>
+                                    <dt>Responsive</dt>
+                                    <dd>Adapts to mobile, tablet, and desktop layouts</dd>
+                                    <dt>Touch/Swipe Support</dt>
+                                    <dd>Native swipe gestures on mobile</dd>
+                                    <dt>Keyboard Navigation</dt>
+                                    <dd>Arrow keys, Home/End, and focusable controls</dd>
+                                    <dt>Autoplay</dt>
+                                    <dd>Optional, configurable delay, pauses on hover/focus</dd>
+                                    <dt>Lazy Loading</dt>
+                                    <dd>Efficient image loading with IntersectionObserver</dd>
+                                    <dt>Accessibility</dt>
+                                    <dd>ARIA roles, live region, focus management, and screen reader support</dd>
+                                    <dt>Custom Events</dt>
+                                    <dd>Emits `slide-change` event on navigation</dd>
+                                    <dt>Configurable Controls</dt>
+                                    <dd>Hide arrows, dots, or all controls via attributes</dd>
+                                    <dt>Error Handling</dt>
+                                    <dd>Graceful fallback for failed images and loading states</dd>
+                                    <dt>Performance Optimized</dt>
+                                    <dd>Uses Shadow DOM, constructable stylesheets, and ResizeObserver</dd>
+                                </dl>
+
+                                <code class="tagbox">
+&lt;image-carousel autoplay="4000"&gt;
+    &lt;img src="img1.jpg" alt="First image"&gt;
+    &lt;img src="img2.jpg" alt="Second image"&gt;
+    &lt;img src="img3.jpg" alt="Third image"&gt;
+&lt;/image-carousel&gt;
+                                </code>
+
+                                <strong>Attributes</strong>
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Attribute</th>
+                                            <th>Description</th>
+                                            <th>Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>autoplay</code></td>
+                                            <td>Autoplay delay in ms (min 1000), optional</td>
+                                            <td><code>autoplay="5000"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>hide-arrows</code></td>
+                                            <td>Hide previous/next arrow buttons</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>hide-dots</code></td>
+                                            <td>Hide navigation dots</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>hide-controls</code></td>
+                                            <td>Hide both arrows and dots</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <strong>Keyboard Support</strong>
+
+                                <ul>
+                                <li><strong>Left/Right Arrow</strong>: Previous/Next slide</li>
+                                <li><strong>Home/End</strong>: First/Last slide</li>
+                                <li><strong>Tab/Shift+Tab</strong>: Move focus between controls</li>
+                                </ul>
+
+                                <strong>Public API</strong>
+
+                                <p>Methods available on the carousel instance:
+                                    <ul>
+                                        <li><code>next()</code>: Go to next slide</li>
+                                        <li><code>prev()</code>: Go to previous slide</li>
+                                        <li><code>goToSlide(index)</code>: Go to slide index (0-based)</li>
+                                        <li><code>play()</code>: Start autoplay</li>
+                                        <li><code>pause()</code>: Pause autoplay</li>
+                                        <li><code>getCurrentSlide()</code>: Get current slide index</li>
+                                        <li><code>getTotalSlides()</code>: Get total number of slides</li>
+                                        <li><code>logPerformanceReport()</code>: (If enabled) Log performance stats</li>
+                                    </ul>
+                                </p>
+
+                                <strong>Accessibility</strong>
+
+                                <ul>
+                                    <li>Uses ARIA roles (`region`, `tablist`, `tab`) for structure</li>
+                                    <li>Live region for announcing slide changes</li>
+                                    <li>All controls are keyboard accessible and have visible focus</li>
+                                    <li>Proper alt text on images is recommended</li>
+                                </ul>
+
+                                <strong>Lazy Loading</strong>
+                                <p>To enable lazy loading, use `data-src` instead of `src` and a small placeholder for `src`:</p>
+
+
+                                <code class="tagbox">
+&lt;image-carousel&gt;
+    &lt;img data-src="large1.jpg" src="placeholder.jpg" alt="..." /&gt;
+    &lt;img data-src="large2.jpg" src="placeholder.jpg" alt="..." /&gt;
+&lt;/image-carousel&gt;
+                                </code>
+
+                                <strong>Error Handling</strong>
+                                <p>
+                                    - If an image fails to load, a fallback image and error message are shown.
+                                    - If no slides are present, a loading or error message is displayed.
+                                </p>
+
+
+                                <strong>Styling</strong>
+                                <p>
+                                    The component uses Shadow DOM for encapsulated styles.  
+                                    You can override dimensions using CSS custom properties or by wrapping the component in a container.
+                                </p>
+
+                                <strong>Example:</strong>
+                                <code class="tagbox">
+&lt;image-carousel autoplay="3000" hide-dots&gt;
+    &lt;img src="nature1.jpg" alt="Nature 1"&gt;
+    &lt;img src="nature2.jpg" alt="Nature 2"&gt;
+    &lt;img src="nature3.jpg" alt="Nature 3"&gt;
+&lt;/image-carousel&gt;
+                                </code>
                         </div>
                     </div>
                 </div>
